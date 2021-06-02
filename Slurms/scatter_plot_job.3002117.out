@@ -1,0 +1,8 @@
+pval    float64
+POS       int64
+dtype: object
+POS      int64
+P      float64
+dtype: object
+length:10236560
+Correlation: 0.650560450022678

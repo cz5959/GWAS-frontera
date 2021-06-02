@@ -1,0 +1,2 @@
+./combine_results.sh: line 14: syntax error near unexpected token `-'
+./combine_results.sh: line 14: `cat *.linear | awk '$1 !~ /^#CHROM/' - | awk '!/'NA'/' - | cut -f1-12 - | { printf '#CHROM\tPOS\tID\tREF\tALT\tA1\tTEST\tOBS_CT\tBETA\tSE\tT_STAT\tP\n'; cat -; } -> $output_path/linear_results_all_chrom.height.glm.linear'
