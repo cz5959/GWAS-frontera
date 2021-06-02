@@ -58,7 +58,7 @@ grouped_df = results_df.groupby(('#CHROM'))
 
 #PLOT
 
-fig = plt.figure(figsize=(16,6))
+fig = plt.figure(figsize=(16,10))
 # axes of figure - 1row,1col,1idx
 ax = fig.add_subplot(111)
 colors = ['#466EA6','#7251B8']
@@ -81,7 +81,7 @@ ax.plot([0,len(results_df)],[5,5])
 ax.set_xticks(x_labels_pos)
 ax.set_xticklabels(x_labels)
 ax.set_xlim([0, len(results_df)])
-ax.set_ylim([0, 10])
+ax.set_ylim([0, 20])
 ax.set_xlabel('Chromosome')
 ax.set_title('Manhattan Plot')
 
