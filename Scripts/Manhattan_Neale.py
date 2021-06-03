@@ -52,7 +52,7 @@ grouped_df = results_df.groupby(('chrom'))
 
 #create Manhattan plot
 
-fig = plt.figure(figsize=(18,8))
+fig = plt.figure(figsize=(18,14))
 #axes of figure - 1row,1col,1idx
 ax = fig.add_subplot(111)
 colors = ['#466EA6','#7251B8']
@@ -74,8 +74,9 @@ ax.plot([0,len(results_df)],[5,5])
 #figure labels
 ax.set_xticks(x_labels_pos)
 ax.set_xticklabels(x_labels)
-ax.set_xlim([0, len(results_df)])
-ax.set_ylim([0, 15])
+y_max = results_df['NEG_LOG_P'].max()
+print(y_max)
+ax.set_ylim([0, y_max])
 ax.set_xlabel('Chromosome')
 ax.set_title('Manhattan Plot for Height - Neale')
 

@@ -58,7 +58,7 @@ grouped_df = results_df.groupby(('#CHROM'))
 
 #PLOT
 
-fig = plt.figure(figsize=(16,10))
+fig = plt.figure(figsize=(18,14))
 # axes of figure - 1row,1col,1idx
 ax = fig.add_subplot(111)
 colors = ['#466EA6','#7251B8']
@@ -68,7 +68,7 @@ x_labels_pos = []
 # create subplots for each chromosome (name = #CHROM)
 for num, (name, group) in enumerate(grouped_df):
     ##### plot, x is index and y is neg log p ######
-    group.plot(kind='scatter', x='index', y='NEG_LOG_P',color=colors[num % len(colors)], ax=ax, s=0.1, marker = '.')
+    group.plot(kind='scatter', x='index', y='NEG_LOG_P',color=colors[num % len(colors)], ax=ax, s=0.3, marker = '.')
     # name of chr
     x_labels.append(name)
     # tick marks; middle of group
@@ -81,7 +81,9 @@ ax.plot([0,len(results_df)],[5,5])
 ax.set_xticks(x_labels_pos)
 ax.set_xticklabels(x_labels)
 ax.set_xlim([0, len(results_df)])
-ax.set_ylim([0, 20])
+y_max = results_df['NEG_LOG_P'].max()
+print(y_max)
+ax.set_ylim([0, y_max])
 ax.set_xlabel('Chromosome')
 ax.set_title('Manhattan Plot')
 
