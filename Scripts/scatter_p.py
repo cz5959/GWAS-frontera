@@ -14,7 +14,7 @@ os.chdir("/scratch1/08005/cz5959/Neale_Lab/Standing_Height")
 neale_df = pd.read_csv("50_raw.gwas.imputed_v3.both_sexes.tsv", sep="\t",usecols=['variant','pval'],dtype={'variant':str, 'pval':np.float64})
 os.chdir("/scratch1/08005/cz5959/Association_Height_50")
 #plink_df = pd.read_csv("linear_results_all_chrom.height.glm.linear", sep="\t",usecols=['POS','P'], dtype={'POS':np.int64,'P':np.float64})
-plink_df = pd.read_csv("linear_results_all_chrom.height.glm.linear", sep="\t",usecols=['#CHROM','POS','ALT','A1','P'], dtype={'#CHROM':np.int64,'POS':np.int64,'ALT':str,'A1':str,'P':np.float64})
+plink_df = pd.read_csv("linear_results_all_chrom.height.glm.linear", sep="\t",usecols=['#CHROM','POS','REF','ALT','P'], dtype={'#CHROM':np.int64,'POS':np.int64,'REF':str,'ALT':str,'P':np.float64})
 
 
 # split variant column in neale_df to just get position, then drop variant column
@@ -22,13 +22,14 @@ plink_df = pd.read_csv("linear_results_all_chrom.height.glm.linear", sep="\t",us
 #neale_df["POS"] = pd.to_numeric(split_df[1], errors='coerce')
 #neale_df.drop(columns=['variant'], inplace = True)
 
-# concatenate chrom, position, alt and a1 for plink variant
-plink_df['variant'] = plink_df['#CHROM'].astype(str) + ":" + plink_df['POS'].astype(str) + ":" + plink_df['ALT'].astype(str) + ":" + plink_df['A1'].astype(str) 
+# concatenate chrom, position, red and alt for plink variant
+plink_df['variant'] = plink_df['#CHROM'].astype(str) + ":" + plink_df['POS'].astype(str) + ":" + plink_df['REF'].astype(str) + ":" + plink_df['ALT'].astype(str) 
 
 # check datatypes and if there are duplicates in plink
 print(neale_df.dtypes)
 print(plink_df.dtypes)
 print(plink_df[plink_df['variant'].duplicated(keep=False)].head(10))
+print( len(plink_df[plink_df['variant'].duplicated(keep=False)]['variant'].unique()) )
 
 # join dataframes with inner merge on variant
 neale_plink_df = pd.merge(neale_df, plink_df, how="inner", on="variant")
