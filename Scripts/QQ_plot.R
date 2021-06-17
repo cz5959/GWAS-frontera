@@ -9,7 +9,7 @@ install.packages("qqman", repos="https://cran.microsoft.com/", lib="~")
 library("qqman")
 
 # read results and convert P to numeric
-results_log <- read.table("linear_results_all_chrom.height.glm.linear",sep="\t",head=FALSE,col.names=c("#CHROM","POS","ID","REF","ALT","A1","TEST","OBS_CT","BETA","SE","TSTAT","P"))
+results_log <- read.table("linear_results_all_chrom.height.glm.linear",sep="\t",head=FALSE,col.names=c("#CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"))
 P <- as.numeric(results_log$P)
 
 #create qq plot

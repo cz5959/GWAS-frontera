@@ -15,11 +15,6 @@ neale_df = pd.read_csv("50_raw.gwas.imputed_v3.both_sexes.tsv", sep="\t",usecols
 os.chdir("/scratch1/08005/cz5959/Association_Height_50")
 plink_df = pd.read_csv("linear_results_all_chrom.height.glm.linear", sep="\t",usecols=['#CHROM','POS','ID','REF','ALT','A1','BETA','P'], dtype={'#CHROM':np.int64,'POS':np.int64,'ID':str,'REF':str,'ALT':str,'A1':str,'BETA':np.float64,'P':np.float64})
 
-# split variant column in neale_df to just get position, then drop variant column
-#split_df = neale_df["variant"].str.split(":", n=3, expand = True)
-#neale_df["POS"] = pd.to_numeric(split_df[1], errors='coerce')
-#neale_df.drop(columns=['variant'], inplace = True)
-
 # concatenate chrom, position, red and alt for plink variant
 plink_df['variant'] = plink_df['#CHROM'].astype(str) + ":" + plink_df['POS'].astype(str) + ":" + plink_df['REF'].astype(str) + ":" + plink_df['ALT'].astype(str) 
 
@@ -87,19 +82,3 @@ plt.ylabel("Plink2 Betas")
 plt.title("Scatterplot of Neale and Plink2 Significant Beta Values")
 plt.tight_layout()
 plt.savefig("scatter_neale_plink_sig_betas.png")
-
-# look into the prongs
-#neale_plink_df['neale_log10'] = x
-#neale_plink_df['plink_log10'] = y
-#prong1 = neale_plink_df.loc[(neale_plink_df['plink_log10'] > 10) & (neale_plink_df['neale_log10'] < 10)]
-#prong3 = neale_plink_df.loc[(neale_plink_df['plink_log10'] < 10) & (neale_plink_df['neale_log10'] > 10)]
-#prong1.to_csv("scatter_prong1.csv", index=False, sep="\t")
-#prong3.to_csv("scatter_prong3.csv", index=False, sep="\t")
-
-#b beta prongs
-#prong1 = low_p_betas_df.loc[ (low_p_betas_df['neale_beta'] < 0) & (low_p_betas_df['plink_beta'] > 0)]
-#prong3 = low_p_betas_df.loc[ (low_p_betas_df['neale_beta'] > 0) & (low_p_betas_df['plink_beta'] < 0)]
-#prong1.to_csv("scatter_prong_beta1.csv", index=False, sep="\t")
-#prong3.to_csv("scatter_prong_beta3.csv", index=False, sep="\t")
-#prong1_mismatch = prong1.loc[ (prong1['ALT_plink'] != prong1['A1_plink'])]
-#prong3_mismatch = prong3.loc[ (prong3['ALT_plink'] != prong3['A1_plink'])]
