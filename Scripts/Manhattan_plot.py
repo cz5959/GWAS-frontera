@@ -17,7 +17,7 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
 
     # DATAFRAME
     # load file to dataframe
-    results_df = pd.read_csv(file_name, sep="\t", usecols =['#CHROM','POS','P','ID'], dtype= {'#CHROM':np.int64,'POS':np.int64,'P':np.float64,'ID':str}))
+    results_df = pd.read_csv(file_name, sep="\t", usecols =['#CHROM','POS','P','ID'], dtype= {'#CHROM':np.int64,'POS':np.int64,'P':np.float64,'ID':str})
 
     # drop rows with any column having null/missing data ; should already be removed when combine results
     results_df = results_df.dropna()
@@ -86,12 +86,12 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
         plt.tight_layout()
         plt.savefig(plot_name)
 
-def main():
-    # set working directory
-    os.chdir("/scratch1/08005/cz5959/GWAS_Results")
+
+# set working directory
+os.chdir("/scratch1/08005/cz5959/GWAS_Results")
     
-    # sys.argv[1] should be phenotype name
-    y_max = manhattan(str(sys.argv[1]),"both_sex")
-    manhattan(str(sys.argv[1]),"female", y_max)
-    manhattan(str(sys.argv[1]),"male", y_max)
+# sys.argv[1] should be phenotype name
+y_max = manhattan(str(sys.argv[1]),"both_sex")
+manhattan(str(sys.argv[1]),"female", y_max)
+manhattan(str(sys.argv[1]),"male", y_max)
 
