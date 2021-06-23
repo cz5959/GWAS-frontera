@@ -13,7 +13,8 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
     #set variables
     file_name = "{1}_all.{0}.glm.linear".format(pheno, sex)
     plot_name = "manhattan_{0}_{1}.png".format(pheno, sex)
-    plot_title = "Manhattan Plot of {0} : {1}".format(pheno.capitalize(), sex.capitalize)
+    plot_title = "Manhattan Plot of {0} : {1}".format(pheno.capitalize(), sex.capitalize())
+    #plot_title = "Manhattan Plot of : {0}".format(sex.capitalize())
 
     # DATAFRAME
     # load file to dataframe
@@ -88,7 +89,8 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
 
 
 # set working directory
-os.chdir("/scratch1/08005/cz5959/GWAS_Results")
+file_path = "/scratch1/08005/cz5959/GWAS_Results/{0}".format(str(sys.argv[1]))
+os.chdir(file_path)
     
 # sys.argv[1] should be phenotype name
 y_max = manhattan(str(sys.argv[1]),"both_sex")

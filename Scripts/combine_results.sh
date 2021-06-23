@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # passed in parameter should be phenotype name
-FILE_PATH=$SCRATCH/GWAS_Results
+FILE_PATH=$SCRATCH/GWAS_Results/$1
 HEADER='#CHROM\tPOS\tID\tREF\tALT\tA1\tAX\tTEST\tOBS_CT\tBETA\tSE\tT_STAT\tP\n'
 echo $1
 

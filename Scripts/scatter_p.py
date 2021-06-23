@@ -8,12 +8,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
 import os
+import sys
+
+# variables
+phenotype=str(sys.argv[1])
+field_id=str(sys.argv[2])
 
 # load in dataframes
-os.chdir("/scratch1/08005/cz5959/Neale_Lab/Standing_Height")
-neale_df = pd.read_csv("50_raw.gwas.imputed_v3.both_sexes.tsv", sep="\t",usecols=['variant','minor_allele','beta','pval'],dtype={'variant':str, 'minor_allele':str, 'beta':np.float64, 'pval':np.float64})
-os.chdir("/scratch1/08005/cz5959/Association_Height_50")
-plink_df = pd.read_csv("linear_results_all_chrom.height.glm.linear", sep="\t",usecols=['#CHROM','POS','ID','REF','ALT','A1','BETA','P'], dtype={'#CHROM':np.int64,'POS':np.int64,'ID':str,'REF':str,'ALT':str,'A1':str,'BETA':np.float64,'P':np.float64})
+os.chdir("/scratch1/08005/cz5959/Neale_Lab/{0}".format(phenotype))
+neale_df = pd.read_csv("{0}_raw.gwas.imputed_v3.both_sexes.tsv".format(field_id), sep="\t",usecols=['variant','minor_allele','beta','pval'],dtype={'variant':str,'minor_allele':str,'beta':np.float64,'pval':np.float64})
+os.chdir("/scratch1/08005/cz5959/GWAS_Results/{0}".format(phenotype))
+plink_df = pd.read_csv("both_sex_all.{0}.glm.linear".format(phenotype), sep="\t",usecols=['#CHROM','POS','REF','ALT','A1','BETA','P'], dtype={'#CHROM':np.int64,'POS':np.int64,'REF':str,'ALT':str,'A1':str,'BETA':np.float64,'P':np.float64})
+
 
 # concatenate chrom, position, red and alt for plink variant
 plink_df['variant'] = plink_df['#CHROM'].astype(str) + ":" + plink_df['POS'].astype(str) + ":" + plink_df['REF'].astype(str) + ":" + plink_df['ALT'].astype(str) 
@@ -48,11 +54,12 @@ plt.figure(figsize=(10,10))
 plt.scatter(x,y, s=0.5)
 plt.xlabel("Neale -log10(p)")
 plt.ylabel("plink -log10(p)")
-plt.title("Scatterplot of Neale and plink -log10(p) Values")
+plt.title("Scatterplot of Neale and plink -log10(p) Values for {0}".format(phenotype.capitalize()))
+#plt.title("Scatterplot of Neale and plink -log10(p) Values for BMI")
 
 # save figure as png
 plt.tight_layout()
-plt.savefig("scatter_neale_plink_pvalues.png")
+plt.savefig("scatter_pvalues_{0}.png".format(phenotype))
 
 
 # BETA
@@ -67,9 +74,10 @@ plt.figure(figsize=(10,10))
 plt.scatter(x,y, s=0.5)
 plt.xlabel("Neale Betas")
 plt.ylabel("Plink2 Betas")
-plt.title("Scatterplot of Neale and Plink2 Beta Values")
+plt.title("Scatterplot of Neale and Plink2 Beta Values for {0}".format(phenotype.capitalize()))
+#plt.title("Scatterplot of Neale and Plink2 Beta Values for BMI")
 plt.tight_layout()
-plt.savefig("scatter_neale_plink_betas.png")
+plt.savefig("scatter_betas_{0}.png".format(phenotype))
 
 # betas for low p-values
 low_p_betas_df = neale_plink_df.loc[ (-np.log10(neale_plink_df['plink_p']) > 10), ['variant','ID','ALT','A1','minor_allele','neale_beta','plink_beta']]
@@ -79,6 +87,8 @@ plt.figure(figsize=(10,10))
 plt.scatter(x,y, s=0.5)
 plt.xlabel("Neale Betas")
 plt.ylabel("Plink2 Betas")
-plt.title("Scatterplot of Neale and Plink2 Significant Beta Values")
+plt.title("Scatterplot of Neale and Plink2 Significant Beta Values for {0}".format(phenotype.capitalize()))
+#plt.title("Scatterplot of Neale and Plink2 Significant Beta Values for BMI")
 plt.tight_layout()
-plt.savefig("scatter_neale_plink_sig_betas.png")
+plt.savefig("scatter_sig_betas_{0}.png".format(phenotype))
+

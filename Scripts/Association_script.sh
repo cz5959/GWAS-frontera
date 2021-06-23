@@ -4,9 +4,10 @@
 
 # paths and variables
 INPUT=$SCRATCH/QC
-OUTPUT=$SCRATCH/GWAS_Results
-PHENO_NAME=testosterone
+OUTPUT=$SCRATCH/GWAS_Results/$1
+PHENO_NAME=$1
 COL_NAMES=chrom,pos,ref,alt,ax,test,nobs,beta,se,tz,p
+echo $1
 
 # move to directory with pulled metadata files
 cd $SCRATCH/Phenotypes
