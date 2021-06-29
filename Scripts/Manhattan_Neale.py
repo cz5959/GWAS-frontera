@@ -9,9 +9,12 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+pheno=sys.argv[1]
+field_id=sys.argv[2]
+
 # load file to dataframe
-os.chdir("/scratch1/08005/cz5959/Neale_Lab/Standing_Height")
-results_df = pd.read_csv("50_raw.gwas.imputed_v3.both_sexes.tsv", sep="\t", usecols =["variant","pval"])
+os.chdir("/scratch1/08005/cz5959/Neale_Lab/{0}".format(pheno))
+results_df = pd.read_csv("{0}_raw.gwas.imputed_v3.both_sexes.tsv".format(field_id), sep="\t", usecols =["variant","pval"])
 
 # drop rows with any column having null/missing data
 results_df = results_df.dropna()
@@ -30,12 +33,12 @@ results_df.reset_index(inplace=True, drop=True)
 if results_df.pval.dtypes == object:
     results_df['pval'] = pd.to_numeric(results_df['pval'], errors='coerce')
     results_df = results_df.dropna()
-    
-#create column with negative log p value
-#ignore divide error message because fixed below
-np.seterr(divide = 'ignore') 
-#if p=0, make dummy -2
-results_df['NEG_LOG_P']= neg_log_values = np.where(results_df['pval'] != 0, -np.log10(results_df['pval']), -2)
+
+# create column with negative log p value
+print(results_df[results_df['pval'] == 0])
+print(len(results_df[results_df['pval'] == 0]))
+results_df = results_df[(results_df['pval'] != 0)]
+results_df['NEG_LOG_P'] = -np.log10(results_df['pval'])
 
 #p values that are greater than 5
 #sig_P_5 = results_df.loc[results_df['NEG_LOG_P'] > 5]
@@ -62,7 +65,7 @@ x_labels_pos = []
 #create subplots for each chromosome (name = #CHROM)
 for num, (name, group) in enumerate(grouped_df):
     ##### plot, x is index and y is neg log p ######
-    group.plot(kind='scatter', x='index', y='NEG_LOG_P',color=colors[num % len(colors)], ax=ax, s=.1, marker = '.')
+    group.plot(kind='scatter', x='index', y='NEG_LOG_P',color=colors[num % len(colors)], ax=ax, s=5 marker = '.')
     #name of chr
     x_labels.append(name)
     #tick marks; middle of group
