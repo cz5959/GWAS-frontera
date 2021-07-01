@@ -13,11 +13,11 @@ import time
 
 def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
     #set variables
-    file_name = "{1}_all.{0}.glm.linear".format(pheno, sex)
+    file_name = "{1}_all_2.{0}.glm.linear".format(pheno, sex)
     plot_name = "manhattan_{0}_{1}.png".format(pheno, sex)
     plot_title = "Manhattan Plot of {0} : {1}".format(pheno.capitalize(), sex.capitalize())
     #plot_title = "Manhattan Plot of : {0}".format(sex.capitalize())
-    sig_snp_thresh = 120 if sex == "both_sex" else 50
+    sig_snp_thresh = int(sys.argv[2]) if sex == "both_sex" else int(sys.argv[3])
 
     # DATAFRAME
     results_df = pd.read_csv(file_name, sep="\t", usecols =['#CHROM','POS','P','ID'], dtype= {'#CHROM':np.int64,'POS':np.int64,'P':np.float64,'ID':str})
@@ -53,6 +53,7 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
     x_labels = []
     x_labels_pos = []
     snp_list = pd.DataFrame(columns=['index','NEG_LOG_P','LOG10','ID'])
+    above_thresh = pd.DataFrame(columns=['#CHROM','ID','NEG_LOG_P'])
 
     # create subplots for each chromosome (name = #CHROM)
     for num, (name, group) in enumerate(grouped_df):
@@ -66,6 +67,7 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
         top_group = group.loc[group['NEG_LOG_P'] > sig_snp_thresh].copy(deep=True)
         # cluster and label top SNP
         if len(top_group) > 0:
+            above_thresh = pd.concat([above_thresh,top_group['#CHROM','ID','NEG_LOG_P']])
             clustering = DBSCAN(eps=500, min_samples=0).fit(top_group[['index','NEG_LOG_P']])
             top_group.reset_index(inplace=True)
             top_group['label'] = pd.DataFrame(clustering.labels_)
@@ -73,10 +75,10 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
                 y = top_group.loc[top_group['label'] == group, ['NEG_LOG_P']]
                 topSNP = top_group.iloc[y.idxmax()]
                 snp_list = pd.concat([snp_list,topSNP[['index','NEG_LOG_P','LOG10','ID']]])
-
+    above_thresh.to_csv("{0}_{1}_SNPsAboveThresh.txt".format(pheno, sex), sep="\t", index=False)
     anno = get_annotation(snp_list, pheno, sex)
     for i, row in anno.iterrows():
-        text = row['SYMBOL'].to_string(index=False) if row['SYMBOL'] != "-" else row['ID'].to_string(index=False)
+        text = row['SYMBOL'] if row['SYMBOL'] != "-" else row['ID']
         ax.text(row['index'], row['NEG_LOG_P'], text)
     # sig line
     ax.plot([0,len(results_df)],[5,5])
@@ -127,11 +129,11 @@ def manhattan_combine(pheno, female_df, male_df, female_anno, male_anno):
 
     # annotations
     for i, row in female_anno.iterrows():
-        text = row['SYMBOL'].to_string(index=False) if row['SYMBOL'] != "-" else row['ID'].to_string(index=False)
+        text = row['SYMBOL'] if row['SYMBOL'] != "-" else row['ID']
         ax1.text(row['index'], row['NEG_LOG_P'], text)
     for i, row in male_anno.iterrows():
-        text = row['SYMBOL'].to_string(index=False) if row['SYMBOL'] != "-" else row['ID'].to_string(index=False)
-        ax2.text(row['index'], row['NEG_LOG_P'], text)
+        text = row['SYMBOL'] if row['SYMBOL'] != "-" else row['ID']
+        ax2.text(row['index'], row['LOG10'], text)
     # x
     x_max = max(len(female_df), len(male_df))
     ax1.plot([0,x_max],[5,5])
@@ -176,12 +178,13 @@ def get_annotation(snp_list, pheno, sex):
             print("timeout")
             quit()
     # load results
-    anno = pd.read_csv(file_name, sep="\t", comment="#", usecols=[0,3]) 
-    anno.rename(columns={"Uploaded_variation":"ID"}, inplace=True)
+    anno = pd.read_csv(file_name, sep="\t", usecols=[0,3], header=31) 
+    anno.rename(columns={"#Uploaded_variation":"ID"},inplace=True)
     anno.drop_duplicates(subset=["ID"],inplace=True)
     anno = pd.merge(snp_list, anno, how="left", on="ID")
     anno.dropna(inplace=True)
-
+    print(anno)
+    print(anno.dtypes)
     return anno        
     
 

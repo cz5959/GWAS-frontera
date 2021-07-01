@@ -1,5 +1,5 @@
 #!/bin/sh
-
+i=testosterone
 # file paths
 PLINK=$SCRATCH/GWAS_Results/$1
 FILE_PATH=$SCRATCH/LD_practice/$1
@@ -37,9 +37,9 @@ grep -h -A 4 "h2:" $FILE_PATH/*h2.log > ${1}_ldsc.txt
 ldsc.py --rg $FILE_PATH/${1}_female.sumstats.gz,$FILE_PATH/${1}_male.sumstats.gz --w-ld-chr $LD_SCORE/eur_w_ld_chr/ --ref-ld-chr $LD_SCORE/eur_w_ld_chr/ --out $FILE_PATH/${1}_male_female
 
 # PARTITIONED
-ldsc.py	--h2 $FILE_PATH/${1}_both_sex.sumstats.gz --ref-ld-chr $PARTITION/baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_frq/1000G.mac5eur. --out $FILE_PATH/${1}_both_sex_baseline
-ldsc.py	--h2 $FILE_PATH/${1}_female.sumstats.gz --ref-ld-chr $PARTITION/baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_frq/1000G.mac5eur. --out $FILE_PATH/${1}_female_baseline
-ldsc.py	--h2 $FILE_PATH/${1}_male.sumstats.gz --ref-ld-chr $PARTITION/baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_frq/1000G.mac5eur. --out $FILE_PATH/${1}_male_baseline
+ldsc.py	--h2 $FILE_PATH/${i}_both_sex.sumstats.gz --ref-ld-chr $PARTITION/baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_frq/1000G.mac5eur. --out $FILE_PATH/${i}_both_sex_baseline
+ldsc.py	--h2 $FILE_PATH/${i}_female.sumstats.gz --ref-ld-chr $PARTITION/baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_frq/1000G.mac5eur. --out $FILE_PATH/${i}_female_baseline
+ldsc.py	--h2 $FILE_PATH/${i}_male.sumstats.gz --ref-ld-chr $PARTITION/baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_frq/1000G.mac5eur. --out $FILE_PATH/${i}_male_baseline
 # cell type group analysis
 
 echo completed

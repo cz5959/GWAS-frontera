@@ -18,10 +18,10 @@ df_female = pd.read_csv("{0}_female_baseline.results".format(pheno),sep="\t",use
 df_male = pd.read_csv("{0}_male_baseline.results".format(pheno),sep="\t",usecols=['Category','Enrichment'],dtype={'Category':str,'Enrichment':np.float64})
 
 # make bar plot
-def make_bar(pheno, df1,df2=None)
+def make_bar(pheno, df1,df2=pd.DataFrame({'A' : []})):
     fig, ax = plt.subplots(figsize=(20,10))
-    if df2==None:
-        x = np.arrange(len(df['Category']))
+    if df2.empty:
+        x = np.arange(len(df['Category']))
         df1.plot(kind='bar',x='Category',y='Enrichment',ax=ax,legend=None)
         plt.title("Partitioned Heritability for {0}".format(pheno))
         plot_name="partition_bar_{0}.png".format(pheno)
@@ -31,12 +31,12 @@ def make_bar(pheno, df1,df2=None)
         df = pd.merge(df1, df2, how="outer", on="Category")
         x = np.arange(len(df['Category']))
         ax.bar(x-0.2,df['Enrichment_Female'], 0.4,color='plum',label = 'Female')
-        ax.bar(x-0.2,df['Enrichment_Male'], 0.4,color='royalblue',label = 'Male')
+        ax.bar(x+0.2,df['Enrichment_Male'], 0.4,color='royalblue',label = 'Male')
         plt.xticks(x,df['Category'],rotation='vertical')
         plt.legend()
         plt.title("Partitioned Heritability for {0} - Male and Female".format(pheno))
         plot_name="partition_bar_{0}_both.png".format(pheno)
-    plt.xlim(0,x.max())
+    plt.xlim(-1,x.max()+1)
     plt.ylabel("Enrichment")
     plt.xlabel("Category")
     plt.tight_layout()

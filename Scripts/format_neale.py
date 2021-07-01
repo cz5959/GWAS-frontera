@@ -8,12 +8,13 @@ import sys
 
 pheno=sys.argv[1]
 field_id=sys.argv[2]
+sex=sys.argv[3]
 
 # load dataframes
 os.chdir("/scratch1/08005/cz5959/Neale_Lab")
 variants_df = pd.read_csv("variants.tsv", sep="\t",usecols=['variant','ref','alt','rsid'],dtype={'variant':str,'ref':str,'alt':str,'rsid':str})
 os.chdir("/scratch1/08005/cz5959/Neale_Lab/{0}".format(pheno))
-neale_df = pd.read_csv("{0}_raw.gwas.imputed_v3.both_sexes.tsv".format(field_id), sep="\t",usecols=['variant','minor_allele','n_complete_samples','beta','pval'],dtype={'variant':str, 'minor_allele':str, 'n_complete_samples':np.int64, 'beta':np.float64, 'pval':np.float64})
+neale_df = pd.read_csv("{0}_raw.gwas.imputed_v3.{1}.tsv".format(field_id,sex), sep="\t",usecols=['variant','minor_allele','n_complete_samples','beta','pval'],dtype={'variant':str, 'minor_allele':str, 'n_complete_samples':np.int64, 'beta':np.float64, 'pval':np.float64})
 
 # remove multialleleic and indels
 variants_df = variants_df[ (variants_df['ref'].str.len() == 1) & (variants_df['alt'].str.len() == 1)]
@@ -30,5 +31,5 @@ neale_df_2.loc[ (neale_df_2['minor_allele'] != neale_df_2['alt']), 'beta'] = -ne
 # rename and reorder columns and save as csv
 neale_df_2.rename(columns= {'rsid':'RSID', 'pval':'P', 'beta':'BETA', 'n_complete_samples':'N','minor_allele':'A1'}, inplace=True)
 neale_df_2 = neale_df_2[['RSID','A1','A2','N','BETA','P']]
-neale_df_2.to_csv("neale_{0}_ldsc.txt".format(pheno), index=False, sep="\t")
+neale_df_2.to_csv("neale_{0}_{1}_ldsc.txt".format(pheno,sex), index=False, sep="\t")
 
