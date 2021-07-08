@@ -16,7 +16,7 @@ variants_df = pd.read_csv("variants.tsv", sep="\t",usecols=['variant','ref','alt
 os.chdir("/scratch1/08005/cz5959/Neale_Lab/{0}".format(pheno))
 neale_df = pd.read_csv("{0}_raw.gwas.imputed_v3.{1}.tsv".format(field_id,sex), sep="\t",usecols=['variant','minor_allele','n_complete_samples','beta','pval'],dtype={'variant':str, 'minor_allele':str, 'n_complete_samples':np.int64, 'beta':np.float64, 'pval':np.float64})
 
-# remove multialleleic and indels
+# remove multiallelic and indels
 variants_df = variants_df[ (variants_df['ref'].str.len() == 1) & (variants_df['alt'].str.len() == 1)]
 variants_df = variants_df[~variants_df['rsid'].str.contains(":")]
 

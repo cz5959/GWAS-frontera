@@ -13,7 +13,7 @@ import time
 
 def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
     #set variables
-    file_name = "{1}_all_2.{0}.glm.linear".format(pheno, sex)
+    file_name = "{1}_all.{0}.glm.linear".format(pheno, sex)
     plot_name = "manhattan_{0}_{1}.png".format(pheno, sex)
     plot_title = "Manhattan Plot of {0} : {1}".format(pheno.capitalize(), sex.capitalize())
     #plot_title = "Manhattan Plot of : {0}".format(sex.capitalize())
