@@ -1,7 +1,9 @@
 #!/bin/sh
 
 #linear association; covariates include 10 PC, sex, and birth year
-
+#make directories if they don't exist
+cd $SCRATCH/GWAS_Results
+mkdir -p $1/{${1}_both,${1}_female,${1}_male}
 # paths and variables
 INPUT=$SCRATCH/QC
 OUTPUT=$SCRATCH/GWAS_Results/$1

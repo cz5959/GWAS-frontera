@@ -11,7 +11,7 @@ setwd(wd)
 
 # qqman package
 #install.packages("qqman", repos="https://cran.microsoft.com/", lib="~")
-library("qqman")
+library("qqman", lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
 
 # create QQ plot: read results, convert P to numeric, create jpeg
 results_log <- read.table(both_file,sep="\t",head=FALSE,col.names=c("#CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"))

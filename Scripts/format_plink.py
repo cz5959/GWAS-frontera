@@ -15,14 +15,15 @@ def edit(sex):
     df['ref_P']=df['P']
     print(sex)
     print(df.head(10))
-    df['P'] = pd.to_numeric(results_df['P'], errors='coerce')
-    NA_df = df.loc[df['P'].isna(), ['#CHROM','ID','A1','P','ref_P']]
+    df['P'] = pd.to_numeric(df['P'], errors='coerce')
+    NA_df = df.loc[(df['P'].isna()) | (df['P'] == 0), ['#CHROM','ID','A1','P','ref_P']]
     print("Number of SNPs can't be converted to numeric: " + str(len(NA_df)))
     if len(NA_df) > 0:
         NA_df.to_csv("{1}_{0}_NA.csv".format(pheno,sex), sep="\t", index = False)
 
-    # drop null 
+    # drop null and 0
     df = df.dropna()
+    df = df[df['P'] != 0]
     df.drop(columns=['ref_P'], inplace=True)
 
     # create csv

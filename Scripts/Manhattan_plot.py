@@ -67,7 +67,7 @@ def manhattan(pheno="phenotype", sex="both_sex", y_max = 0):
         top_group = group.loc[group['NEG_LOG_P'] > sig_snp_thresh].copy(deep=True)
         # cluster and label top SNP
         if len(top_group) > 0:
-            above_thresh = pd.concat([above_thresh,top_group['#CHROM','ID','NEG_LOG_P']])
+            above_thresh = pd.concat([above_thresh,top_group[['#CHROM','ID','NEG_LOG_P']]])
             clustering = DBSCAN(eps=500, min_samples=0).fit(top_group[['index','NEG_LOG_P']])
             top_group.reset_index(inplace=True)
             top_group['label'] = pd.DataFrame(clustering.labels_)

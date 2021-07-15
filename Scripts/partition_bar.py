@@ -12,14 +12,17 @@ import sys
 # load dataframes
 pheno = sys.argv[1]
 result = "cell_types"
-file_path = "/scratch1/08005/cz5959/LD_practice/{0}".format(pheno)
-os.chdir(file_path)
+get_names = False
+print(pheno, result)
+
+#results
+os.chdir("/scratch1/08005/cz5959/LD_practice/{0}".format(pheno))
 df = pd.read_csv("{0}_both_sex_{1}.results".format(pheno, result),sep="\t",usecols=['Category','Enrichment','Enrichment_std_error'],dtype={'Category':str,'Enrichment':np.float64,'Enrichment_std_error':np.float64})
 df_female = pd.read_csv("{0}_female_{1}.results".format(pheno, result),sep="\t",usecols=['Category','Enrichment','Enrichment_std_error'],dtype={'Category':str,'Enrichment':np.float64,'Enrichment_std_error':np.float64})
 df_male = pd.read_csv("{0}_male_{1}.results".format(pheno, result),sep="\t",usecols=['Category','Enrichment','Enrichment_std_error'],dtype={'Category':str,'Enrichment':np.float64,'Enrichment_std_error':np.float64})
 
 # make bar plot
-def make_bar(pheno, df1,df2=pd.DataFrame({'A' : []})):
+def make_bar(pheno, df1, df2=pd.DataFrame({'A' : []})):
     fig, ax = plt.subplots(figsize=(20,10))
     if df2.empty:
         x = np.arange(len(df1['Category']))
@@ -46,6 +49,21 @@ def make_bar(pheno, df1,df2=pd.DataFrame({'A' : []})):
     plt.legend()
     plt.tight_layout()
     plt.savefig(plot_name)
+
+# categories:
+def categories(result)
+    os.chdir("/scratch1/08005/cz5959/ldsc")
+    df_names = pd.read_csv("{0}.ldcts".format(result), sep="\t", header=None, usecols=[0])
+    row = pd.Series(["Control"])
+    df_names2 = pd.concat([row,df_names]).reset_index(drop=True)
+    os.chdir("/scratch1/08005/cz5959/LD_practice/{0}".format(pheno))
+    return df_names2
+
+if get_names:
+    df_names = categories(result)
+    df['Category'] = df_names.values
+    df_female['Category'] = df_names.values
+    df_male['Category'] = df_names.values
 
 make_bar(pheno, df)
 make_bar(pheno, df_female, df_male)
