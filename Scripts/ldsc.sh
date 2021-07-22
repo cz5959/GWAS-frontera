@@ -67,4 +67,7 @@ echo completed
 
 #### formate file for partitioned heritability
 cut -d, -f1 GTEx_brain.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^|GTEx_brain_1000Gv3_ldscores/GTEx_brain.control.,|' - > GTEx_brain.txt
+cut -d, -f1 ENTEX.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^|Multi_tissue_chromatin_1000Gv3_ldscores/ENTEX.control.,|' - > ENTEX.txt
+cut -d, -f1 Roadmap.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^|Multi_tissue_chromatin_1000Gv3_ldscores/Roadmap.control.,|' - > Roadmap.txt
+cut -d, -f1 Multi_tissue_gene_expr.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^| Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.,|' - > Multi_tissue_gene_expr.txt
 # vi to remove newline

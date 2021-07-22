@@ -10,7 +10,7 @@ pheno <- args[1]
 wd <- paste("/scratch1/08005/cz5959/GWAS_Results/",pheno,sep="")
 setwd(wd)
 
-# load results
+# load results - summstats
 female_file <- paste("female_all.",pheno,".glm.linear",sep="")
 male_file <- paste("male_all.",pheno,".glm.linear",sep="")
 
@@ -21,7 +21,21 @@ male_df <- read.table(male_file,sep="\t",head=FALSE,
 col.names=c("CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"),
 colClasses = c(rep("integer",2), rep("character", 3), rep("NULL", 4), rep("numeric",2), "NULL", "numeric"))
 
-# new ID column CHROM:ID:REF:ALT
+#load results - clumped
+female_file <- paste("female_",pheno,"_tab.clumped",sep="")
+male_file <- paste("male_",pheno,"_tab.clumped",sep="")
+female_clump <- read.table(female_file,sep="\t",head=TRUE)
+male_clump <- read.table(male_file,sep="\t",head=TRUE)
+
+strong_f <- female_df[female_df$ID %in% female_clump$SNP,]
+strong_f <- strong_f[order(strong_f$P),]
+strong_f <- strong_f[!duplicated(strong_f$ID),]
+strong_m <- male_df[male_df$ID %in% male_clump$SNP,]
+strong_m <- strong_m[order(strong_m$P),]
+strong_m <- strong_m[!duplicated(strong_m$ID), ]
+
+
+# new ID column CHROM:POS:REF:ALT:ID
 female_df$VAR <- paste(female_df$CHROM, female_df$POS, female_df$REF, female_df$ALT, female_df$ID, sep=":")
 male_df$VAR <- paste(male_df$CHROM, male_df$POS, male_df$REF, male_df$ALT, male_df$ID, sep=":")
 
@@ -39,6 +53,10 @@ strong_f <- which(female_df$P < 5e-8)
 strong_m <- which(male_df$P < 5e-8)
 strong <- unique(c(strong_f,strong_m))
 print(paste("sig snps > 5e-8: ", length(strong), sep=""))
+strong_f <- rownames(female_df)
+strong_m <- rownames(male_df)
+strong <- unique(c(strong_f,strong_m))
+print(paste("clumped snps ", length(strong), sep=""))
 #m.1by1 = mash_1by1(data)
 #strong = get_significant_results(m.1by1,0.05)
 # get random subset

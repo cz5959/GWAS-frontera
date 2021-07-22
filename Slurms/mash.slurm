@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH -J mash                           # Job name
-#SBATCH -o mash_job.%j.out                        # Name of stdout output file (%j expands to jobId)
-#SBATCH -p flex                               # Queue name
+#SBATCH -J mash                                 # Job name
+#SBATCH -o mash_job.%j.out                      # Name of stdout output file (%j expands to jobId)
+#SBATCH -p flex                                 # Queue name
 #SBATCH -N 1                                    # Total number of nodes requested
 #SBATCH -n 1                                    # Total number of mpi tasks requested
 #SBATCH -t 01:00:00                             # Run time (hh:mm:ss) - 1.5 hours
