@@ -21,3 +21,8 @@ U.c[['f_neg']] <- f_neg
 U.c[['m_neg']] <- m_neg
 U.c[['equal_opp']] <- equal_opp
 m.c = mash(data, U.c)
+
+
+
+
+x <- c(4, 1, 4, 5, 1, 6)

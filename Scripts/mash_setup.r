@@ -26,7 +26,7 @@ male_file <- paste("male_",pheno,"_tab.clumped",sep="")
 female_clump <- read.table(female_file,sep="\t",head=TRUE)
 male_clump <- read.table(male_file,sep="\t",head=TRUE)
 
-# new ID column CHROM:POS:REF:ALT:ID
+# order by POS and add new ID column CHROM:POS:REF:ALT:ID
 female_df$VAR <- paste(female_df$CHROM, female_df$POS, female_df$REF, female_df$ALT, female_df$ID, sep=":")
 male_df$VAR <- paste(male_df$CHROM, male_df$POS, male_df$REF, male_df$ALT, male_df$ID, sep=":")
 
@@ -42,14 +42,11 @@ data = mash_set_data(BETA, SE)
 
 # strong subset index list
 strong_f <- female_df[female_df$ID %in% female_clump$SNP,]
-strong_f <- strong_f[order(strong_f$P),]
-strong_f <- strong_f[!duplicated(strong_f$ID),]
-strong_f <- which(strong_f$P < 1e-5)
+strong_f <- which(strong_f$P < 5e-8)
 strong_m <- male_df[male_df$ID %in% male_clump$SNP,]
-strong_m <- strong_m[order(strong_m$P),]
-strong_m <- strong_m[!duplicated(strong_m$ID), ]
-strong_m <- which(strong_m$P < 1e-5)
+strong_m <- which(strong_m$P < 5e-8)
 strong <- unique(c(strong_f,strong_m))
 
 # save Rdata
-save(female_df, data, strong, file= paste(pheno,"_mash.RData",sep=""))
+summstat_pos <- female_df$POS
+save(summstat_pos, data, strong, file= paste(pheno,"_mash.RData",sep=""))
