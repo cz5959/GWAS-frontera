@@ -19,7 +19,7 @@ for i in range(len(pheno_list)):
     pheno_df = pd.read_csv("pheno_{0}.txt".format(pheno), sep="\t")
     df = pd.merge(sex_df, pheno_df, how="inner", on="IID")
     male = df.loc[df['sex']==1,[pheno]]
-    female = df.loc[df['sex']==1,[pheno]]
+    female = df.loc[df['sex']==0,[pheno]]
     m_var_list[i] = np.var(male)
     f_var_list[i] = np.var(female)
     m_std_list[i] = np.std(male)
