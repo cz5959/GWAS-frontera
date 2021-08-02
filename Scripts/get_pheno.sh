@@ -1,9 +1,8 @@
 #!/bin/sh
 
-ID=30600
-
 meta_path=/corral-repl/utexas/Recombining-sex-chro/ukb/data/metadata
 
+ID=4080
 field="$ID"; head -n1 $meta_path/ukb45020.txt | tr "\t" "\n" | grep -n -w $field
 
 #test
@@ -25,6 +24,8 @@ awk -F "\t" '{print $11742}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - |
 awk -F "\t" '{print $74}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_waist_circ.txt
 awk -F "\t" '{print $78}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_hip_circ.txt
 awk -F "\t" '{print $14041}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_eosinophill_perc.txt
+awk -F "\t" '{print $1554}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_diastolicBP_auto.txt
+awk -F "\t" '{print $1562}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_systolicBP_auto.txt
 
 for f in *_h2_Cahoy.results; do mv "$f" "$(echo "f" | sed s/_h2_/_/)"; done
 for f in *_h2_Cahoy.log; do mv "$f" "$(echo "f" | sed s/_h2_/_/)"; done
