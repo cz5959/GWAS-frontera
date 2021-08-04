@@ -19,13 +19,19 @@ awk -F "\t" '{print $14436}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - |
 
 # wave 3
 awk -F "\t" '{print $14615}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_urate.txt
+awk -F "\t" '{print $14226}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_albumin.txt
+awk -F "\t" '{print $425}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_pulse_rate.txt
 awk -F "\t" '{print $11758}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_arm_fatfree_mass_L.txt
 awk -F "\t" '{print $11742}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_arm_fatfree_mass_R.txt
 awk -F "\t" '{print $74}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_waist_circ.txt
 awk -F "\t" '{print $78}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_hip_circ.txt
 awk -F "\t" '{print $14041}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_eosinophill_perc.txt
+awk -F "\t" '{print $14002}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_lymphocyte_perc.txt
 awk -F "\t" '{print $1554}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_diastolicBP_auto.txt
 awk -F "\t" '{print $1562}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_systolicBP_auto.txt
 
 for f in *_h2_Cahoy.results; do mv "$f" "$(echo "f" | sed s/_h2_/_/)"; done
 for f in *_h2_Cahoy.log; do mv "$f" "$(echo "f" | sed s/_h2_/_/)"; done
+
+
+

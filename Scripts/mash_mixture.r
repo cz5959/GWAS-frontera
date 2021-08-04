@@ -7,9 +7,12 @@ library(mashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-librar
 # arguments and set working directory
 args <- commandArgs(trailingOnly=TRUE)
 pheno <- args[1]
+print(pheno)
+wd <- paste("/scratch1/08005/cz5959/LD_practice/LD_scores")
+setwd(wd)
+load(file="LD_groups.RData")
 wd <- paste("/scratch1/08005/cz5959/GWAS_Results/",pheno,sep="")
 setwd(wd)
-print(pheno)
 load(file= paste(pheno,"_mash.RData",sep=""))
 
 #### MASH ####
@@ -18,14 +21,13 @@ load(file= paste(pheno,"_mash.RData",sep=""))
 print(paste("strong subset ", length(strong), sep=""))
 
 random_subset <- function(seed=1) {
-    # random
     set.seed(seed)
 
-    # random sampling
+    # METHOD 1: random sampling
     # random = sample( 1:length(summstat_pos), (length(summstat_pos)/50) )
     # from partitioned sampling, sample once per 250000kb
 
-    # sample every ~250,000 kb
+    # METHOD 2: sample every ~250,000 kb
     num <- floor((max(summstat_pos) - min(summstat_pos)) / 250000)
     interval <- floor(length(summstat_pos) / num)
     random <- numeric(0)
@@ -37,6 +39,14 @@ random_subset <- function(seed=1) {
             random[[(length(random) + 1)]] <- sample(start:start+interval,1)
         }
     }
+
+    # METHOD 3: sample once from every LD block
+    random <- numeric(0)
+    for (i in 1:1703) {
+        sample_subset <- which(pos_groups$group == i)
+        random[[(length(random) + 1)]] <- sample(sample_subset,1)
+    }
+
     print(paste("random subset ", length(random), sep=""))
     return(random)
 }

@@ -20,3 +20,4 @@ export PATH=$PATH:$SCRATCH/gsl/bin 		# to make gsl-config avail
 
 #launch script executable
 ./mash.r
+

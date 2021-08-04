@@ -11,9 +11,6 @@ BMI	Male	0.2563	0.0099	0.9272
 IGF-1	Both	0.1987	0.0127	0.8919
 IGF-1	Female	0.2032	0.0151	0.8919
 IGF-1	Male	0.2382	0.0163	0.8919
-Total Bilirubin	Both	0.0786	0.0299	0.9815
-Total Bilirubin	Female	0.0944	0.0405	0.9815
-Total Bilirubin	Male	0.0942	0.0381	0.9815
 Creatinine	Both	0.0954	0.0054	0.897
 Creatinine	Female	0.1264	0.0074	0.897
 Creatinine	Male	0.0909	0.0066	0.897
@@ -44,3 +41,37 @@ FVC (best measure)	Male	0.2099	0.0103	0.9767
 HbA1c	Both	0.1066	0.0069	0.9471
 HbA1c	Female	0.112	0.0079	0.9471
 HbA1c	Male	0.1159	0.0081	0.9471
+Arm fat free mass (L)	Both	0.2282	0.0084	0.9363
+Arm fat free mass (L)	Female	0.2413	0.0095	0.9363
+Arm fat free mass (L)	Male	0.2722	0.0113	0.9363
+Arm fat free mass (R)	Both	0.2286	0.0084	0.9474
+Arm fat free mass (R)	Female	0.251	0.0102	0.9474
+Arm fat free mass (R)	Male	0.2729	0.0113	0.9474
+Eosinophill percentage	Both	0.1301	0.0104	0.9608
+Eosinophill percentage	Female	0.1264	0.012	0.9608
+Eosinophill percentage	Male	0.1425	0.0122	0.9608
+Lymphocyte percentage	Both	0.1319	0.0093	0.9309
+Lymphocyte percentage	Female	0.1454	0.0105	0.9309
+Lymphocyte percentage	Male	0.1327	0.0094	0.9309
+Waist circumference	Both	0.1917	0.0063	0.8931
+Waist circumference	Female	0.2053	0.0073	0.8931
+Waist circumference	Male	0.2154	0.0087	0.8931
+Hip circumference	Both	0.1942	0.0067	0.9008
+Hip circumference	Female	0.2176	0.008	0.9008
+Hip circumference	Male	0.2144	0.0092	0.9008
+Waist to hip ratio	Both	0.1528	0.005	0.7329
+Waist to hip ratio	Female	0.1824	0.0086	0.7329
+Waist to hip ratio	Male	0.175	0.0068	0.7329
+Diastolic blood pressure (auto)	Both	0.1245	0.005	0.8736
+Diastolic blood pressure (auto)	Female	0.1571	0.0071	0.8736
+Diastolic blood pressure (auto)	Male	0.113	0.0065	0.8736
+Systolic blood pressure (auto)	Both	0.13	0.0049	0.9226
+Systolic blood pressure (auto)	Female	0.1543	0.0069	0.9226
+Systolic blood pressure (auto)	Male	0.1234	0.0063	0.9226
+Albumin	Both	0.1127	0.0071	0.9681
+Albumin	Female	0.1116	0.0071	0.9681
+Albumin	Male	0.1178	0.0091	0.9681
+Pulse rate	Both	0.1346	0.0077	0.9167
+Pulse rate	Female	0.1482	0.0091	0.9167
+Pulse rate	Male	0.1376	0.0086	0.9167
+
