@@ -6,7 +6,9 @@ import sys
 import os
 
 os.chdir("/scratch1/08005/cz5959/Phenotypes")
-pheno_list = ['height','testosterone','bmi','creatinine','IGF1','RBC_count','weight','calcium','protein_total','urea','SHBG','whole_body_fat_mass','FVC_best','HbA1c']
+pheno_list = ['height','testosterone','bmi','creatinine','IGF1','RBC_count',
+'weight','calcium','protein_total','urea','SHBG','whole_body_fat_mass','FVC_best','HbA1c',
+'albumin','arm_fatfree_mass_L','arm_fatfree_mass_R','diastolicBP_auto','systolicBP_auto','eosinophil_perc', 'lymphocyte_perc', 'hip_circ', 'waist_circ', 'waist_to_hip', 'pulse_rate', 'urate']
 m_var_list = np.zeros(len(pheno_list))
 f_var_list = np.zeros(len(pheno_list))
 m_std_list = np.zeros(len(pheno_list))
