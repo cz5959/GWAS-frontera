@@ -42,10 +42,11 @@ random_subset <- function(seed=1) {
 
     # METHOD 3: sample once from every LD block
     random <- numeric(0)
-    for (i in 1:1703) {
+    for (i in unique(pos_groups$group)) {
         sample_subset <- which(pos_groups$group == i)
         random[[(length(random) + 1)]] <- sample(sample_subset,1)
     }
+    return(random)
 
     print(paste("random subset ", length(random), sep=""))
     return(random)
@@ -91,6 +92,9 @@ fit_mash <- function(random) {
 
 for (i in 1:20) {
     random <- random_subset(i)
+    ## sample w/o replacement
+    pos_groups <- pos_groups[-c(random),]
+    
     mix <- fit_mash(random)
     if (i==1) {
         mixture <- matrix(names(mix), ncol=1)

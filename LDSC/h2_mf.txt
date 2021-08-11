@@ -24,3 +24,5 @@ diastolicBP_auto	0.1571	0.113
 systolicBP_auto	0.1543	0.1234
 albumin	0.1116	0.1178
 pulse_rate	0.1482	0.1376
+waist_to_hip_bmi	0.1811	0.125
+urate	0.1904	0.1602

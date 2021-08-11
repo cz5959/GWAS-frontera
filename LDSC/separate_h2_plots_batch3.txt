@@ -5,9 +5,9 @@ Arm fat free mass (L)	Male	0.2722	0.0113	0.9363
 Arm fat free mass (R)	Both	0.2286	0.0084	0.9474
 Arm fat free mass (R)	Female	0.251	0.0102	0.9474
 Arm fat free mass (R)	Male	0.2729	0.0113	0.9474
-Eosinophill percentage	Both	0.1301	0.0104	0.9608
-Eosinophill percentage	Female	0.1264	0.012	0.9608
-Eosinophill percentage	Male	0.1425	0.0122	0.9608
+Eosinophil percentage	Both	0.1301	0.0104	0.9608
+Eosinophil percentage	Female	0.1264	0.012	0.9608
+Eosinophil percentage	Male	0.1425	0.0122	0.9608
 Lymphocyte percentage	Both	0.1319	0.0093	0.9309
 Lymphocyte percentage	Female	0.1454	0.0105	0.9309
 Lymphocyte percentage	Male	0.1327	0.0094	0.9309
@@ -32,4 +32,9 @@ Albumin	Male	0.1178	0.0091	0.9681
 Pulse rate	Both	0.1346	0.0077	0.9167
 Pulse rate	Female	0.1482	0.0091	0.9167
 Pulse rate	Male	0.1376	0.0086	0.9167
-
+Waist to hip ratio ( BMI adjusted )	Both	0.1258	0.0068	0.615
+Waist to hip ratio ( BMI adjusted )	Female	0.1811	0.0123	0.615
+Waist to hip ratio ( BMI adjusted )	Male	0.125	0.0069	0.615
+Urate	Both	0.1511	0.013	0.8816
+Urate	Female	0.1904	0.0195	0.8816
+Urate	Male	0.1602	0.0216	0.8816

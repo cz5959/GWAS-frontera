@@ -2,7 +2,7 @@
 
 meta_path=/corral-repl/utexas/Recombining-sex-chro/ukb/data/metadata
 
-ID=4080
+ID=30880
 field="$ID"; head -n1 $meta_path/ukb45020.txt | tr "\t" "\n" | grep -n -w $field
 
 #test
@@ -18,7 +18,7 @@ awk -F "\t" '{print $8996}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | 
 awk -F "\t" '{print $14436}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_HbA1c.txt
 
 # wave 3
-awk -F "\t" '{print $14615}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_urate.txt
+awk -F "\t" '{print $14616}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_urate.txt
 awk -F "\t" '{print $14226}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_albumin.txt
 awk -F "\t" '{print $425}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_pulse_rate.txt
 awk -F "\t" '{print $11758}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | awk -F "\t" '{for(i=1;i<=NF;i++){if($i==""){next}}}1' - > pheno_arm_fatfree_mass_L.txt

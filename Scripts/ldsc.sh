@@ -70,4 +70,5 @@ cut -d, -f1 GTEx_brain.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""
 cut -d, -f1 ENTEX.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^|Multi_tissue_chromatin_1000Gv3_ldscores/ENTEX.control.,|' - > ENTEX.txt
 cut -d, -f1 Roadmap.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^|Multi_tissue_chromatin_1000Gv3_ldscores/Roadmap.control.,|' - > Roadmap.txt
 cut -d, -f1 Multi_tissue_gene_expr.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^| Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.,|' - > Multi_tissue_gene_expr.txt
+cut -d, -f1 Multi_tissue_gene_expr_GTEx_cut.ldcts | awk '{printf "%s%s",sep,$2; sep=","} END{print ""}' - | sed '1s|^| Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.,|' - > Multi_tissue_gene_expr_GTEx_cut.txt
 # vi to remove newline
