@@ -1,0 +1,19 @@
+Adipose_Subcutaneous	Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.1.,Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.
+Adipose_Visceral_(Omentum)	Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.2.,Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.
+Adrenal_Gland	Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.3.,Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.
+Kidney_Cortex	Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.34.,Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.
+Muscle_Skeletal Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.38.,Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.
+Pancreas        Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.41.,Multi_tissue_gene_expr_1000Gv3_ldscores/GTEx.control.
+
+A06.407.071.140.Adrenal.Cortex  Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.1.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A06.407.071.Adrenal.Glands      Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.2.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A05.810.453.Kidney      Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.56.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A05.810.453.324.Kidney.Cortex   Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.57.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A03.734.414.Islets.of.Langerhans        Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.59.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A10.690.467.Muscle..Smooth      Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.83.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A10.690.Muscles Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.84.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A03.734.Pancreas        Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.89.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A10.165.114.830.750.Subcutaneous.Fat    Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.131.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A11.620.520.Myocytes..Smooth.Muscle     Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.132.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A10.165.114.830.500.750.Subcutaneous.Fat..Abdominal     Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.144.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.
+A02.633.567.850.Quadriceps.Muscle       Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.145.,Multi_tissue_gene_expr_1000Gv3_ldscores/Franke.control.

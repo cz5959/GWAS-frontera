@@ -11,7 +11,7 @@ import sys
 
 # load dataframes
 pheno = sys.argv[1]
-result = "cell_types"
+result = sys.argv[2]
 get_names = False
 print(pheno, result)
 

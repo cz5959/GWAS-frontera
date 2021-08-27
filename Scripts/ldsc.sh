@@ -10,16 +10,20 @@ NEALE=$SCRATCH/Neale_Lab/$1
 FILE_PATH=$SCRATCH/LD_practice/$1
 LD_SCORE=$SCRATCH/LD_practice/LD_scores
 PARTITION=$SCRATCH/LD_practice/Partitioned
-C=$SCRATCH/ldsc/GTEx_brain_1000Gv3_ldscores
+#cell types
+C=$PARTITION/cell_type_groups
 CELL_TYPES=${C}/Adrenal_Pancreas.,${C}/Cardiovascular.,${C}/CNS.,${C}/Connective_Bone.,${C}/GI.,${C}/Immune.,${C}/Kidney.,${C}/Liver.,${C}/SkeletalMuscle.,${C}/Other.
+#other
+C=./Cahoy_1000Gv3_ldscores
 CELL_TYPES=${C}/Cahoy.control.,${C}/Cahoy.1.,${C}/Cahoy.2.,${C}/Cahoy.3.
 CELL_TYPES=$(cat GTEx_brain.txt)
+
 TYPE=GTEx_brain
 echo $1
 
 #### REFORMAT SUMM STAT
 # need rsid; effect allele; non-effect allele; sample size; p-value; signed summ stat (beta or log odds, z-score, etc)
-# plinkc
+# plink
 munge_sumstats.py --sumstats $PLINK/both_sex_all.${1}.glm.linear --snp ID --a2 AX --N-col OBS_CT --out $FILE_PATH/${1}_both_sex --merge-alleles $LD_SCORE/w_hm3.snplist
 munge_sumstats.py --sumstats $PLINK/female_all.${1}.glm.linear --snp ID --a2 AX --N-col OBS_CT --out $FILE_PATH/${1}_female --merge-alleles $LD_SCORE/w_hm3.snplist
 munge_sumstats.py --sumstats $PLINK/male_all.${1}.glm.linear --snp ID --a2 AX --N-col OBS_CT --out $FILE_PATH/${1}_male --merge-alleles $LD_SCORE/w_hm3.snplist
@@ -56,10 +60,11 @@ ldsc.py --h2 $FILE_PATH/${1}_both_sex.sumstats.gz --ref-ld-chr $CELL_TYPES --w-l
 ldsc.py --h2 $FILE_PATH/${1}_female.sumstats.gz --ref-ld-chr $CELL_TYPES --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_Phase3_frq/1000G.EUR.QC. --out $FILE_PATH/${1}_female_$TYPE
 ldsc.py --h2 $FILE_PATH/${1}_male.sumstats.gz --ref-ld-chr $CELL_TYPES --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_Phase3_frq/1000G.EUR.QC. --out $FILE_PATH/${1}_male_$TYPE
 
-#partition CTS
-ldsc.py	--h2-cts $FILE_PATH/${1}_both_sex.sumstats.gz --ref-ld-chr-cts ${TYPE}.ldcts --ref-ld-chr $PARTITION/1000G_EUR_Phase3_baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --out $FILE_PATH/${1}_both_sex_$TYPE
-ldsc.py	--h2-cts $FILE_PATH/${1}_female.sumstats.gz --ref-ld-chr-cts ${TYPE}.ldcts --ref-ld-chr $PARTITION/1000G_EUR_Phase3_baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --out $FILE_PATH/${1}_female_$TYPE
-ldsc.py	--h2-cts $FILE_PATH/${1}_male.sumstats.gz --ref-ld-chr-cts ${TYPE}.ldcts --ref-ld-chr $PARTITION/1000G_EUR_Phase3_baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --out $FILE_PATH/${1}_male_$TYPE
+#partition other
+ldsc.py --h2 $FILE_PATH/${1}_both_sex.sumstats.gz --ref-ld-chr $CELL_TYPES --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_Phase3_frq/1000G.EUR.QC. --out $FILE_PATH/${1}_both_sex_$TYPE
+ldsc.py --h2 $FILE_PATH/${1}_female.sumstats.gz --ref-ld-chr $CELL_TYPES --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_Phase3_frq/1000G.EUR.QC. --out $FILE_PATH/${1}_female_$TYPE
+ldsc.py --h2 $FILE_PATH/${1}_male.sumstats.gz --ref-ld-chr $CELL_TYPES --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. --overlap-annot --frqfile-chr $PARTITION/1000G_Phase3_frq/1000G.EUR.QC. --out $FILE_PATH/${1}_male_$TYPE
+
 
 echo completed
 
