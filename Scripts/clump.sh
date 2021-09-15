@@ -1,11 +1,10 @@
 #!/bin/bash
 
 FILE=$SCRATCH/GWAS_Results/$1
-BASE=$SCRATCH/1000G/EUR_all_phase3
-
+TARGET=$SCRATCH/1000G/EUR_all_phase3
 
 plink \
-    --bfile $BASE \
+    --bfile $TARGET \
     --clump-p1 1 \
     --clump-r2 0.1 \
     --clump-kb 250 \
@@ -15,17 +14,17 @@ plink \
     --out $FILE/both_sex_$1
 
 plink \
-    --bfile $BASE \
+    --bfile $TARGET \
     --clump-p1 1 \
     --clump-r2 0.1 \
     --clump-kb 250 \
     --clump $FILE/female_all.${1}.glm.linear \
     --clump-snp-field ID \
     --clump-field P \
-    --out $FILE/emale_$1
+    --out $FILE/female_$1
 
 plink \
-    --bfile $BASE \
+    --bfile $TARGET \
     --clump-p1 1 \
     --clump-r2 0.1 \
     --clump-kb 250 \

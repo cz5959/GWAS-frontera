@@ -18,7 +18,9 @@ cd $SCRATCH/Phenotypes
 for i in {1..22}
 do 
 	# both sex
-	plink2 --memory 64000 --threads 16 --glm no-x-sex hide-covar cols=$COL_NAMES --pfile $INPUT/ukb_imp_chr${i}_v3_7 --keep whitebritishIDs.txt --pheno pheno_${PHENO_NAME}.txt --pheno-name $PHENO_NAME --out $OUTPUT/${PHENO_NAME}_both/both_sex_${i} --covar covariates.txt --covar-col-nums 3-14 --covar-variance-standardize 
+	plink2 --memory 64000 --threads 16 --glm no-x-sex hide-covar cols=$COL_NAMES --pfile $INPUT/ukb_imp_chr${i}_v3_7 \
+	--keep whitebritishIDs.txt --pheno pheno_${PHENO_NAME}.txt --pheno-name $PHENO_NAME \
+	--out $OUTPUT/${PHENO_NAME}_both/both_sex_${i} --covar covariates.txt --covar-col-nums 3-14 --covar-variance-standardize 
 	# females
 	plink2 --memory 64000 --threads 16 --glm no-x-sex hide-covar cols=$COL_NAMES --pfile $INPUT/ukb_imp_chr${i}_v3_7 --keep whitebritishIDs.txt --keep-females --pheno pheno_${PHENO_NAME}.txt --pheno-name $PHENO_NAME --out $OUTPUT/${PHENO_NAME}_female/female_${i} --covar covariates.txt --covar-col-nums 3-12,14 --covar-variance-standardize
 	# males

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+### moved to JUPYTER ###
+
 # import packages
 import matplotlib
 matplotlib.use("Agg")
@@ -10,19 +12,19 @@ import os
 import sys
 
 # load dataframes
-pheno = sys.argv[1]
-result = sys.argv[2]
-plot_name="partition_mash_{0}_{1}_both.png".format(pheno, result)
-print(pheno, result)
+pheno = "height"
+result = "baseline"
+plot_name="partition_mash_{0}_{1}_both.pdf".format(pheno, result)
 
-os.chdir("/scratch1/08005/cz5959/LD_practice/{0}".format(pheno))
-df_female = pd.read_csv("{0}_female_mash_{1}.results".format(pheno, result),sep="\t",usecols=['Category','Enrichment','Enrichment_std_error'],dtype={'Category':str,'Enrichment':np.float64,'Enrichment_std_error':np.float64})
-df_male = pd.read_csv("{0}_male_mash_{1}.results".format(pheno, result),sep="\t",usecols=['Category','Enrichment','Enrichment_std_error'],dtype={'Category':str,'Enrichment':np.float64,'Enrichment_std_error':np.float64})
+os.chdir('C:\\Users\\Carrie Zhu\\Documents\\Research\\GWAS-frontera\\LDSC\\{0}'.format(pheno))
+df_male = pd.read_csv("{0}_female_mash_{1}.results".format(pheno, result),sep="\t",usecols=['Category','Enrichment','Enrichment_std_error'],dtype={'Category':str,'Enrichment':np.float64,'Enrichment_std_error':np.float64})
+df_female = pd.read_csv("{0}_male_mash_{1}.results".format(pheno, result),sep="\t",usecols=['Category','Enrichment','Enrichment_std_error'],dtype={'Category':str,'Enrichment':np.float64,'Enrichment_std_error':np.float64})
 
-df1.rename(columns={'Enrichment':'Enrichment_Female', 'Enrichment_std_error':'std_error_female'},inplace=True)
-df2.rename(columns={'Enrichment':'Enrichment_Male', 'Enrichment_std_error':'std_error_male'},inplace=True)
-df = pd.merge(df1, df2, how="outer", on="Category")
+df_female.rename(columns={'Enrichment':'Enrichment_Female', 'Enrichment_std_error':'std_error_female'},inplace=True)
+df_male.rename(columns={'Enrichment':'Enrichment_Male', 'Enrichment_std_error':'std_error_male'},inplace=True)
+df = pd.merge(df_female, df_male, how="outer", on="Category")
 
+fig, ax = plt.subplots(figsize=(20,10))
 x = np.arange(len(df['Category']))
 ax.bar(x-0.2,df['Enrichment_Female'], 0.4,color='plum',label = 'Female')
 ax.bar(x+0.2,df['Enrichment_Male'], 0.4,color='royalblue',label = 'Male')
@@ -31,11 +33,12 @@ plt.errorbar(x+0.2, df['Enrichment_Male'], yerr = (df['std_error_male']), linest
 
 plt.xticks(x,df['Category'],rotation='vertical',fontsize="large")
 plt.yticks(fontsize="large")
-plt.title("Partitioned Heritability for {0} - Male and Female - {1}".format(pheno, result.capitalize()),fontsize="large")
+plt.title("Partitioned Heritability for {0} - Male and Female - {1} - mash".format(pheno, result.capitalize()),fontsize="x-large")
 plt.xlim(-1,x.max()+1)
-plt.ylabel("Enrichment", labelsize="large")
-plt.xlabel("Category", labelsize="large")
+plt.ylabel("Enrichment", fontsize="large")
+plt.xlabel("Category", fontsize="large")
 
 plt.legend()
 plt.tight_layout()
+
 plt.savefig(plot_name)

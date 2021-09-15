@@ -7,7 +7,8 @@ source activate ldsc
 pheno=$1
 # file paths
 MASH=$SCRATCH/GWAS_Results/$pheno
-FILE_PATH=$SCRATCH/LD_practice/$pheno
+mkdir -p $SCRATCH/LD_practice/$pheno/mash
+FILE_PATH=$SCRATCH/LD_practice/$pheno/mash
 LD_SCORE=$SCRATCH/LD_practice/LD_scores
 PARTITION=$SCRATCH/LD_practice/Partitioned
 C=$PARTITION/cell_type_groups
@@ -16,6 +17,14 @@ CELL_TYPES=${C}/Adrenal_Pancreas.,${C}/Cardiovascular.,${C}/CNS.,${C}/Connective
 # reformat summary statistics
 munge_sumstats.py --sumstats $MASH/${pheno}_female_mash_posterior.txt --out $FILE_PATH/${pheno}_female_mash --merge-alleles $LD_SCORE/w_hm3.snplist
 munge_sumstats.py --sumstats $MASH/${pheno}_male_mash_posterior.txt --out $FILE_PATH/${pheno}_male_mash --merge-alleles $LD_SCORE/w_hm3.snplist
+
+# heritability
+ldsc.py --h2 $FILE_PATH/${pheno}_female_mash.sumstats.gz --w-ld-chr $LD_SCORE/eur_w_ld_chr/ --ref-ld-chr $LD_SCORE/eur_w_ld_chr/ --out $FILE_PATH/${pheno}_female_mash_h2
+ldsc.py --h2 $FILE_PATH/${pheno}_male_mash.sumstats.gz --w-ld-chr $LD_SCORE/eur_w_ld_chr/ --ref-ld-chr $LD_SCORE/eur_w_ld_chr/ --out $FILE_PATH/${pheno}_male_mash_h2
+
+# correlation
+ldsc.py --rg $FILE_PATH/${pheno}_female_mash.sumstats.gz,$FILE_PATH/${pheno}_male_mash.sumstats.gz \
+--w-ld-chr $LD_SCORE/eur_w_ld_chr/ --ref-ld-chr $LD_SCORE/eur_w_ld_chr/ --out $FILE_PATH/${pheno}_male_female_mash
 
 # baseline partition
 ldsc.py	--h2 $FILE_PATH/${pheno}_female_mash.sumstats.gz --ref-ld-chr $PARTITION/baseline/baseline. --w-ld-chr $PARTITION/weights_hm3_no_hla/weights. \

@@ -8,7 +8,7 @@ library(mashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-librar
 args <- commandArgs(trailingOnly=TRUE)
 pheno <- args[1]
 print(pheno)
-wd <- paste("/scratch1/08005/cz5959/GWAS_Results/",pheno,sep="")
+wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/mash")
 setwd(wd)
 load(file= paste(pheno,"_mash.RData",sep=""))
 
@@ -39,19 +39,25 @@ random_subset <- function(seed=1) {
     #    }
     #}
 
-    # METHOD 3: sample once from every LD block
+    # METHOD3: LD blocks
+    #random <- numeric(0)
+    #for (i in unique(LD_groups$group)) {
+    #    sample_subset <- LD_groups[LD_groups$group == i, 'index']
+    #    random[[(length(random) + 1)]] <- sample(sample_subset,1)
+    #}
+
+    # METHOD4: LD blocks, same sample size
     random <- numeric(0)
     unique_groups <- sample(unique(LD_groups$group))
-    while (random <= 1703) {
+    while (length(random) <= 1703) {
         for (i in unique_groups) {
-            if (random > 1703) {
+            if (length(random) > 1703) {
                 break
             }
             sample_subset <- LD_groups[LD_groups$group == i, 'index']
             random[[(length(random) + 1)]] <- sample(sample_subset,1)
         }
-    }
-        
+    }        
 
     print(paste("random subset ", length(random), sep=""))
     return(random)
@@ -93,7 +99,7 @@ rep=12
 for (i in 1:rep) {
     random <- random_subset(i)
     ## sample w/o replacement
-    LD_groups <- LD_groups[LD_groups$index != random,]
+    LD_groups <- LD_groups[ ! LD_groups$index %in% random,]
     
     ## mash
     mix <- fit_mash(random)
@@ -102,7 +108,7 @@ for (i in 1:rep) {
     }
     mixture <- cbind(mixture, mix)
 }
-colnames(mixture) <- cbind("names",paste("mix_",1:rep,sep=""))
+colnames(mixture) <- cbind(paste("mix_",0:rep,sep=""))
 write.table(mixture, file=paste(pheno,"mixprop_12_5e-2.txt",sep=""), sep="\t", row.names=FALSE)
 
 #png( paste(pheno,"_mixture_bar.png",sep=""), width = 1200, height = 480)
