@@ -1,17 +1,26 @@
 #!/bin/bash
 
-# passed in parameter should be phenotype name
-FILE_PATH=$SCRATCH/GWAS_Results/$1
+while getopts p: flag
+do
+    case "${flag}" in
+        p) PHENO=${OPTARG};;
+    esac
+done
+echo $PHENO
+
+FILE_PATH=$SCRATCH/GWAS_Results/$PHENO
 HEADER='#CHROM\tPOS\tID\tREF\tALT\tA1\tAX\tTEST\tOBS_CT\tBETA\tSE\tT_STAT\tP\n'
-echo $1
+echo $PHENO
 
-# move to directory with linear result files
-# pipeline: concatenate results vertically | remove header | remove NA rows | add header 
-cd $FILE_PATH/${1}_both
-cat *.linear | awk '$1 !~ /^#CHROM/' - | awk '!/'NA'/' - | { printf $HEADER; cat - ; } > $FILE_PATH/both_sex_all.${1}.glm.linear
+declare -a arr=("both_sex" "female" "male")
+for sex in "${arr[@]}"
+do
+    # move to directory with linear result files
+    cd $FILE_PATH/$sex
+    # pipeline: concatenate results vertically | remove header | remove NA rows | add header 
+    cat *.linear | awk '$1 !~ /^#CHROM/' - | awk '!/'NA'/' - | { printf $HEADER; cat - ; } > $PGS_dir/${sex}_all.${PHENO}.glm.linear
+done
 
-cd $FILE_PATH/${1}_female
-cat *.linear | awk '$1 !~ /^#CHROM/' - | awk '!/'NA'/' - | { printf $HEADER; cat - ; } > $FILE_PATH/female_all.${1}.glm.linear
 
-cd $FILE_PATH/${1}_male
-cat *.linear | awk '$1 !~ /^#CHROM/' - | awk '!/'NA'/' - | { printf $HEADER; cat - ; } > $FILE_PATH/male_all.${1}.glm.linear
+
+

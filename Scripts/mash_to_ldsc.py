@@ -6,8 +6,13 @@ import pandas as pd
 import os
 import sys
 import scipy.stats
+import argparse
 
-pheno=sys.argv[1]
+parser = argparse.ArgumentParse()
+parser.add_argument("-p", "--pheno", dest = "pheno", default = "", help="phenotype")
+args = parser.parse_args()
+pheno = args.pheno
+
 file_path = "/scratch1/08005/cz5959/GWAS_Results/{0}".format(pheno)
 os.chdir(file_path)
 

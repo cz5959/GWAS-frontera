@@ -1,21 +1,22 @@
 #!/usr/bin/env Rscript
 
-wd <- paste("/scratch1/08005/cz5959/LD_practice/LD_scores")
-setwd(wd)
+# 2 minutes
+
+# load in variants 
+setwd("/scratch1/08005/cz5959/QC")
+df <- read.table("ukb_imp_all_v3_11.pvar",sep="\t",head=FALSE, col.names=c("CHROM","POS","ID","REF","ALT"), colClasses = c(rep("integer",2), rep("NULL", 3)))
+df$index <- 1:nrow(df)
+
+# Pickrell LD blocks
+setwd("/scratch1/08005/cz5959/LD_practice/LD_scores")
 load(file="LD_blocks_EUR.RData")
 
-file <- "both_sex_all.height.glm.linear"
-df <- read.table(file,sep="\t",head=FALSE, 
-col.names=c("CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"), 
-colClasses = c(rep("integer",2), rep("character", 3), rep("NULL", 4), rep("numeric",2), "NULL", "numeric"))
-
 # LD_scores
-summstat_pos <- df[, c('CHROM','POS','index')]
 LD_blocks$index <- 1:nrow(LD_blocks)
 pos_groups <- data.frame(matrix(ncol = 4, nrow = 0))
 colnames(pos_groups) <- c("CHROM", "POS","index","group")
 for (i in 1:22) {
-    chr <- summstat_pos[summstat_pos$CHROM == i,]
+    chr <- df[df$CHROM == i,]
     chr$group <- 0
     ld <- LD_blocks[LD_blocks$chr == i,]
     for (j in 1:nrow(ld)) {

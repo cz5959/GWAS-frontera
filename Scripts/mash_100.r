@@ -1,24 +1,33 @@
 #!/usr/bin/env Rscript
 
 # load libraries
+library(optparse, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
 library(ashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
 library(mashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
 
-# arguments and set working directory
-args <- commandArgs(trailingOnly=TRUE)
-pheno <- args[1]
-mode <- args[2]
-print(pheno)
+# argument parser
+option_list = list(
+    make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character"),
+    make_option(c("-m","--mode"), type="character", default="additive",help="mash for PGS?",metavar="character"),
+    make_option(c("-s","--set"), type="character", default="1",help="set number",metavar="character")
+)
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
+pheno <- opt$pheno; print(pheno)
+set <- opt$set; print(set)
+
+# set working directory
 wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/mash")
 setwd(wd)
 # load mash data from setup
-if (is.na(mode)) { load(file= paste0(pheno,"_mash.RData")) }
-else { load(file= paste0(pheno,"_mash_prs.RData")) }
+if (opt$mode == "additive") { 
+    load(file= paste0(pheno,"_mash.RData")) 
+} else { load(file= paste0(pheno,"_mash_pgs.RData")) }
 
 #### MASH ####
 # random subset
 random_subset <- function(seed=1) {
-    set.seed(seed)
+    set.seed(seed); print(paste0("Seed #: ", seed))
     # METHOD3: LD blocks
     random <- numeric(0)
     for (i in unique(LD_groups$group)) {
@@ -52,7 +61,6 @@ fit_mash <- function(random) {
     U.c[['equal_-1_1']] <- matrix(c(1,-1,-1,1),2,2)
     names(U.c)[1:7] <- c("equal_0_1", "f_0_1", "m_0_1", "equal_1_1", "equal_0.25_1", "equal_0.5_1", "equal_0.75_1")
 
-
     # fit mash model 
     m = mash(data.random, Ulist= U.c, outputlevel = 1)
     # mixture model
@@ -68,7 +76,6 @@ for (i in 1:rep) {
     random <- random_subset(i)
     # sample w/o replacement
     LD_groups <- LD_groups[ ! LD_groups$index %in% random,]
-    
     # mash
     results <- fit_mash(random)
     mix <- results[[1]]
@@ -76,14 +83,14 @@ for (i in 1:rep) {
     if (i==1) {
         mixture <- matrix(names(mix), ncol=1)
         g_ave <- g
-    }
-    else {
+    } else {
         # combine all g pi and grid
         g_ave$pi <- g_ave$pi + g$pi
         g_ave$grid <- g_ave$grid + g$grid
     }
     mixture <- cbind(mixture, mix)
     g_list[[i]] <- g
+    save(g_ave, file= paste0(pheno,"_mash_100g_pgs.RData"))
 }
 # get average for g_all by dividing by number of repetitions
 g_ave$pi <- g_ave$pi / rep
@@ -91,10 +98,9 @@ g_ave$grid <- g_ave$grid / rep
 
 # save fitted results
 colnames(mixture) <- cbind(paste0("mix_",0:rep))
-if (is.na(mode)) {
+if (opt$mode == "additive") {
     write.table(mixture, file=paste0(pheno,"mixprop_100_all.txt"), sep="\t", row.names=FALSE)
     save(g_list, g_ave, file= paste0(pheno,"_mash_100g.RData"))
-}
-else {
-    save(g_ave, file= paste0(pheno,"_mash100g_prs.RData"))
+} else {
+    save(g_ave, file= paste0(pheno,"_mash_100g_pgs.RData"))
 }

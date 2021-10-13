@@ -10,7 +10,7 @@
 #SBATCH --mail-type=all                         # Email at begin and end of job
 
 # Change directories to your $SCRATCH directory where your executable is
-cd $SCRATCH/Scripts
+cd $SCRATCH/Scripts/mash
 
 # load modules and directories
 module load Rstats
