@@ -24,8 +24,9 @@ remove_zero <- function(sex) {
     }
     min_p <- min(df[df$P != 0,]$P)
     df$P[df$P==0] <- min_p
-    write.table(df, file=paste0(sex,"_all_no0.",pheno,".glm.linear"))
+    write.table(df, file=paste0(sex,"_all_no0.",pheno,".glm.linear"),quote=FALSE)
 }
 
 remove_zero("male")
 remove_zero("female")
+remove_zero("both_sex")

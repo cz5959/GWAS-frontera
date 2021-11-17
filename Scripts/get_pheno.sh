@@ -1,7 +1,7 @@
 #!/bin/sh
 
 meta_path=/corral-repl/utexas/Recombining-sex-chro/ukb/data/metadata
-ID=2443
+ID=6152
 field="$ID"; head -n1 $meta_path/ukb45020.txt | tr "\t" "\n" | grep -n -w $field
 
 #test
@@ -33,6 +33,7 @@ awk -F "\t" '{print $1562}' $meta_path/ukb45020.txt | paste -d "\t" ids.txt - | 
 # binary
 cut -f6732-6867 $meta_path/ukb45020.txt | paste -d "\t" ids.txt - > NCI.txt     #hypertension, asthma
 cut -f1051 $meta_path/ukb45020.txt | paste -d "\t" ids.txt - > pheno_diabetes.txt
+cut -f6073-6092 $meta_path/ukb45020.txt | paste -d "\t" ids.txt -> pheno_6142.txt
 
 
 

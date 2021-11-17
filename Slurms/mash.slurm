@@ -14,10 +14,12 @@ cd $SCRATCH/Scripts/mash
 
 # load modules and directories
 module load Rstats
+
 # export paths
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRATCH/gsl/lib
 export PATH=$PATH:$SCRATCH/gsl/bin 		# to make gsl-config avail
 
 #launch script executable
 ./mash.r
+
 

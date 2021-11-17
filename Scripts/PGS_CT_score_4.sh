@@ -1,16 +1,17 @@
 #!/bin/sh
 
-while getopts p:t: flag
+while getopts p:t:s: flag
 do
     case "${flag}" in
         p) PHENO=${OPTARG};;
         t) TYPE=${OPTARG};;
+        s) SET=${OPTARG};;
     esac
 done
-echo $PHENO; echo $TYPE
+echo $PHENO; echo $TYPE; echo $SET
 
 LD_dir=$SCRATCH/1000G/EUR_all_phase3
-PGS_dir=$SCRATCH/GWAS_Results/$PHENO/PGS
+PGS_dir=$SCRATCH/GWAS_Results/$PHENO/PGS_$SET
 
 ### ADDITIVE ###
 declare -a arr=("both_sex" "female" "male")

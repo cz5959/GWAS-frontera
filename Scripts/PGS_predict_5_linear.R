@@ -4,11 +4,13 @@
 library(optparse, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
 # argument parser
 option_list = list(
-    make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character")
+    make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character"),
+    make_option(c("-s","--set"), type="character", default="1",help="set number",metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 pheno <- opt$pheno; print(pheno)
+set <- opt$set; print(set)
 
 p.threshold <- c('1', '0.01', '1e-5', '1e-8')
 
@@ -22,7 +24,7 @@ colnames(covariates)=c("FID","IID",paste0("PC",1:10),"sex","birthyear")
 pheno_covar <- merge(phenotype, covariates, by=c("FID", "IID"))
 
 # test set
-wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/PGS")
+wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/PGS_",set)
 setwd(wd)
 female_ids <- read.table(paste0(pheno,"_female_testIIDs.txt"), sep="\t", col.names=c("FID","IID"), colClasses=c("NULL","integer"))
 male_ids <- read.table(paste0(pheno,"_male_testIIDs.txt"), sep="\t", col.names=c("FID","IID"), colClasses=c("NULL","integer"))
@@ -104,3 +106,5 @@ print("BOTH SEX ADDITIVE")
 pgs_prediction("both_sex","additive", both_sex_null, "both_sex_additive")
 pgs_prediction("female","additive", female_null, "both_sex_additive")
 pgs_prediction("male","additive", male_null, "both_sex_additive")
+
+

@@ -20,7 +20,7 @@ wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/PGS")
 setwd(wd)
 get_pseudo_p <- function(sex) {
     # load gwas p-values, 2 columns: ID and P
-    file_name <- paste0(sex,"_train.",pheno,".glm.logistic")
+    file_name <- paste0(sex,"_train.",pheno,".glm.linear")
     m_gwas_df <- read.table(file_name,sep="\t",head=FALSE, 
     col.names=c("CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"), 
     colClasses=c(rep("NULL",2), "character", rep("NULL", 2), "character", rep("NULL",6), "numeric")) 
@@ -62,3 +62,9 @@ for (sex in c("female","male")) {
 }
 
 df <- read.table(paste0(sex,"_pseudoP_pgs_small.",pheno,".txt"),sep="\t",header=TRUE,colClasses=c(rep("NULL",3),rep("numeric",2)))
+
+
+df <- read.csv('female_pseudoP_pgs.wth_bmi_adj.txt', sep='\t')
+pdf('test_pgs_5_mash.pdf')
+df_small <- df[c(rep(FALSE,999),TRUE),]
+plot(lfsr ~ P, data=df_small, main='test_mash_5',pch='.')

@@ -7,7 +7,7 @@ library("dplyr", lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-libr
 
 # grab from non-cancer illness self-reported 
 df <- read.table("NCI.txt",sep="\t",header=FALSE)
-df_new <- df[, colSums(is.na(df[3:6])) < nrow(df)] # removed 38 columns 
+df_new <- df[, colSums(is.na(df[3:22])) < nrow(df)] # removed 38 columns 
 
 # now just get phenotype based on code
 ht <- df_new %>% filter_all(any_vars(. %in% code))

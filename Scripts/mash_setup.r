@@ -42,7 +42,7 @@ setup_sex_df <- function(sex) {
 ## binary
 setup_sex_df <- function(sex) {
     # load results - summstats
-    file_name <- paste0(wd,"/PGS/",sex,"_train.",pheno,".glm.logistic")
+    file_name <- paste0(wd,"/PGS/",sex,"_train.",pheno,".glm.linear")
     
     gwas_df <- read.table(file_name,sep="\t",head=FALSE, 
     col.names=c("CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"), 
@@ -59,6 +59,17 @@ setup_sex_df <- function(sex) {
 
 female_df <- setup_sex_df("female")
 male_df <- setup_sex_df("male")
+
+if (nrow(female_df) != nrow(male_df)) {
+    print('ERROR: different gwas lengths!')
+    if (nrow(female_df) > nrow(male_df)) {
+        print( female_df[!female_df$ID %in% male_df$ID,] )
+        female_df <- female_df[female_df$ID %in% male_df$ID,]
+    } else {
+        print( male_df[!male_df$ID %in% female_df$ID,] )
+        male_df <- male_df[male_df$ID %in% female_df$ID,]
+    }
+}
 
 ####
 

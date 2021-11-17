@@ -15,17 +15,17 @@ echo $PHENO
 
 # file paths
 ADDITIVE=$SCRATCH/GWAS_Results/$PHENO
-LD_FILE=$SCRATCH/LD_files/$PHENO
-LD_SCORE=$SCRATCH/LD_files/LD_scores
+LD_FILE=$SCRATCH/LD_practice/$PHENO
+LD_SCORE=$SCRATCH/LD_practice/LD_scores
 
 
 declare -a arr=("both_sex" "female" "male")
 for sex in "${arr[@]}"
 do
     # reformat summary statistics
-    munge_sumstats.py --sumstats $ADDITIVE/${sex}_all.${PHENO}.glm.linear \
+    munge_sumstats.py --sumstats $ADDITIVE/${sex}_all_no0.${PHENO}.glm.linear \
     --snp ID --a2 AX --N-col OBS_CT --merge-alleles $LD_SCORE/w_hm3.snplist \
-    --out $LD_FILE/${PHENO}_${sex}
+    --chunksize 500000 --out $LD_FILE/${PHENO}_${sex}
 
     # calculate heritability
     ldsc.py --h2 $LD_FILE/${PHENO}_${sex}.sumstats.gz \
@@ -37,4 +37,10 @@ done
 ldsc.py --rg $LD_FILE/${PHENO}_female.sumstats.gz,$LD_FILE/${PHENO}_male.sumstats.gz \
 --w-ld-chr $LD_SCORE/eur_w_ld_chr/ --ref-ld-chr $LD_SCORE/eur_w_ld_chr/ \
 --out $LD_FILE/${PHENO}_male_female
+
+
+
+#### grep get
+grep "h2: " */*h2.log
+grep "Genetic Correlation: " */*male_female.log
 
