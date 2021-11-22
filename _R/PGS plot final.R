@@ -29,19 +29,21 @@ df_sep <- melt_out(df_sep)
 df_combined <- melt_out(df_combined)
 
 # separated plot, r2
+pdf(file="pgs_comparison_five.pdf",width=7,height=9)
 p <- ggplot(data=df_sep, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   geom_bar(position='dodge',stat='identity') +
-  geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), alpha= 0.8, show.legend = FALSE,
+  geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), show.legend = FALSE,
                 position='dodge', stat='identity') +
   labs(title='PGS Comparison Over Five Folds', y="R2", fill="Model") + 
   coord_flip() + theme_classic() + scale_fill_npg(labels = c('additive both-sex', 'additive same-sex', 'mash')) +
   theme(axis.text = element_text(size=10), axis.title = element_text(size=14), plot.title=element_text(size=16),
         legend.title=element_text(size=12), legend.text=element_text(size=10), 
         legend.position = 'top', legend.background = element_rect(linetype='solid', color='black'))
-
 p
+dev.off()
 
 # combined plot, r2
+pdf(file="pgs_comparison_five_combined.pdf",width=8,height=8)
 p <- ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   geom_bar(position='dodge',stat='identity') +
   geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), alpha= 0.8, show.legend = FALSE,
@@ -52,4 +54,5 @@ p <- ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
         legend.title=element_text(size=12), legend.text=element_text(size=10), 
         legend.position = 'top', legend.background = element_rect(linetype='solid', color='black'))
 p
+dev.off()
 

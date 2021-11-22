@@ -38,7 +38,7 @@ get_corr <- function(data) {
     corrs_row <- rbind(corrs_row, data.frame(Pheno=pheno, Est=corr_est, Err=corr_err, Sex=sex))
   }
   corrs_row$est_diff <- abs(corrs_row[1,2] - corrs_row[2,2])
-  corrs_row$err_sum <- abs(corrs_row[1,3] - corrs_row[2,3])
+  corrs_row$err_sum <- abs(corrs_row[1,3] + corrs_row[2,3])
   return(corrs_row)
 }
 
@@ -53,7 +53,7 @@ get_slope <- function(data) {
     slope_row <- rbind(slope_row, data.frame(Pheno=pheno, Est=slope_est, Err=slope_err, Sex=sex))
   }
   slope_row$est_diff <- abs(slope_row[1,2] - slope_row[2,2])
-  slope_row$err_sum <- abs(slope_row[1,3] - slope_row[2,3])
+  slope_row$err_sum <- abs(slope_row[1,3] + slope_row[2,3])
   return(slope_row)
 }
 
@@ -111,7 +111,7 @@ colnames(corrs_result)
 #####################################################
 
 # corr plot scatter
-ggplot(corrs_result, aes(x= reorder(Pheno, est_diff), y=Est, fill=Sex)) +
+ggplot(corrs_result, aes(x= reorder(Pheno, Correlation), y=Est, fill=Sex)) +
   geom_bar(position="dodge", stat="identity") + 
   geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.4, position="dodge",stat="identity") +
   labs(title=paste0("Correlation Between Pheno/PGS and Testosterone"), x="Phenotype", y="Correlation") +
@@ -121,7 +121,7 @@ ggplot(corrs_result, aes(x= reorder(Pheno, est_diff), y=Est, fill=Sex)) +
   coord_flip()
 
 # slope plot scatter
-ggplot(slope_result, aes(x=reorder(Pheno, est_diff), y=Est, fill=Sex)) +
+ggplot(slope_result, aes(x=reorder(Pheno, Correlation), y=Est, fill=Sex)) +
   geom_bar(position="dodge", stat="identity") + 
   geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.4, position="dodge",stat="identity") +
   labs(title=paste0("Slope of Pheno/PGS ~ Testosterone"), x="Phenotype", y="Beta") +
