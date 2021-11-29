@@ -29,6 +29,9 @@ m_id <- which(sex==1)
 # get genotype from binom sampling at site k with allele freq
 allele_freq <- read.csv("maf_sample.txt", colClasses = 'numeric')
 
+#### 370,000 pickrell LD blocks into mash
+# do the 100 causal first, then do gwas sites (can ignore the causal)
+
 # set seed for sampling
 set.seed(1)
 
@@ -38,9 +41,9 @@ snpids <- sample(1:nrow(allele_freq),snp_num)
 snp_freqs <- allele_freq$maf[snpids]
 
 # get genotype at site i for all individuals
-get_genotypes <- function(snpid) {
-  allele1 <- rbinom(n=length(sex), size=1, prob=snp_freqs)
-  allele2 <- rbinom(n=length(sex), size=1, prob=snp_freqs)
+get_genotypes <- function(snp_freq) {
+  allele1 <- rbinom(n=length(sex), size=1, prob=snp_freq)
+  allele2 <- rbinom(n=length(sex), size=1, prob=snp_freq)
   genotypes <- allele1 + allele2
   if (length(unique(genotypes)) ==1) {
     return(c(100))
