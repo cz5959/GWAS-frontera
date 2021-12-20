@@ -16,14 +16,23 @@ opt = parse_args(opt_parser)
 pheno <- opt$pheno; print(pheno)
 set <- opt$set; print(set)
 
-# set working directory
-wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/mash_",set)
-setwd(wd)
-
 # add PGS suffix if using PGS method 
-if (opt$mode == "additive") { suffix <- "" } else { suffix <- "_pgs" } 
+if (opt$mode == "additive") {
+    suffix <- "" ; wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/mash")
+
+} else { 
+    suffix <- "_pgs" ; wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/mash_",set)
+} 
+setwd(wd)
 load(file= paste0(pheno,"_mash",suffix,".RData"))
 load(file= paste0(pheno,"_mash_100g",suffix,".RData"))
+
+# adjust table for mixture weights
+weight_col <- function(df) {
+    colnames(df) <- gsub("^(.*)[.].*", "\\1",colnames(df))
+    df <- t(rowsum(t(df), group = colnames(df)))
+    return(df)
+}
 
 # posterior summaries for all
 header <- c("female", "male")
@@ -43,16 +52,24 @@ for (i in 0:num) {
     } 
     datasub=mash_set_data(data$Bhat[start:end,], data$Shat[start:end,])
     msub = mash(datasub, g=g_ave, fixg=TRUE)    
+    if (i == 0) {
+        cov_names <- colnames(msub$posterior_weights)
+        weights_all <- data.frame(matrix(ncol = length(cov_names), nrow = 0)) ; colnames(weights_all) <- cov_names
+    }
     pm = get_pm(msub)
     psd = get_psd(msub)
     lfsr = get_lfsr(msub)
     pm_all <- rbind(pm_all, pm)
     psd_all <- rbind(psd_all, psd)
     lfsr_all <- rbind(lfsr_all, lfsr)
-    save(pm_all,psd_all,lfsr_all,file=paste0(pheno,"_mash_posterior",suffix,".RData"))
+    #save(pm_all,psd_all,lfsr_all,file=paste0(pheno,"_mash_posterior",suffix,".RData"))
+    weights <- weight_col(msub$posterior_weights)
+    weights_all <- rbind(weights_all, msub$posterior_weights)
+    #save(pm_all,psd_all,lfsr_all,weights_all, file=paste0(pheno,"_mash_posterior",suffix,".RData"))
 }
 
 # write posterior estimates to table
 write.table(pm_all, file=paste0(pheno,"_mash_pm",suffix,".txt"), sep="\t", row.names=FALSE)
 write.table(psd_all, file=paste0(pheno,"_mash_psd",suffix,".txt"), sep="\t", row.names=FALSE)
 write.table(lfsr_all, file=paste0(pheno,"_mash_lfsr",suffix,".txt"), sep="\t", row.names=FALSE)
+write.table(weights_all, file=paste0(pheno,"_mash_weights",suffix,".txt"), sep="\t", row.names=FALSE)

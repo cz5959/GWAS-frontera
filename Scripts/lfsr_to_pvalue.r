@@ -21,7 +21,7 @@ setwd(wd)
 get_pseudo_p <- function(sex) {
     # load gwas p-values, 2 columns: ID and P
     file_name <- paste0(sex,"_train.",pheno,".glm.linear")
-    m_gwas_df <- read.table(file_name,sep="\t",head=FALSE, 
+    gwas_df <- read.table(file_name,sep="\t",head=FALSE, 
     col.names=c("CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"), 
     colClasses=c(rep("NULL",2), "character", rep("NULL", 2), "character", rep("NULL",6), "numeric")) 
 

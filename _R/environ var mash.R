@@ -5,56 +5,57 @@ library(mashr)
 library(ggplot2)
 library(reshape2)
 setwd("~/Research/GWAS-frontera/mash/simulation")
-#setwd("/scratch1/08005/cz5959/QC/MFI/autosome")
-
-# parameters
-option_list = list(
-  make_option(c("-i","--snps"), type="integer", default=100,help="i: num of causal SNPs",metavar="character")
-)
-opt_parser = OptionParser(option_list=option_list)
-opt = parse_args(opt_parser)
-
-snp_num <- opt$snps; print(snp_num)
 
 ### 350k ## if statement to remove monomorphism ######################heat plots
 
 # create sample of individuals -- random sex
 # 0=female  1=male
-sex <- rbinom(350000,1,0.5)   
-f_id <- which(sex==0)
-m_id <- which(sex==1)
+n=300000
+sex <- rbinom(n,1,0.5)   
+f_id <- which(sex==0) ; m_id <- which(sex==1)
 
 ### SNP ###
-
-# get genotype from binom sampling at site k with allele freq
-allele_freq <- read.csv("maf_sample.txt", colClasses = 'numeric')
-
-#### 370,000 pickrell LD blocks into mash
+#### 170,000 pickrell LD blocks into mash
 # do the 100 causal first, then do gwas sites (can ignore the causal)
 
-# set seed for sampling
+# set seed
 set.seed(1)
 
-# sample i causal SNPs from k genotypes
-snp_num <- 10 ##############
-snpids <- sample(1:nrow(allele_freq),snp_num)
-snp_freqs <- allele_freq$maf[snpids]
-
-# get genotype at site i for all individuals
+# get genotype at site
 get_genotypes <- function(snp_freq) {
-  allele1 <- rbinom(n=length(sex), size=1, prob=snp_freq)
-  allele2 <- rbinom(n=length(sex), size=1, prob=snp_freq)
+  allele1 <- rbinom(n=n, size=1, prob=snp_freq)
+  allele2 <- rbinom(n=n, size=1, prob=snp_freq)
   genotypes <- allele1 + allele2
-  if (length(unique(genotypes)) ==1) {
-    return(c(100))
-  } else {
-    return(genotypes)
+  return(genotypes)
+}
+
+# i causal SNPs
+snp_num <- 100 ; snp_num_name <- '1e2'
+snp_freqs <- read.csv(paste0("maf_sample_",snp_num_name,".txt"), colClasses = 'numeric') ; snp_freqs <- snp_freqs$x
+
+genotype_matrix_i <- matrix(nrow=n, ncol=length(snp_freqs))
+monomorphs <- NULL
+for (i in 1:length(snp_freqs)) {
+  snp_count <- get_genotypes(snp_freqs[i])
+  if (length(unique(snp_count)) ==1) {       # check if snp is monomorphic
+    monomorphs[i] <- i
+    next
+  }
+  #genotype_matrix_i[,i] <- snp_count
+  genotype_matrix_i <- cbind(genotype_matrix_i, snp_count)
+  if (i %% 1000 == 0){
+    print(i)
   }
 }
 
+######################################################################################
+
+# Beta (effect size)
+Beta <- rnorm(snp_num, mean=0, sd=1)
+
 # get environmental effect
-get_environment <- function() {
-  var_G <- (Beta^2) * snp_af * (1-snp_af)   # genetic variance
+get_environment <- function(h2, E_ratio) {
+  var_G <- (Beta^2) * snp_freqs * (1-snp_freqs)   # genetic variance
   var_E_m <- (var_G * (1-h2)) / h2          # environmental variance (males)
   var_E_f <- var_E_m * E_ratio              # environmental variance for female based on proportion
   E <- NULL
@@ -68,40 +69,53 @@ get_environment <- function() {
   return(E)
 }
 
-GWAS <- function(E) {
-  pheno <- (Beta*snp_count) + E      # calculate phenotypes from Beta, snp i, and E
-  f_model <- lm(pheno[f_id] ~ snp_count[f_id] + E[f_id])
-  m_model <- lm(pheno[m_id] ~ snp_count[m_id] + E[m_id])
+# environment and heritability combination
+for (h2 in c(0.5, 0.05)) {
+  for (E_ratio in c(1, 1.5, 5)) {
+    E <- get_environment(h2, E_ratio)
+    pheno <- (Beta * rowSums(genotype_matrix_i)) + E
+    assign(paste0("E_",h2,"_",E_ratio), E)
+    assign(paste0("pheno_",h2,"_",E_ratio), pheno)
+  }
+}
+
+# GWAS ## TODo: more snps per gwas
+GWAS <- function(genotype, pheno, E) {
+  f_model <- lm(pheno[f_id] ~ genotype[f_id] + E[f_id])
+  m_model <- lm(pheno[m_id] ~ genotype[m_id] + E[m_id])
   f_gwas <- summary(f_model)$coefficients[2,1:2]
   m_gwas <- summary(m_model)$coefficients[2,1:2]
   return(rbind(f_gwas,m_gwas))
 }
 
-# get genotypes and betas for all snps
-monomorphs <- NULL
-mash_BETA <- NULL
-mash_SE <- NULL
-for (i in 1:length(snp_freqs)) {
-  snp_count <- get_genotypes(snp_freqs[i])    # get allele count for all individuals
-  snp_af <- snp_freqs[i]
-  if (length(snp_count) == 1) {       # check if snp is monomorphic
-    monomorphs[i] <- snpids[i]
-    next
+################################
+# k snps, LD blocks
+gwas_snps <- read.csv("maf_sample_1700e2.txt", colClasses = 'numeric') ; gwas_snps <- gwas_snps$x
+h2 = 0.5; E_ratio = 1
+E <- get_environment(h2, E_ratio)
+pheno <- (Beta * rowSums(genotype_matrix_i)) + E
+
+genotype_matrix_k <- NULL
+for (i in 1:length(gwas_snps)) {
+  snp <- get_genotypes(gwas_snps[i])    # get allele count for all individuals
+  genotype_matrix_k <- cbind(genotype_matrix_k, snp)
+  if (i %% 1000 == 0){
+    print(i)
   }
-  Beta <- rnorm(1, mean=0, sd=1)          # sample effect size B from normal distribution
-  
-  for (h2 in c(0.5, 0.05)) {
-    for (E_ratio in c(1, 1.5, 5)) {
-      E <- get_environment()
-      gwas <- GWAS(E)
-      mash_BETA <- rbind(mash_BETA, data.frame(h2= h2, E_ratio=E_ratio, female= gwas[1,1], male= gwas[2,1]))
-      mash_SE <- rbind(mash_SE, data.frame(h2= h2, E_ratio=E_ratio, female= gwas[1,2], male= gwas[2,2]))
-    }
-  }
-  
-  # print progress
 }
 
+############# load genotype matrix file 10000 at a time
+
+mash_BETA <- NULL
+mash_SE <- NULL
+for (i in 1:170000) {
+  gwas <- GWAS(genotype_matrix_k[,1], E)
+  mash_BETA <- rbind(mash_BETA, data.frame(female= gwas[1,1], male= gwas[2,1]))
+  mash_SE <- rbind(mash_SE, data.frame(female= gwas[1,2], male= gwas[2,2]))
+  if (i %% 1000 == 0){
+    print(i)
+  }
+}
 
 mash_func <- function() {
   for (h2 in c(0.5, 0.05)) {
@@ -161,3 +175,5 @@ ggplot(data=mix_long, aes(x=mix, y=value)) +
   geom_point(size=2) +
   facet_wrap(~variable, ncol=6) +
   coord_flip()
+
+

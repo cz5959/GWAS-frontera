@@ -13,7 +13,7 @@ setwd(wd)
 load(file= paste(pheno,"_mash.RData",sep=""))
 
 # p-value thresholds for LD_groups
-LD_groups <- LD_groups[LD_groups$P.x < 5e-2 | LD_groups$P.y < 5e-2,]
+#LD_groups <- LD_groups[LD_groups$P.x < 5e-2 | LD_groups$P.y < 5e-2,]
 #LD_groups <- LD_groups[LD_groups$P.x < 1e-5 | LD_groups$P.y < 1e-5,]
 #LD_groups <- LD_groups[LD_groups$P.x < 5e-8 | LD_groups$P.y < 5e-8,]
 
@@ -40,24 +40,24 @@ random_subset <- function(seed=1) {
     #}
 
     # METHOD3: LD blocks
-    #random <- numeric(0)
-    #for (i in unique(LD_groups$group)) {
-    #    sample_subset <- LD_groups[LD_groups$group == i, 'index']
-    #    random[[(length(random) + 1)]] <- sample(sample_subset,1)
-    #}
+    random <- numeric(0)
+    for (i in unique(LD_groups$group)) {
+       sample_subset <- LD_groups[LD_groups$group == i, 'index']
+       random[[(length(random) + 1)]] <- sample(sample_subset,1)
+    }
 
     # METHOD4: LD blocks, same sample size
-    random <- numeric(0)
-    unique_groups <- sample(unique(LD_groups$group))
-    while (length(random) <= 1703) {
-        for (i in unique_groups) {
-            if (length(random) > 1703) {
-                break
-            }
-            sample_subset <- LD_groups[LD_groups$group == i, 'index']
-            random[[(length(random) + 1)]] <- sample(sample_subset,1)
-        }
-    }        
+    #random <- numeric(0)
+    #unique_groups <- sample(unique(LD_groups$group))
+    #while (length(random) <= 1703) {
+    #    for (i in unique_groups) {
+    #        if (length(random) > 1703) {
+    #            break
+    #        }
+    #        sample_subset <- LD_groups[LD_groups$group == i, 'index']
+    #        random[[(length(random) + 1)]] <- sample(sample_subset,1)
+    #    }
+    #}        
 
     print(paste("random subset ", length(random), sep=""))
     return(random)
@@ -89,27 +89,35 @@ fit_mash <- function(random) {
 
 
     # fit mash model 
-    m = mash(data.random, Ulist= U.c, outputlevel = 1)
+    m = mash(data.random, Ulist= U.c)
     # mixture proportions
-    mixture_prop <- get_estimated_pi(m)
-    return(mixture_prop)
+    #mixture_prop <- get_estimated_pi(m)
+    #return(mixture_prop)
+    return(m)
 }
 
-rep=12
+rep=1
 for (i in 1:rep) {
     random <- random_subset(i)
     ## sample w/o replacement
-    LD_groups <- LD_groups[ ! LD_groups$index %in% random,]
+    #LD_groups <- LD_groups[ ! LD_groups$index %in% random,]
     
     ## mash
-    mix <- fit_mash(random)
-    if (i==1) {
-        mixture <- matrix(names(mix), ncol=1)
-    }
-    mixture <- cbind(mixture, mix)
+    m <- fit_mash(random)
+    mix <- get_estimated_pi(m)
+    pos_weight <- m$posterior_weights
+    #if (i==1) {
+    #    mixture <- matrix(names(mix), ncol=1)
+    #    posteriors <- matrix(names(mix), ncol=1)
+    #}
+    #mixture <- cbind(mixture, mix)
+    #posteriors <- matrix(names(mix), ncol=1)
 }
-colnames(mixture) <- cbind(paste("mix_",0:rep,sep=""))
-write.table(mixture, file=paste(pheno,"mixprop_12_5e-2.txt",sep=""), sep="\t", row.names=FALSE)
+#colnames(mixture) <- cbind(paste("mix_",0:rep,sep=""))
+#write.table(mixture, file=paste(pheno,"mixprop_12_5e-2.txt",sep=""), sep="\t", row.names=FALSE)
+
+write.table(mix, file=paste(pheno,"_est_pi.txt",sep=""), sep="\t", row.names=FALSE)
+write.table(pos_weight, file=paste(pheno,"_pos_weight.txt",sep=""), sep="\t", row.names=FALSE)
 
 #png( paste(pheno,"_mixture_bar.png",sep=""), width = 1200, height = 480)
 #par(mar=c(7,4,4,2)+.1)

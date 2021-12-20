@@ -4,7 +4,7 @@ library(reshape2)
 library(ggpubr)
 library(ggsci)
 
-setwd("~/Research/GWAS-frontera/GWAS_Results")
+setwd("~/Research/GWAS-frontera/PGS")
 
 df <- read.csv("pgs_linear_results_five.txt", sep="\t")
 df <- df[c(-5,-6,-9,-10,-13,-14)]
@@ -29,8 +29,8 @@ df_sep <- melt_out(df_sep)
 df_combined <- melt_out(df_combined)
 
 # separated plot, r2
-rects <- data.frame(xstart = seq(0.5,41.5,1), xend = seq(1.5,42.5,1))
-#pdf(file="pgs_comparison_five.pdf",width=7,height=16)
+rects <- data.frame(xstart = seq(0.5,55.5,1), xend = seq(1.5,56.5,1))
+pdf(file="pgs_comparison_five.pdf",width=7,height=19)
 p <- ggplot(data=df_sep, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   geom_bar(position='dodge',stat='identity') +
   geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), show.legend = FALSE,
@@ -40,12 +40,12 @@ p <- ggplot(data=df_sep, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   theme(axis.text = element_text(size=10), axis.title = element_text(size=14), plot.title=element_text(size=16),
         legend.title=element_text(size=12), legend.text=element_text(size=10), 
         legend.position = 'top', legend.background = element_rect(linetype='solid', color='black')) +
-  geom_rect(data=rects, aes(ymin=0, ymax=0.33, xmin=xstart, xmax=xend), alpha=0.1,fill=rep(c("white","grey20"),times=21), inherit.aes=FALSE)
+  geom_rect(data=rects, aes(ymin=0, ymax=0.33, xmin=xstart, xmax=xend), alpha=0.1,fill=rep(c("white","grey20"),times=28), inherit.aes=FALSE)
 p
 dev.off()
 
 # combined plot, r2
-pdf(file="pgs_comparison_five_combined.pdf",width=8,height=12)
+pdf(file="pgs_comparison_five_combined.pdf",width=8,height=14)
 p <- ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   geom_bar(position='dodge',stat='identity') +
   geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), alpha= 0.8, show.legend = FALSE,
