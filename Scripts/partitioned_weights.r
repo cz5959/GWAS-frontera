@@ -11,16 +11,17 @@ opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 pheno <- opt$pheno; print(pheno)
 
-# load cell type to snp list
+# load cell type list
 setwd("/scratch1/08005/cz5959/LD_practice/Partitioned/celltype_to_snp")
 snp_df <- read.csv("celltype_all.txt", sep="\t", colClasses=c(rep("integer",12)))
 
-# load posterior weights
+# load chromosome and positions 
 wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno)
 setwd(wd)
 pos_df <- read.csv(paste0("female_all.",pheno,".glm.linear"), sep="\t", colClasses = c(rep("integer",2), rep("NULL", 11)))
 colnames(pos_df)=c("CHROM","POS")
 
+# get list of covariance matrices for phenotype
 wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/mash")
 setwd(wd)
 df <- read.csv(paste0(pheno,"_mash_weights.txt"),sep="\t",nrow=1)
@@ -38,7 +39,7 @@ get_weight <- function(df) {
     for (i in 1:10) {
         grouped_df <- df %>%
             group_by(across(5+i)) %>%
-            summarise(across(c(1,2,3,4,5), list(mean)))
+            summarise(across(c(1:5), list(sum)))
         grouped_df <- data.frame(grouped_df)
         final_grouped[nrow(final_grouped)+1,] <- grouped_df[2,] 
     }
@@ -64,11 +65,5 @@ for (i in 1:ceiling(num/5)) {
 write.table(final_df, file=paste0(pheno,"_mash_partitioned.txt"), sep="\t", row.names=FALSE)
 
 
-
-
-#load("celltype_to_snp.RData")
-#celltype_df <- snp_df
-#for (i in 2:10) {
-#    snp_df <- read.csv(paste0(i,"_celltype_to_snp.txt"), sep="\t", colClasses=c("NULL","NULL","integer"))
-#    celltype_df[paste0("group_",i)] <- snp_df
-#}
+####
+perl -pe 's/(\d*\.\d*)/sprintf("%.9f",$1+0.5)/ge' testosterone_mash_weights.txt > testosterone_mash_weights2.txt

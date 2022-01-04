@@ -7,18 +7,10 @@ require("ggsci")
 require("ggpubr")
 require("gridExtra")
 
-pheno <- "height"
-setwd("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/height")
+pheno <- "testosterone"
+setwd(paste0("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/",pheno))
 
 df <- read.csv(paste0(pheno,"mixprop_100_all.txt"), sep="\t")
-
-### simulation
-setwd("~/Research/GWAS-frontera/mash/simulation")
-df2 <- read.csv("5000_0.5_5.txt", sep="\t")
-df2 <- data.frame(cbind(df$mix_0, df2$x))
-colnames(df2) <- c("Name", "Mean")
-df_values <- df2
-###
 
 # get mean and sem (NOT SIM)
 df_values <- data.frame( Name = df$mix_0, Mean = rowMeans(df[2:101]), 
@@ -36,28 +28,32 @@ prepare_df <- function(df) {
 }
 
 # split between null and values
-df_ave <- prepare_df(df_values[2:nrow(df_values),c(2,3,4)])
-df_null <- prepare_df(df_values[1,c(2,3,4)])
+df_ave <- prepare_df(df_values[2:nrow(df_values),c(2,3,4,5)])
+df_null <- prepare_df(df_values[1,c(2,3,4,5)])
 df_null$Mean <- as.numeric(df_null$Mean)
 df_ave$Mean <- as.numeric(df_ave$Mean)
 
+effect_labels <-  c('female','female x 3', 'female x 2', 'female x 1.5','equal','male x 1.5','male x 2','male x 3','male')
 big <- ggplot(df_ave, aes(x= effect, y= correlation, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "white", size= 4) +
+  geom_text(aes(label=round(Mean,3)), color= "white", size= 6, vjust=-0.1) +
+  geom_text(aes(label=round(SE,3)), color= "white", size= 4, vjust=1.5) +
   scale_y_continuous(expand=c(0,0)) +
+  scale_x_discrete(labels= effect_labels) +
   labs(title="Weights of Hypothesis Matrices", xlab="Magnitude", ylab="Correlation") +
   theme_pubclean() +
-  theme(axis.text=element_text(size=12), legend.position = "none") +
+  theme(axis.text=element_text(size=14), legend.position = "none") +
   scale_fill_material("blue-grey")
 
 small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "white", size= 4) +
+  geom_text(aes(label=round(Mean,3)), color= "white", size= 6, vjust=-0.1) +
+  geom_text(aes(label=round(SE,3)), color= "white", size= 4, vjust=1.5) +
   scale_y_continuous(expand=c(0,0)) +
   labs(title="Weight of No Effect Matrice", xlab="Magnitude", ylab="Correlation") +
   theme_pubclean() +
   theme(axis.text=element_blank(), axis.title=element_blank(), legend.position = "none",
-        axis.ticks = element_blank(), plot.title = element_text(size=10)) +
+        axis.ticks = element_blank(), plot.title = element_text(size=12)) +
   scale_fill_material("blue-grey")
 
 lay <- rbind( c(1,1,1,1), c(1,1,1,1), c(1,1,1,1), c(1,1,1,1), c(2,3,3,3))
