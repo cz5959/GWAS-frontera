@@ -42,8 +42,8 @@ big <- ggplot(df_ave, aes(x= effect, y= correlation, fill= Mean)) +
   scale_x_discrete(labels= effect_labels) +
   labs(title="Weights of Hypothesis Matrices", xlab="Magnitude", ylab="Correlation") +
   theme_pubclean() +
-  theme(axis.text=element_text(size=14), legend.position = "none") +
-  scale_fill_material("blue-grey")
+  theme(axis.text=element_text(size=14), plot.title = element_text(size=14), legend.position = "none") +
+  scale_fill_gradient(low="gray95",high="#1d47a1")
 
 small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
@@ -54,7 +54,7 @@ small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
   theme_pubclean() +
   theme(axis.text=element_blank(), axis.title=element_blank(), legend.position = "none",
         axis.ticks = element_blank(), plot.title = element_text(size=12)) +
-  scale_fill_material("blue-grey")
+  scale_fill_gradient(low="gray95",high="#1d47a1")
 
 lay <- rbind( c(1,1,1,1), c(1,1,1,1), c(1,1,1,1), c(1,1,1,1), c(2,3,3,3))
 p <- gridExtra::grid.arrange(big, small, ncol=1, layout_matrix=lay)

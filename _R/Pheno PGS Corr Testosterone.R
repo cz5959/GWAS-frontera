@@ -43,7 +43,7 @@ get_corr <- function(data) {
 }
 
 get_slope <- function(data) {
-  # correlation between Beta and testosterone
+  # slope between Beta and testosterone
   slope_row <- NULL
   for (sex in c("male", "female")) {
     data_sub <- data[data$Sex == sex,]
@@ -111,14 +111,23 @@ colnames(corrs_result)
 #####################################################
 
 # corr plot scatter
-ggplot(corrs_result, aes(x= reorder(Pheno, Correlation), y=Est, fill=Sex)) +
+rects <- data.frame(xstart = seq(0.5,22.5,1), xend = seq(1.5,23.5,1), col = c(1,rep(c(2,1),11)))
+ggplot(corrs_result, aes(x= reorder(Pheno, est_diff), y=Est, fill=Sex)) +
   geom_bar(position="dodge", stat="identity") + 
-  geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.4, position="dodge",stat="identity") +
-  labs(title=paste0("Correlation Between Pheno/PGS and Testosterone"), x="Phenotype", y="Correlation") +
+  geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.8, position="dodge",stat="identity") +
+  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.4,ymax=1.0), 
+            inherit.aes = FALSE, alpha=0.2, fill = c("white",rep(c("grey","white"),11))) +
+  scale_y_continuous(expand=c(0,0)) +
+  labs(title=paste0("Correlation Between Phenotype~PGS \nand Testosterone Levels"), x="Phenotype", y="Correlation") +
   theme(axis.text = element_text(size=12), axis.title = element_text(size=16), plot.title=element_text(size=20),
         legend.title=element_text(size=14), legend.text=element_text(size=12)) +
-  theme_classic() + scale_color_npg() +
+  theme_classic() + 
+  scale_fill_manual(values=c("#d67629","#1d47a1")) +
   coord_flip()
+
+
+
+
 
 # slope plot scatter
 ggplot(slope_result, aes(x=reorder(Pheno, Correlation), y=Est, fill=Sex)) +
@@ -129,3 +138,4 @@ ggplot(slope_result, aes(x=reorder(Pheno, Correlation), y=Est, fill=Sex)) +
         legend.title=element_text(size=14), legend.text=element_text(size=12)) +
   theme_classic() + scale_color_npg() +
   coord_flip()
+

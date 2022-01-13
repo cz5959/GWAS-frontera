@@ -14,11 +14,12 @@ option_list = list(
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
+
 snp_num <- opt$snps; print(snp_num)
 h2 <- opt$heritability; print(h2)
 E_ratio <- opt$environment; print(E_ratio)
 
-# create sample of individuals -- random sex
+# create sample of individuals with random sex
 # 0=female  1=male
 n=300000
 sex <- rbinom(n,1,0.5)   
@@ -27,19 +28,19 @@ f_id <- which(sex==0) ; m_id <- which(sex==1)
 # set seed
 set.seed(1)
 
-# genotype matrix for 300k
-snp_freqs <- read.csv("maf_sample_20k.txt", colClasses = 'numeric') ; snp_freqs <- snp_freqs$x
+# genotype matrix for 300k individuals
+snp_freqs <- read.csv("maf_sample_20k.txt", colClasses = 'numeric') ; snp_freqs <- snp_freqs$x    # load 20k total snp frequencies
 setwd("/scratch1/08005/cz5959/simulation")
-load("simulation_matrix_k_5k.RData")
+load("simulation_matrix_k_5k.RData")  # load matrix of 300k by 5k snp genotypes 
 
 # i causal SNPs
-snp_freqs <- snp_freqs[1:snp_num]
-genotype_matrix_i <- genotype_matrix_k[,(1:snp_num)]
+snp_freqs <- snp_freqs[1:snp_num]   # subset i causal snp frequencies
+genotype_matrix_i <- genotype_matrix_k[,(1:snp_num)]  # subset i causal snp genotypes
 
 ######################################################################################
 
 # Beta (effect size)
-Beta <- rnorm(snp_num, mean=0, sd=1)
+Beta <- rnorm(snp_num, mean=0, sd=1)    # get vector of i Beta effect sizes
 
 # get environmental effect
 get_environment <- function(h2, E_ratio) {
@@ -47,7 +48,7 @@ get_environment <- function(h2, E_ratio) {
   var_E_m <- (var_G * (1-h2)) / h2          # environmental variance (males)
   var_E_f <- var_E_m * E_ratio              # environmental variance for female based on proportion
   E <- NULL
-  for (i in 1:length(sex)) {
+  for (i in 1:length(sex)) {    # assign environmental effect based on gender
     if (sex[i] == 0) {
       E[i] <- rnorm(1, mean=0, sd=sqrt(var_E_f))
     } else {
@@ -58,27 +59,17 @@ get_environment <- function(h2, E_ratio) {
 }
 
 # environment and heritability combination
-#h2 in c(0.5, 0.05)   E_ratio in c(1, 1.5, 5)
-E <- get_environment(h2, E_ratio)
-pheno <- (Beta * rowSums(genotype_matrix_i)) + E
+E <- get_environment(h2, E_ratio)   # call function to get vector of environmental effects
+rm(snp_freqs)
+pheno <- rowSums(t(t(genotype_matrix_i)*Beta)) + E    # get vector of 300k phenotypes
 rm(genotype_matrix_i)
 
-##### 10k
-rm(genotype_matrix_k)
-load("simulation_matrix_k_10k.RData")
-snp_freqs <- snp_freqs[1:snp_num+5000]
-genotype_matrix_i <- genotype_matrix_k[,(1:snp_num+5000)]
-Beta <- c(Beta, rnorm(snp_num, mean=0, sd=1))
-E <- c(E, get_environment(h2, E_ratio))
-pheno <- c(pheno, ((Beta * rowSums(genotype_matrix_i)) + E))
-rm(genotype_matrix_i)
-rm(genotype_matrix_k)
-load("simulation_matrix_k_5k.RData")
-
-# GWAS
+# GWAS function for each SNP
 GWAS <- function(genotype, pheno, E) {
+  # linear regression of phenotype on genotype + environmental effect
   f_model <- lm(pheno[f_id] ~ genotype[f_id] + E[f_id])
   m_model <- lm(pheno[m_id] ~ genotype[m_id] + E[m_id])
+  # grab Beta and SE coefficients for the SNP
   f_gwas <- summary(f_model)$coefficients[2,1:2]
   m_gwas <- summary(m_model)$coefficients[2,1:2]
   return(rbind(f_gwas,m_gwas))
@@ -87,14 +78,18 @@ GWAS <- function(genotype, pheno, E) {
 # k snps, LD blocks
 mash_BETA <- NULL
 mash_SE <- NULL
-for (j in c(10,15,20)) {
+for (j in c(1,10,15,20)) {    # for each of the premade genotype matrices
+  if (j != 1){
+    load(paste0("simulation_matrix_k_",j,"k.RData"))    # go through each SNP
+  }
   for (i in 1:length(colnames(genotype_matrix_k))) {
-    gwas <- GWAS(genotype_matrix_k[,i], pheno, E)
+    gwas <- GWAS(genotype_matrix_k[,i], pheno, E)     # call GWAS function
     mash_BETA <- rbind(mash_BETA, data.frame(female= gwas[1,1], male= gwas[2,1]))
     mash_SE <- rbind(mash_SE, data.frame(female= gwas[1,2], male= gwas[2,2]))
   }
+  print(j)
+  save(mash_BETA, mash_SE, file="simulation_mash_wip.RData")
   rm(genotype_matrix_k)
-  load(paste0("simulation_matrix_k_",j,"k.RData"))
 }
 
 save(mash_BETA, mash_SE, file=paste0("mash_",snp_num,"_",h2,"_",E_ratio,".RData"))

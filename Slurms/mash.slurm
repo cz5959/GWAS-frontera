@@ -23,3 +23,6 @@ export PATH=$PATH:$SCRATCH/gsl/bin 		# to make gsl-config avail
 ./mash.r
 
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$WORK/gsl/lib
+export PATH=$PATH:$WORK/gsl/bin 	
+

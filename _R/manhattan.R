@@ -1,6 +1,7 @@
 require("dplyr")
 require("tidyr")
 require("ggplot2")
+require("grid")
 require("gridExtra")
 require("ggpubr")
 
@@ -45,26 +46,22 @@ axis_df <- x_axis(female_df)
 
 female_plot <- ggplot(female_df, aes(x=POS_CUM,y=-log10(P))) +
   geom_point( aes(color=as.factor(COLOR)), alpha=0.7, size=1) +
-  
   scale_x_continuous(label=axis_df$X.CHROM, breaks=axis_df$CENTER) +
   scale_y_continuous(expand=c(0,0)) +
-  
   theme_pubclean() +
   theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin(20,20,0,20),
         axis.text = element_text(size=11), panel.grid.major.y=element_blank()) +
-  scale_color_npg() +
+  scale_color_manual(values=c("#d67629","#1d47a1")) +
   labs(title=paste0("Miami Plot - ", pheno_name), y="Female")
 
 male_plot <- ggplot(male_df, aes(x=POS_CUM,y=-log10(P))) +
   geom_point( aes(color=as.factor(COLOR)), alpha=0.7, size=1) +
-  
   scale_x_continuous(label=axis_df$X.CHROM, breaks=axis_df$CENTER) +
   scale_y_reverse(expand=c(0,0)) +
-  
   theme_pubclean() + 
   theme(legend.position = "none",  axis.text.x=element_blank(), axis.ticks.x = element_blank(), plot.margin = margin(0,20,20,20),
         axis.text = element_text(size=11), panel.grid.major.y=element_blank()) +
-  scale_color_npg() +
+  scale_color_manual(values=c("#d67629","#1d47a1")) +
   labs(x="Chromosome",y="Male")
 
 p <- grid.arrange(female_plot, male_plot, nrow = 2, left=textGrob("-log10(P)",rot=90,vjust=1))
