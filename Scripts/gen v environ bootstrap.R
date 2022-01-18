@@ -15,21 +15,22 @@ pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","w
                 "protein_total","whole_body_fat_mass","urate","arm_fatfree_mass_L",
                 "arm_fatfree_mass_R", "eosinophil_perc", "lymphocyte_perc", "waist_circ",
                 "hip_circ", "waist_to_hip", "wth_bmi_adj","diastolicBP_auto","systolicBP_auto",
-                "albumin", "pulse_rate")
+                "albumin", "pulse_rate", "urea", "SHBG", "FVC_best", "HbA1c")
 df_sex <- read.csv("sex_ids.txt", sep="\t")
-for (pheno in pheno_list) {
-  df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
-  df_pheno <- merge(df_pheno, df_sex, by='IID')
-  m <- df_pheno[df_pheno$sex == 1, 2] ; f <- df_pheno[df_pheno$sex == 0, 2]
-  male_varse <- replicate(100,var(sample(m,replace=T)))
-  female_varse <- replicate(100,var(sample(f,replace=T)))
-  male_varse <- mean(male_varse - mean(male_varse)) / sqrt(100-1)
-  female_varse <- mean(female_varse - mean(female_varse)) / sqrt(100-1)
-  male_var <- var(m) 
-  female_var <- var(f)
-  pheno_var <- rbind(pheno_var, data.frame(pheno=pheno, m_var=male_var, f_var=female_var,
-                                           m_varse=male_varse, f_varse=female_varse))
-}
+# for (pheno in pheno_list) {
+#   df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
+#   df_pheno <- merge(df_pheno, df_sex, by='IID')
+#   m <- df_pheno[df_pheno$sex == 1, 2] ; f <- df_pheno[df_pheno$sex == 0, 2]
+#   male_varse <- replicate(100,var(sample(m,replace=T)))
+#   female_varse <- replicate(100,var(sample(f,replace=T)))
+#   male_varse <- mean(male_varse - mean(male_varse)) / sqrt(100-1)
+#   female_varse <- mean(female_varse - mean(female_varse)) / sqrt(100-1)
+#   male_var <- var(m) 
+#   female_var <- var(f)
+#   pheno_var <- rbind(pheno_var, data.frame(pheno=pheno, m_var=male_var, f_var=female_var,
+#                                            m_varse=male_varse, f_varse=female_varse))
+# }
+pheno_var <- read.csv("pheno_var.txt", sep="\t")
 #write.table(pheno_var, file="pheno_var.txt", sep="\t", row.names=FALSE)
 
 # get heritability
@@ -100,7 +101,7 @@ empty_df <- data.frame()
 
 g1 <- ggplot(empty_df) + geom_point() + 
   scale_y_continuous(breaks=c(23.5,24,24.5), limits=c(23.4,24.8)) + 
-  scale_x_continuous(breaks=c(0.5,1,1.5), limits=c(0.25,1.75)) +
+  scale_x_continuous(breaks=c(0.5,1,1.5,2), limits=c(0.25,2.2)) +
   theme(axis.text.x=element_blank(), axis.title=element_blank(), axis.ticks.x=element_blank())
 
 g2 <- ggplot(empty_df) + geom_point() +
@@ -126,12 +127,12 @@ g4 <- ggplot(data=df1, aes(x= geno_var_ratio, y= env_var_ratio, color=on)) +
   geom_errorbarh(aes(y=env_var_ratio, xmin=geno_var_ratio-geno_var_ratio_se, xmax=geno_var_ratio+geno_var_ratio_se),
                  height=0) +
   scale_y_continuous(breaks=c(1,2,3), limits=c(0,3.5)) +
-  scale_x_continuous(breaks=c(0.5,1,1.5), limits=c(0.25,1.75)) +
+  scale_x_continuous(breaks=c(0.5,1,1.5,2), limits=c(0.25,2.2)) +
   theme(axis.text.x=element_text(), axis.title=element_blank(), legend.position = "none") +
   geom_text_repel(data=(df1_1), aes(label=pheno_name), size=3, max.overlaps=Inf, segment.alpha=0.5, 
-                  ylim=c(2.2,NA)) +
+                  ylim=c(1.5,NA), box.padding=1.5) +
   geom_text_repel(data=(df1_2), aes(label=pheno_name), size=3, max.overlaps=Inf, segment.alpha=0.5, 
-                  ylim=c(NA,0.4))
+                  ylim=c(NA,0.9), box.padding=1.5)
 
 g5 <- ggplot(data=df2, aes(x= geno_var_ratio, y= env_var_ratio)) +
   geom_point(size=2, alpha=0.5, color='#56B1F7') + geom_abline(slope = 1, intercept = 0, color='#132B43') +

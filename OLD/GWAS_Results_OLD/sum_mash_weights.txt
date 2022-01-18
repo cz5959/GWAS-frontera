@@ -24,5 +24,5 @@ lymphocyte_perc	20	22
 hip_circ	6	68
 waist_circ	16	33
 waist_to_hip	29	37
-waist_to_hip_bmi	6	68
+wth_bmi_adj	6	68
 urate	36	29

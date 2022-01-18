@@ -36,18 +36,19 @@ df_ave$Mean <- as.numeric(df_ave$Mean)
 effect_labels <-  c('female','female x 3', 'female x 2', 'female x 1.5','equal','male x 1.5','male x 2','male x 3','male')
 big <- ggplot(df_ave, aes(x= effect, y= correlation, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "white", size= 6, vjust=-0.1) +
-  geom_text(aes(label=round(SE,3)), color= "white", size= 4, vjust=1.5) +
+  geom_text(aes(label=round(Mean,3)), color= "white", size= 5, vjust=-0.1) +
+  geom_text(aes(label=round(SE,3)), color= "white", size= 3, vjust=1.5) +
   scale_y_continuous(expand=c(0,0)) +
   scale_x_discrete(labels= effect_labels) +
   labs(title="Weights of Hypothesis Matrices", xlab="Magnitude", ylab="Correlation") +
   theme_pubclean() +
-  theme(axis.text=element_text(size=14), plot.title = element_text(size=14), legend.position = "none") +
+  theme(axis.text=element_text(size=12), axis.title = element_text(size=14), plot.title = element_text(size=16), 
+        legend.position = "none") +
   scale_fill_gradient(low="gray95",high="#1d47a1")
 
 small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "white", size= 6, vjust=-0.1) +
+  geom_text(aes(label=round(Mean,3)), color= "white", size= 5, vjust=-0.1) +
   geom_text(aes(label=round(SE,3)), color= "white", size= 4, vjust=1.5) +
   scale_y_continuous(expand=c(0,0)) +
   labs(title="Weight of No Effect Matrice", xlab="Magnitude", ylab="Correlation") +
@@ -92,14 +93,15 @@ df_small$corr <- factor(df_small$corr, levels = c('negative', 'uncorrelated', 'p
 df_small$variable <- factor(df_small$variable, levels = c('F > M', 'F = M', 'M > F'))
 df_small <- df_small %>% mutate_at(3, as.numeric) %>%
   arrange(corr, variable)
-
-ggplot(df_small, aes(x=variable, y= corr, fill= value)) +
+colnames(df_small) <- c("correlation", "effect", "value")
+ggplot(df_small, aes(x=effect, y= correlation, fill= value)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
   geom_text(aes(label=round(value,3)), color= "white", size= 4) +
   labs(title="Weights of Hypothesis Matrices", xlab="Magnitude", ylab="Correlation") +
   theme_pubclean() +
   theme(axis.text=element_text(size=12), legend.position = "none") +
-  scale_fill_material("blue-grey")
+  scale_fill_gradient(low="gray95",high="#1d47a1")
+
 
 
 

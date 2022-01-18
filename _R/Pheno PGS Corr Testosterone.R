@@ -8,7 +8,13 @@ pheno_list <- c("height","bmi","RBC_count","IGF1","creatinine","weight","calcium
                 "protein_total","whole_body_fat_mass","urate","arm_fatfree_mass_L",
                 "arm_fatfree_mass_R", "eosinophil_perc", "lymphocyte_perc", "waist_circ",
                 "hip_circ", "waist_to_hip", "wth_bmi_adj","diastolicBP_auto","systolicBP_auto",
-                "albumin", "pulse_rate")
+                "albumin", "pulse_rate", "urea", "SHBG", "FVC_best", "HbA1c")
+
+# get nice phenotype names
+setwd("~/Research/GWAS-frontera/LDSC/")
+ldsc_df <- read.csv("ldsc_results.txt", sep="\t", colClasses = c(rep("character",2), rep("NULL",5)))
+ldsc_df <- unique(ldsc_df)
+ldsc_df[! ldsc_df$Code %in% pheno_list,]
 
 # get lm results from each testosterone bin
 bin_fun <- function(data, n, sex) {
@@ -60,6 +66,7 @@ get_slope <- function(data) {
 corrs_result <- NULL
 slope_result <- NULL
 for (pheno in pheno_list) {
+  print(pheno)
   # phenotype
   setwd("~/Research/GWAS-frontera/Phenotypes")
   df_testosterone <- read.csv("pheno_testosterone.txt", sep="\t", colClasses = c("NULL","integer","numeric"))
@@ -94,11 +101,15 @@ for (pheno in pheno_list) {
   # slope between Beta and testosterone
   slope_result <- rbind(slope_result, get_slope(results))
 }
+# save corr and slope files
+#setwd("~/Research/GWAS-frontera/Phenotypes")
+#write.table(corrs_result, file="pgs_testosterone_corr.txt", sep="\t", row.names=FALSE)
+#write.table(slope_result, file="pgs_testosterone_slope.txt", sep="\t", row.names=FALSE)
 
 # ldsc correlation
 setwd("~/Research/GWAS-frontera/LDSC")
 ldsc_df <- read.csv("ldsc_results.txt",sep="\t")
-ldsc_df <- ldsc_df[ldsc_df$Sex == 'both_sex',c(1,6)]
+ldsc_df <- ldsc_df[ldsc_df$Sex == 'both_sex',c(1,2,6)]
 
 format_result <- function(result) {
   result <- result[order(result$Pheno),]
@@ -112,7 +123,7 @@ colnames(corrs_result)
 
 # corr plot scatter
 rects <- data.frame(xstart = seq(0.5,22.5,1), xend = seq(1.5,23.5,1), col = c(1,rep(c(2,1),11)))
-ggplot(corrs_result, aes(x= reorder(Pheno, est_diff), y=Est, fill=Sex)) +
+ggplot(corrs_result, aes(x= reorder(Phenotype, est_diff), y=Est, fill=Sex)) +
   geom_bar(position="dodge", stat="identity") + 
   geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.8, position="dodge",stat="identity") +
   geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.4,ymax=1.0), 
