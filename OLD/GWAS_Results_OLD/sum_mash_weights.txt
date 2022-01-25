@@ -1,28 +1,28 @@
-phenotype	sum_weight_m	sum_weight_f
-bmi	13	46
-calcium	35	29
-creatinine	53	21
-FVC_best	62	14
-HbA1c	50	21
-height	21	12
-IGF1	34	32
-protein_total	26	19
-RBC_count	33	30
-SHBG	14	74
-testosterone	95	3
-urea	31	19
-weight	22	13
-whole_body_fat_mass	6	48
-albumin	17	27
-arm_fatfree_mass_L	87	3
-arm_fatfree_mass_R	92	4
-diastolicBP_auto	16	56
-systolicBP_auto	11	55
-eosinophil_perc	36	13
-pulse_rate	39	24
-lymphocyte_perc	20	22
-hip_circ	6	68
-waist_circ	16	33
-waist_to_hip	29	37
-wth_bmi_adj	6	68
-urate	36	29
+phenotype	sum_weight_m	sum_weight_f	sum_weight_e	trivial
+bmi	13	46	40	11
+calcium	35	29	36	26
+creatinine	53	21	26	20
+FVC_best	62	14	24	21
+HbA1c	50	21	29	25
+height	21	12	64	32
+IGF1	34	32	14	16
+protein_total	26	19	54	42
+RBC_count	33	30	38	16
+SHBG	14	74	11	11
+testosterone	95	3	1	0
+urea	31	19	46	25
+weight	22	13	63	25
+whole_body_fat_mass	6	48	47	15
+albumin	17	27	58	41
+arm_fatfree_mass_L	87	3	10	8
+arm_fatfree_mass_R	92	4	4	2
+diastolicBP_auto	16	56	27	20
+systolicBP_auto	11	55	34	17
+eosinophil_perc	36	13	51	27
+pulse_rate	39	24	37	15
+lymphocyte_perc	20	22	59	27
+hip_circ	6	68	26	10
+waist_circ	16	33	51	22
+waist_to_hip	29	37	34	13
+wth_bmi_adj	10	63	28	9
+urate	36	29	43	19

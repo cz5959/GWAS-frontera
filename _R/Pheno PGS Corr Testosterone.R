@@ -102,9 +102,11 @@ for (pheno in pheno_list) {
   slope_result <- rbind(slope_result, get_slope(results))
 }
 # save corr and slope files
-#setwd("~/Research/GWAS-frontera/Phenotypes")
+setwd("~/Research/GWAS-frontera/Phenotypes")
 #write.table(corrs_result, file="pgs_testosterone_corr.txt", sep="\t", row.names=FALSE)
 #write.table(slope_result, file="pgs_testosterone_slope.txt", sep="\t", row.names=FALSE)
+
+corrs_result <- read.csv("pgs_testosterone_corr.txt", sep="\t")
 
 # ldsc correlation
 setwd("~/Research/GWAS-frontera/LDSC")
@@ -120,23 +122,32 @@ corrs_result <- format_result(corrs_result)
 slope_result <- format_result(slope_result)
 colnames(corrs_result)
 #####################################################
+# new_pheno <- c("Albumin", "Arm fat free\nmass (L)", "Arm fat free\nmass (R)", "BMI", "Calcium", "Creatinine",
+#   "Diastolic BP", "Eosinophil\npercentage", "Forced vital\ncapacity", "HbA1c", 
+#   "Height", "Hip\ncircumference", "IGF-1", "Lymphocyte\npercentage", "Total protein", "Pulse rate", 
+#   "RBC count", "SHBG", "Systolic BP", "Urate", "Urea", "Waist\ncircumference", "Waist to hip\nratio",
+#   "Weight", "Whole body\nfat mass" , "Waist:hip\n(bmi adj.)") 
+# corrs_result$Phenotype <- rep(new_pheno, each=2)
 
 # corr plot scatter
-rects <- data.frame(xstart = seq(0.5,22.5,1), xend = seq(1.5,23.5,1), col = c(1,rep(c(2,1),11)))
+rects <- data.frame(xstart = seq(0.5,26.5,1), xend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))
+rects <- rects[1:26,]
 ggplot(corrs_result, aes(x= reorder(Phenotype, est_diff), y=Est, fill=Sex)) +
   geom_bar(position="dodge", stat="identity") + 
-  geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.8, position="dodge",stat="identity") +
-  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.4,ymax=1.0), 
-            inherit.aes = FALSE, alpha=0.2, fill = c("white",rep(c("grey","white"),11))) +
-  scale_y_continuous(expand=c(0,0)) +
+  geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.6, position="dodge",stat="identity") +
+  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.4,ymax=1.1), 
+            inherit.aes = FALSE, alpha=0.2, fill = c(rep(c("grey","white"),13))) +
+  scale_y_continuous(expand=c(0,0)) + 
   labs(title=paste0("Correlation Between Phenotype~PGS \nand Testosterone Levels"), x="Phenotype", y="Correlation") +
-  theme(axis.text = element_text(size=12), axis.title = element_text(size=16), plot.title=element_text(size=20),
-        legend.title=element_text(size=14), legend.text=element_text(size=12)) +
   theme_classic() + 
+  theme(axis.text = element_text(size=10), axis.title = element_text(size=12), plot.title=element_blank(),
+        #plot.title=element_text(size=12),
+        #legend.title=element_text(size=12), legend.text=element_text(size=10)
+        legend.position = "none") +
   scale_fill_manual(values=c("#d67629","#1d47a1")) +
   coord_flip()
 
-
+#########################################################
 
 
 

@@ -4,8 +4,8 @@ library(reshape2)
 library(ggsci)
 
 # set up and load in files
-pheno <- "height"
-title <- "Weight"
+pheno <- "urate"
+title <- "Urate"
 setwd("~/Research/GWAS-frontera/Phenotypes")
 df_testosterone <- read.csv("pheno_testosterone.txt", sep="\t", colClasses = c("NULL","integer","numeric"))
 df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
@@ -15,16 +15,11 @@ colnames(df_pheno) <- c('IID','pheno')
 # get PGS scores
 setwd(paste0("~/Research/GWAS-frontera/GWAS_results/",pheno))
 
-df_both <- read.csv("both_sex_additive_height.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-df_add_f <- read.csv("female_additive_weight.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-df_add_m <- read.csv("male_additive_weight.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-df_mash_f <- read.csv("female_mash_weight.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-df_mash_m <- read.csv("male_mash_weight.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-# df_both <- read.csv(paste0("both_sex_additive_",pheno,".0.01.profile"),sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-# df_add_f <- read.csv(paste0("female_additive_",pheno,".1e-5.profile"),sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-# df_add_m <- read.csv(paste0("male_additive_",pheno,".1e-5.profile"),sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-# df_mash_f <- read.csv(paste0("female_mash_",pheno,".1e-5.profile"),sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-# df_mash_m <- read.csv(paste0("male_mash_",pheno,".1e-5.profile"),sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+df_both <- read.csv("both_sex_additive_urate.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+df_add_f <- read.csv("female_additive_urate.1e-5.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+df_add_m <- read.csv("male_additive_urate.1e-5.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+df_mash_f <- read.csv("female_mash_urate.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+df_mash_m <- read.csv("male_mash_urate.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
 score <- Reduce(function(x,y) merge(x,y, by='IID'), list(df_both, df_add_f, df_add_m, df_mash_f, df_mash_m))
 colnames(score) <- c('IID', 'both', 'add_female', 'add_male', 'mash_female', 'mash_male')
 
@@ -127,21 +122,49 @@ for (t in c('both', 'add', 'mash')) {
 trend$Type <- c('both','both','add','add','mash','mash')
 
 # plot phenotype to pgs linear regression
-labels <- c(add="additive sex-specific", both="additive both-sex", mash="mash sex-specific")
+labels <- c(add="sex-specific additive", both="additive", mash="sex-specific covariance aware")
 #png(paste0(pheno,"_pgs_testosterone.png"), width=700,height=700,res=100)
-ggplot(results, aes(x=Testosterone, y=Beta, color=Sex)) +
-  geom_point(size=2) +
-  geom_point(data=overlap_results, aes(x=Testosterone, y=Beta), shape=1, stroke=1.5) +
-  geom_errorbar(aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4, show.legend = TRUE) +
+p <- ggplot(results, aes(x=Testosterone, y=Beta, color=Sex)) +
+  geom_point(size=1.5) +
+  geom_point(data=overlap_results, aes(x=Testosterone, y=Beta), shape=1, stroke=1, size=1.5) +
+  geom_errorbar(aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4) +
   geom_errorbar(data= overlap_results, aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4) +
-  labs(title=paste0(title," to PGS Regression by Testosterone Levels"), x="Testosterone Level", y="Phenotype to PGS") +
-  theme(axis.text = element_text(size=12), axis.title = element_text(size=16), plot.title=element_text(size=20),
-        legend.title=element_text(size=14), legend.text=element_text(size=12)) +
+  labs(title=title, x="Testosterone Level", y="Phenotype Value to PGS Slope") +
   facet_wrap(~Type, ncol=1, scales="free_y", labeller=labeller(Type=labels)) +
   geom_segment(data=trend, aes(x=x1,xend=x2,y=y1,yend=y2)) +
-  stat_cor(method='pearson', p.accuracy=0.001, label.x.npc=0.7, label.y.npc=0.99, show.legend=FALSE, size=3.5) +
-  theme_classic() + scale_color_npg()
-dev.off()
+  stat_cor(method='pearson', p.accuracy=0.001, label.x.npc=0.7, label.y.npc=0.90, show.legend=FALSE, size=3) +
+  theme_classic() + 
+  theme(axis.text = element_text(size=10), axis.title = element_text(size=12), plot.title=element_text(size=16),
+        legend.position= "none") +
+  scale_color_manual(values=c("#d67629","#1d47a1"))
+
+f_text <- data.frame(label = c("female", "", ""), Type = c("add", "both", "mash"))
+m_text <- data.frame(label = c("male", "", ""), Type = c("add", "both", "mash"))
+
+p + geom_text(data=f_text, x = 0.8, y = 11500, color="#d67629", aes(label=label), size=3.5, fontface=2) + 
+  geom_text(data=m_text, x = 7, y = 11500, color="#1d47a1", aes(label=label), size=3.5, fontface=2)
+
+#dev.off()
+
+########## 
+results_both <- results[results$Type == "both",]
+trend_both <- trend[trend$Type == "both",]
+overlap_results_both <- overlap_results[overlap_results$Type == "both",]
+ggplot(results_both, aes(x=Testosterone, y=Beta, color=Sex)) +
+  geom_point(size=1.5) +
+  geom_point(data=overlap_results_both, aes(x=Testosterone, y=Beta), shape=1, stroke=1, size=1.5) +
+  geom_errorbar(aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4) +
+  geom_errorbar(data= overlap_results_both, aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4) +
+  labs(title=title, x="Testosterone Level", y="Phenotype Value \nto PGS Slope") +
+  geom_segment(data=trend_both, aes(x=x1,xend=x2,y=y1,yend=y2)) +
+  stat_cor(method='pearson', p.accuracy=0.001, label.x.npc=0.7, label.y.npc=0.90, show.legend=FALSE, size=3) +
+  theme_classic() + 
+  theme(axis.text = element_text(size=10), axis.title = element_text(size=12), plot.title=element_text(size=16),
+        legend.position= "none") +
+  scale_color_manual(values=c("#d67629","#1d47a1")) +
+  annotate("text", x=1, y=14500, label="female", color="#d67629", size=3.5) +
+  annotate("text", x=8, y=14500, label="male", color="#1d47a1", size=3.5)
+
 
 ########################################################################
 # linear regression for CORR
@@ -156,7 +179,7 @@ for (t in c('both', 'add', 'mash')) {
 trend$Type <- c('both','both','add','add','mash','mash')
 
 # plot phenotype to pgs correlation
-png(paste0(pheno,"_pgs_testosterone_corr.png"), width=700,height=700,res=100)
+#png(paste0(pheno,"_pgs_testosterone_corr.png"), width=700,height=700,res=100)
 ggplot(results, aes(x=Testosterone, y=Corr, color=Sex)) +
   geom_point(size=2) +
   geom_point(data=overlap_results, aes(x=Testosterone, y=Corr), shape=1, stroke=1.5) +

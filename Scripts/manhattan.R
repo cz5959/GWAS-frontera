@@ -69,10 +69,10 @@ female_plot <- ggplot(female_df, aes(x=POS_CUM,y=-log10(P))) +
   scale_y_continuous(expand=c(0,0)) +
   
   theme_pubclean() +
-  theme(legend.position = "none", axis.title.x = element_blank(), plot.margin = margin(20,20,0,20),
-        axis.text = element_text(size=11), panel.grid.major.y=element_blank()) +
+  theme(legend.position = "none", axis.title = element_blank(), plot.margin = margin(20,20,0,20),
+        axis.text = element_text(size=10), panel.grid.major.y=element_blank(), plot.title=element_text(size=16, hjust=0.5)) +
   scale_color_manual(values=c("#d67629","#1d47a1")) +
-  labs(title=paste0("Miami Plot - ", pheno_name), y="Female")
+  labs(title=pheno_name)
 
 male_plot <- ggplot(male_df, aes(x=POS_CUM,y=-log10(P))) +
   geom_point( aes(color=as.factor(COLOR)), alpha=0.7, size=0.1) +
@@ -81,12 +81,13 @@ male_plot <- ggplot(male_df, aes(x=POS_CUM,y=-log10(P))) +
   scale_y_reverse(expand=c(0,0)) +
   
   theme_pubclean() + 
-  theme(legend.position = "none",  axis.text.x=element_blank(), axis.ticks.x = element_blank(), plot.margin =  margin(0,20,20,20),
-        axis.text = element_text(size=11), panel.grid.major.y=element_blank()) +
+  theme(legend.position = "none",  axis.text.x=element_blank(), axis.ticks.x = element_blank(), 
+        plot.margin =  margin(0,20,20,20), panel.grid.major.y=element_blank(), 
+        axis.text.y = element_text(size=10), axis.title.y = element_blank(), axis.title.x = element_text(size=12)) +
   scale_color_manual(values=c("#d67629","#1d47a1")) +
-  labs(x="Chromosome",y="Male")
+  labs(x="Chromosome")
 
-p <- grid.arrange(female_plot, male_plot, nrow = 2, left=textGrob("-log10(P)",rot=90,vjust=1))
+p <- grid.arrange(female_plot, male_plot, nrow = 2, left=textGrob(bquote(-log[10] ~P), rot=90, vjust=1, gp=gpar(fontsize=12)))
 p
 
 dev.off()
