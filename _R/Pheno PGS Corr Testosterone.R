@@ -132,6 +132,28 @@ colnames(corrs_result)
 # corr plot scatter
 rects <- data.frame(xstart = seq(0.5,26.5,1), xend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))
 rects <- rects[1:26,]
+plot <- ggplot(corrs_result, aes(x= reorder(Phenotype, est_diff), y=Est, color=Sex)) +
+  geom_hline(yintercept = 0, linetype="dashed", alpha=0.5) +
+  geom_point(size=2, position=position_dodge(width=0.7)) +
+  geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.6, width=0.5, position=position_dodge(width=0.7)) +
+  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.4,ymax=1.1), 
+            inherit.aes = FALSE, alpha=0.2, fill = c(rep(c("grey","white"),13))) +
+  scale_y_continuous(expand=c(0,0)) + 
+  labs(title=paste0("Correlation Between Phenotype~PGS \nand Testosterone Levels"), 
+       y="R - Correlation between Testosterone Level and \nEffect of Polygenic Score on Phenotype") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=10), axis.title = element_blank(), plot.title=element_blank(),
+        #plot.title=element_text(size=12), legend.title=element_text(size=12), legend.text=element_text(size=10)
+        legend.position = "none") +
+  scale_color_manual(values=c("#d67629","#207335")) +
+  coord_flip()
+
+annotate_figure(plot, 
+                bottom = text_grob("R - Correlation between Testosterone Level and \nEffect of Polygenic Score on Phenotype", size=12))
+
+# corr plot bar
+rects <- data.frame(xstart = seq(0.5,26.5,1), xend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))
+rects <- rects[1:26,]
 ggplot(corrs_result, aes(x= reorder(Phenotype, est_diff), y=Est, fill=Sex)) +
   geom_bar(position="dodge", stat="identity") + 
   geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.6, position="dodge",stat="identity") +

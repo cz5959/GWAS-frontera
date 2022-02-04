@@ -22,6 +22,7 @@ melt_out <- function(df) {
              variable.name = "r2_var", value.name = "r2_se_val")
   df2$r2_var <- df1$r2_var
   df <- merge(df1,df2, by=c('Phenotype','Sex','r2_var'))
+  df <- df[order(df$Phenotype, decreasing = FALSE),]
   return(df)
 }
 
@@ -30,7 +31,7 @@ df_combined <- melt_out(df_combined)
 
 # separated plot, r2
 rects <- data.frame(xstart = seq(0.5,55.5,1), xend = seq(1.5,56.5,1))
-pdf(file="pgs_comparison_five.pdf",width=7,height=19)
+#pdf(file="pgs_comparison_five.pdf",width=7,height=19)
 p <- ggplot(data=df_sep, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   geom_bar(position='dodge',stat='identity') +
   geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), show.legend = FALSE,
@@ -42,20 +43,37 @@ p <- ggplot(data=df_sep, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
         legend.position = 'top', legend.background = element_rect(linetype='solid', color='black')) +
   geom_rect(data=rects, aes(ymin=0, ymax=0.33, xmin=xstart, xmax=xend), alpha=0.1,fill=rep(c("white","grey20"),times=28), inherit.aes=FALSE)
 p
-dev.off()
+#dev.off()
 
 # combined plot, r2
-pdf(file="pgs_comparison_five_combined.pdf",width=8,height=14)
+#pdf(file="pgs_comparison_five_combined.pdf",width=8,height=14)
 p <- ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   geom_bar(position='dodge',stat='identity') +
   geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), alpha= 0.8, show.legend = FALSE,
                 position='dodge', stat='identity') +
-  labs(title='PGS Comparison Over Five Folds - Combined Models', y="R2", fill="Model") + 
-  coord_flip() + theme_classic() + scale_fill_npg(labels = c('additive both-sex', 'additive same-sex', 'mash')) +
-  theme(axis.text = element_text(size=10), axis.title = element_text(size=14), plot.title=element_text(size=16),
-        legend.title=element_text(size=12), legend.text=element_text(size=10), 
+  scale_y_continuous(expand = c(0,0)) +
+  labs(title='PGS Comparison Over Five Folds - Combined Models', y="R2", fill="Model") +
+  coord_flip() + 
+  theme_classic() + 
+  scale_fill_npg(labels = c('additive both-sex', 'additive same-sex', 'mash')) +
+  theme(axis.text = element_text(size=9), axis.title = element_text(size=11), plot.title=element_text(size=14),
+        legend.title=element_text(size=11), legend.text=element_text(size=9), 
         legend.position = 'top', legend.background = element_rect(linetype='solid', color='black'))
 p
-dev.off()
+#dev.off()
 
-
+## combined plot, edited
+ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
+  geom_bar(position='dodge',stat='identity') +
+  geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), alpha= 0.8, 
+                show.legend = FALSE, position='dodge', stat='identity', size=0.2) +
+  scale_y_continuous(expand = c(0,0)) +
+  labs(title='PGS Comparison', subtitle = "Combined Models", y="R2", fill="Model") +
+  coord_flip() + 
+  theme_classic() + 
+  scale_fill_manual(values = c("#2b62d9", "#829ed9", "#563f61")) +
+  theme(axis.text = element_text(size=9), axis.title = element_text(size=11), plot.title=element_text(size=14),
+      legend.position = "none") +
+  annotate("text", x = 14.5, y=0.8, label = "Sex-specific covariance aware", hjust = 1, color="#563f61", size=3.4 ) +
+  annotate("text", x = 13.5, y=0.8, label = "Sex-specific additive", hjust = 1, color="#829ed9", size=3.4) +
+  annotate("text", x = 12.5, y=0.8, label = "Additive", hjust = 1, color="#2b62d9", size=3.4 )

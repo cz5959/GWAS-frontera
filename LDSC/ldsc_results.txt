@@ -65,9 +65,9 @@ hip_circ	Hip circumference	male	0.2159	0.0102	0.8929	0.0164
 waist_to_hip	Waist to hip ratio	both_sex	0.158	0.0053	0.7517	0.0252
 waist_to_hip	Waist to hip ratio	female	0.1866	0.0091	0.7517	0.0252
 waist_to_hip	Waist to hip ratio	male	0.1757	0.0073	0.7517	0.0252
-wth_bmi_adj	Waist:hip (bmi adj.)	both_sex	0.1282	0.0072	0.6322	0.0269
-wth_bmi_adj	Waist:hip (bmi adj.)	female	0.1821	0.0131	0.6322	0.0269
-wth_bmi_adj	Waist:hip (bmi adj.)	male	0.1268	0.0074	0.6322	0.0269
+wth_bmi_adj	Waist:hip (bmi adjusted)	both_sex	0.1282	0.0072	0.6322	0.0269
+wth_bmi_adj	Waist:hip (bmi adjusted)	female	0.1821	0.0131	0.6322	0.0269
+wth_bmi_adj	Waist:hip (bmi adjusted)	male	0.1268	0.0074	0.6322	0.0269
 diastolicBP_auto	Diastolic BP	both_sex	0.1278	0.0054	0.9241	0.0274
 diastolicBP_auto	Diastolic BP	female	0.1609	0.0081	0.9241	0.0274
 diastolicBP_auto	Diastolic BP	male	0.1092	0.0069	0.9241	0.0274
