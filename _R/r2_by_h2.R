@@ -20,6 +20,14 @@ df <- df %>%
   arrange(Correlation, Phenotype, Sex) %>%
   mutate(Phenotype = factor(Phenotype, levels=unique(Phenotype))) 
 
+#write.table(df, file = "relative_h2.txt", quote=FALSE, sep="\t", row.names=FALSE)
+# relative heritability diff by correlation
+#df <- df[df$Sex != 'both_sex', c(1,3,6,8,9)]
+#f <- df[df$Sex == 'female',]
+#m <- df[df$Sex == 'male',]
+#f[f$Code == "arm_fatfree_mass_R",]
+#df <- data.frame(Code = f$Code, Correlation = f$Correlation, h2_diff = abs(f$relative_h2 - m$relative_h2))
+#model <- cor.test(df$Correlation, df$h2_diff)
 
 rects <- data.frame(ystart = seq(0.5,26.5,1), yend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))
 p1 <- ggplot(df, aes(x=relative_h2, y=Phenotype, col=(Sex))) +

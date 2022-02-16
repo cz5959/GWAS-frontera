@@ -150,7 +150,3 @@ annotate_figure(plot,
                 left = text_grob("Environmental Variance Ratio", size=10, rot=90),
                 top = text_grob("Genetic Variance Ratio to \n Environmental Variance Ratio", face = "bold", size = 14))
 
-head(mtcars[,3])
-mtcars$disp[3]
-a <- "test"
-mtcars[a] <- 0 

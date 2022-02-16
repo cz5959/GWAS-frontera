@@ -29,6 +29,19 @@ melt_out <- function(df) {
 df_sep <- melt_out(df_sep)
 df_combined <- melt_out(df_combined)
 
+# formate df_combined for analysis
+#df_combined = dcast(df_combined, Phenotype ~ r2_var, value.var="r2_val")
+#write.table(df_combined, file = "combined_r2.txt", sep="\t", row.names=FALSE, quote = FALSE)
+
+# ttest for difference between additive and mash
+df_add <- df_combined[df_combined$r2_var == "ab_r2", c(1,4,5)]
+df_mash <- df_combined[df_combined$r2_var == "m_r2",c(1,4,5)]
+df_add <- df_add %>%
+  mutate(mean_diff = r2_val - df_mash$r2_val) %>%
+  mutate(se_diff = sqrt((df_add$r2_se_val)^2 + (df_mash$r2_se_val)^2) ) %>%
+  mutate(ttest = mean_diff - se_diff) 
+#write.table(df_add, file = "combined_diff.text", sep="\t", row.names=FALSE, quote = FALSE)
+
 # separated plot, r2
 rects <- data.frame(xstart = seq(0.5,55.5,1), xend = seq(1.5,56.5,1))
 #pdf(file="pgs_comparison_five.pdf",width=7,height=19)
@@ -71,9 +84,9 @@ ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   labs(title='PGS Comparison', subtitle = "Combined Models", y="R2", fill="Model") +
   coord_flip() + 
   theme_classic() + 
-  scale_fill_manual(values = c("#2b62d9", "#829ed9", "#563f61")) +
+  scale_fill_manual(values = c("#b0464f", "#d1b724", "#2b62d9")) +
   theme(axis.text = element_text(size=9), axis.title = element_text(size=11), plot.title=element_text(size=14),
       legend.position = "none") +
-  annotate("text", x = 14.5, y=0.8, label = "Sex-specific covariance aware", hjust = 1, color="#563f61", size=3.4 ) +
-  annotate("text", x = 13.5, y=0.8, label = "Sex-specific additive", hjust = 1, color="#829ed9", size=3.4) +
-  annotate("text", x = 12.5, y=0.8, label = "Additive", hjust = 1, color="#2b62d9", size=3.4 )
+  annotate("text", x = 14.5, y=0.8, label = "Sex-specific covariance aware", hjust = 1, color="#2b62d9", size=3.4 ) +
+  annotate("text", x = 13.5, y=0.8, label = "Sex-specific additive", hjust = 1, color="#d1b724", size=3.4) +
+  annotate("text", x = 12.5, y=0.8, label = "Additive", hjust = 1, color="#b0464f", size=3.4 )

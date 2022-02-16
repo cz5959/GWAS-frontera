@@ -46,7 +46,7 @@ df_ave$Mean <- as.numeric(df_ave$Mean)
 effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
 
 setwd("~/Research/GWAS-frontera/mash/heatmaps")
-#pdf(file=paste0(pheno,"_mash_large.pdf"), width=7, height=5)
+pdf(file=paste0(pheno,"_mash_large.pdf"), width=7, height=5)
 
 big <- ggplot(df_ave, aes(x= magnitude, y= correlation, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +

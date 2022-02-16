@@ -26,6 +26,10 @@ mash_weights <- mash_weights %>%
 # combine phenotypic variance and mash weights df
 df <- merge(pheno_vars, mash_weights, by.x = "pheno", by.y = "phenotype")
 
+#df_corr <- df[df$pheno != 'testosterone',]
+#model <- cor.test(df_corr$diff_mf, df_corr$ratio_mf)
+#model
+
 # split outliers (arm_fatfree_mass and testosterone)
 df1 <- df[! df$pheno %in% c('arm_fatfree_mass_L', 'arm_fatfree_mass_R', 'testosterone'),]
 df2 <- df[df$pheno %in% c('arm_fatfree_mass_L', 'arm_fatfree_mass_R'),]
