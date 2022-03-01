@@ -15,7 +15,6 @@ pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","w
 
 
 for (pheno in pheno_list) {
-pheno <- "diastolicBP_auto"
 #setwd(paste0("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/",pheno))
 setwd(paste0("~/Research/GWAS-frontera/GWAS_Results/",pheno))
 
@@ -46,7 +45,7 @@ df_ave$Mean <- as.numeric(df_ave$Mean)
 effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
 
 setwd("~/Research/GWAS-frontera/mash/heatmaps")
-pdf(file=paste0(pheno,"_mash_large.pdf"), width=7, height=5)
+#pdf(file=paste0(pheno,"_mash_large.pdf"), width=7, height=5)
 
 big <- ggplot(df_ave, aes(x= magnitude, y= correlation, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
@@ -77,7 +76,7 @@ small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
 lay <- rbind( c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(2,2,3,3,3))
 p <- gridExtra::grid.arrange(big, small, ncol=1, layout_matrix=lay)
 
-dev.off()
+#dev.off()
 
 ##########################################################################
 ### SMALL HEATMAP ###
@@ -121,7 +120,9 @@ sum_corr <- df_small %>%
   group_by(correlation) %>%
   summarise(sum = sum(value))
 
-pdf(file=paste0(pheno,"_mash_small.pdf"), width=5, height=3)
+#pdf(file=paste0(pheno,"_mash_small.pdf"), width=5, height=3)
+setwd("~/Research/GWAS-frontera/mash/heatmaps/png_small")
+png(file=paste0(pheno,"_mash_small.png"), width=5, height=3, units="in", res=200)
 
 print(
 ggplot(df_small, aes(x=magnitude, y= correlation, fill= value)) +
@@ -141,3 +142,4 @@ ggplot(df_small, aes(x=magnitude, y= correlation, fill= value)) +
 dev.off()
 
 }
+

@@ -12,3 +12,9 @@ cd $SCRATCH/ensembl-vep
 
 ##MSG: ERROR: --nearest requires Set::IntervalTree perl module to be installed
 ###export PERL5LIB=$PERL5LIB:$SCRATCH/Annotation/cpanm/lib/perl5
+
+# test
+./vep -i $SCRATCH/Annotation/female_arm_fatfree_mass_L.clumped.ids --dir_cache $SCRATCH/Annotation/cache --cache -o $SCRATCH/Annotation/female_arm_fatfree_mass_L_annotation.txt --force_overwrite \
+--tab --symbol --nearest symbol \
+--pick \
+--fields "Uploaded_variation,Location,Allele,SYMBOL,Gene,NEAREST,Feature,Feature_type,Consequence" --stats_text

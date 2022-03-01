@@ -76,5 +76,7 @@ plink2 --memory 64000 --threads 16 --pfile $pheno_path/ukb_imp_chr6_v3_3 --maf 0
     # # HWE > 1e-10
 plink2 --memory 64000 --threads 16 --pfile $pheno_path/ukb_imp_chr6_v3_4 --hwe 1e-10 --make-pgen --out $pheno_path/ukb_imp_chr6_v3_5
 
+#
 LD_dir=$SCRATCH/1000G/EUR_all_phase3
 plink2 --pfile $LD_dir --rm-dup exclude-all --chr 1-22 --max-alleles 2 --snps-only --exclude test.txt --make-bed --out ${LD_file}_nodup
+

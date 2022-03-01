@@ -14,19 +14,25 @@ get_genotypes <- function(snp_freq) {
 }
 
 setwd("/scratch1/08005/cz5959/QC/MFI/autosome")
-gwas_snps <- read.csv("maf_sample_1700e2.txt", colClasses = 'numeric') ; gwas_snps <- gwas_snps$x
+gwas_snps <- read.csv("maf_sample_20k.txt", colClasses = 'numeric') ; gwas_snps <- gwas_snps$x
 
 setwd("/scratch1/08005/cz5959/simulation")
 genotype_matrix_k <- NULL
-for (i in 1:length(gwas_snps)) {
+snp_list <- c(5,10,15,20)
+
+for (j in snp_list) {
+for (i in (j-4999):(j*1000)) {
   snp <- get_genotypes(gwas_snps[i])    # get allele count for all individuals
   genotype_matrix_k <- suppressMessages(bind_cols(genotype_matrix_k, snp))
-  if (i %% 1000 == 0){
-    print(i)
-    write.table(genotype_matrix_k, file=paste0("simulation_matrix_k_",i,".txt"), sep="\t", row.names=FALSE)
-  }
+  #if (i %% 1000 == 0){
+  #  print(i)
+  #  write.table(genotype_matrix_k, file=paste0("simulation_matrix_k_",i,".txt"), sep="\t", row.names=FALSE)
+  #}
+}
+save(genotype_matrix_k, file=paste0("simulation_matrix_k_",j,"k.RData"))
+write.table(genotype_matrix_k, file="simulation_matrix_k_",j,"k.txt", sep="\t", row.names=FALSE)
 }
 
-setwd("/scratch1/08005/cz5959/simulation")
-write.table(genotype_matrix_k, file="simulation_matrix_k.txt", sep="\t", row.names=FALSE)
-save(genotype_matrix_k, file="simulation_matrix_k.RData")
+#setwd("/scratch1/08005/cz5959/simulation")
+#write.table(genotype_matrix_k, file="simulation_matrix_k.txt", sep="\t", row.names=FALSE)
+#save(genotype_matrix_k, file="simulation_matrix_k.RData")
