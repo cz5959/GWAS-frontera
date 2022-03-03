@@ -1,2 +1,2 @@
-# GWAS-frontera
+# GxSex - in humans
  
