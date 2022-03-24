@@ -59,6 +59,7 @@ x_axis <- function(plot_df) {
 female_df <- edit_df(female_df)
 male_df <- edit_df(male_df)
 axis_df <- x_axis(female_df)
+axis_df$X.CHROM <- c(1:18,"",20,"",22)
 
 pdf(file=paste0(pheno,"_miami.pdf"), width=10, height=4)
 

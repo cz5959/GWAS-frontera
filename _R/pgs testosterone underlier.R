@@ -1,0 +1,119 @@
+library(ggplot2)
+library(ggpubr)
+library(reshape2)
+library(ggsci)
+
+# set up and load in files
+pheno <- "whole_body_fat_mass"
+title <- "Whole body fat mass"
+
+# get PGS scores
+setwd(paste0("~/Research/GWAS-frontera/GWAS_results/",pheno))
+df_both <- read.csv("both_sex_additive_whole_body_fat_mass.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+
+# get phenotype 
+setwd("~/Research/GWAS-frontera/Phenotypes")
+df_testosterone <- read.csv("pheno_testosterone.txt", sep="\t", colClasses = c("NULL","integer","numeric"))
+df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
+df_sex <- read.csv("sex_ids.txt", sep="\t")
+colnames(df_pheno) <- c('IID','pheno')
+
+# merge dataframes - testosterone, sex, pheno, pgs scores f, pgs scores m
+df <- merge(merge(df_testosterone, df_sex, by='IID'), df_pheno, by='IID')
+df <- merge(df,df_both,by='IID')
+# order by testosterone
+df <- df[order(df$testosterone),]
+# label then split by sex
+df$sex[df$sex == 1] <- 'male'
+df$sex[df$sex == 0] <- 'female'
+df_m <- df[df$sex == 'male',]
+df_f <- df[df$sex == 'female',]
+
+# find intercept for overlaps
+f_inter = mean(df_f$testosterone) + 2*sd(df_f$testosterone)
+m_inter = mean(df_m$testosterone) - 2*sd(df_m$testosterone)
+
+# create dataframe with the overlaps
+overlap <- df_m[df_m$testosterone <= m_inter,]
+overlap <- rbind(overlap, df_f[df_f$testosterone >= f_inter,])
+# remove overlapping from the non-overlapping df
+df_m <- df_m[! df_m$IID %in% overlap$IID,]
+df_f <- df_f[! df_f$IID %in% overlap$IID,]
+
+# get lm results from each testosterone bin
+bin_fun <- function(data, n, sex) {
+  intervals = seq(0,nrow(data),nrow(data)/n)
+  cuts <- cut(1:nrow(data), breaks = intervals)
+  results <- NULL
+  for (i in 1:n) {
+    # linear regression
+    bin <- data[cuts == levels(cuts)[i],]
+    model <- lm(paste0("pheno ~ SCORE"), data = bin)
+    beta <- model$coefficients[2]
+    stderror <- summary(model)$coefficients[2,2]
+    T_mean <- mean(bin$testosterone)
+    # correlation
+    corr <- cor.test(bin$pheno, unlist(bin["SCORE"]))
+    corr_est <- corr$estimate
+    corr_error <- corr$conf.int[2] - corr_est
+    results <- rbind(results, data.frame(Testosterone=T_mean, Beta=beta, Error=stderror, Corr=corr_est, Corr_err=corr_error, Sex=sex))
+  }
+  return(results)
+}
+
+# call function for overlap and nonoverlaps
+m_results <- bin_fun(df_m,10,'male')
+f_results <- bin_fun(df_f,10,'female')
+overlap_results_m <- bin_fun(overlap[overlap$sex=='male',],1,'male')
+overlap_results_f <- bin_fun(overlap[overlap$sex=='female',],1,'female')
+overlap_results <- rbind(overlap_results_m, overlap_results_f)
+results <- rbind(m_results, f_results)
+
+# trendlines x range
+m_over <- overlap_results$Testosterone[1]
+f_over <- overlap_results$Testosterone[2]
+x_max <- max(results$Testosterone)
+
+# trendline boundary points
+trend_y <- function(m_model, f_model) {
+  trendline <- NULL
+  m_y1 <- m_model$coefficients[1] + (m_model$coefficients[2] * m_over)
+  m_y2 <- m_model$coefficients[1] + (m_model$coefficients[2] * x_max)
+  f_y1 <- f_model$coefficients[1] + (f_model$coefficients[2] * 0)
+  f_y2 <- f_model$coefficients[1] + (f_model$coefficients[2] * f_over)
+  mp <- summary(m_model)$coefficients[2,4]
+  fp <- summary(f_model)$coefficients[2,4]
+  trendline <- rbind(trendline,data.frame(x1=m_over, x2=x_max, y1=m_y1, y2=m_y2, p=mp, Sex='male'))
+  trendline <- rbind(trendline,data.frame(x1=0, x2=f_over, y1=f_y1, y2=f_y2, p=fp, Sex='female'))
+  return(trendline)
+}
+
+# linear regression for BETA
+trend <- NULL
+result_sub <- results[results$Sex == 'male',]
+male_model <- lm(Beta ~ Testosterone, data=result_sub)
+result_sub <- results[results$Sex == 'female',]
+female_model <- lm(Beta ~ Testosterone, data=result_sub)
+trend <- rbind(trend, trend_y(male_model, female_model))
+text_size = 2.5
+sex_label_y =18000
+setwd("~/Research/GWAS-frontera/Supp Figures/pgs testosterone")
+
+#png(file=paste0(pheno,"_pgs_testosterone.png"), width=3.5, height=2.5, units="in", res=200)
+ggplot(results, aes(x=Testosterone, y=Beta, color=Sex)) +
+  geom_point(size=1.5) +
+  geom_point(data=overlap_results, aes(x=Testosterone, y=Beta), shape=1, stroke=1, size=1.5) +
+  geom_errorbar(aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4) +
+  geom_errorbar(data= overlap_results, aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4) +
+  labs(title=title, x="Testosterone Level (nmol/L)", y="Effect of PGS on Phenotype") +
+  geom_segment(data=trend, aes(x=x1,xend=x2,y=y1,yend=y2)) +
+  theme_classic() + 
+  theme(axis.text = element_text(size=8.5), axis.title = element_text(size=9), 
+        plot.title=element_text(size=11), legend.position= "none", plot.margin = margin(20,20,20,20)) +
+  scale_color_manual(values=c("#d67629","#207335")) +
+  stat_cor(method='pearson', p.accuracy=0.001, label.x.npc=0.55, label.y.npc=0.9, 
+           show.legend=FALSE, size=text_size) +
+  annotate("text", x=1, y=sex_label_y, label="female", color="#d67629", size=text_size) +
+  annotate("text", x=8, y=sex_label_y, label="male", color="#207335", size=text_size)
+dev.off()
+

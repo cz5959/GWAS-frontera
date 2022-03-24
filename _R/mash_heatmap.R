@@ -13,7 +13,6 @@ pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","w
                "hip_circ", "waist_to_hip", "wth_bmi_adj","diastolicBP_auto","systolicBP_auto",
                "albumin", "pulse_rate", "urea", "SHBG", "FVC_best", "HbA1c")
 
-
 for (pheno in pheno_list) {
 #setwd(paste0("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/",pheno))
 setwd(paste0("~/Research/GWAS-frontera/GWAS_Results/",pheno))
@@ -44,39 +43,45 @@ df_ave$Mean <- as.numeric(df_ave$Mean)
 
 effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
 
-setwd("~/Research/GWAS-frontera/mash/heatmaps")
-#pdf(file=paste0(pheno,"_mash_large.pdf"), width=7, height=5)
+#setwd("~/Research/GWAS-frontera/mash/heatmaps")
+#pdf(file=paste0(pheno,"_mash_large.pdf"), width=6.5, height=4.8)
+#setwd("~/Research/GWAS-frontera/mash/heatmaps/png_files")
+#png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.8, units="in", res=300)
+setwd("~/Research/GWAS-frontera/Supp Figures/mash heatmaps")
+png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.5, units="in", res=300)
 
 big <- ggplot(df_ave, aes(x= magnitude, y= correlation, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "black", size= 3.2, vjust=-0.1) +
-  geom_text(aes(label=round(SE,3)), color= "black", size= 2.5, vjust=1.5) +
+  geom_text(aes(label=round(Mean,3)), color= "black", size= 2.6, vjust=-0.1) +
+  geom_text(aes(label=round(SE,3)), color= "black", size= 2, vjust=1.5) +
   scale_y_continuous(breaks=seq(-1,1,0.25), expand=c(0,0)) +
   scale_x_discrete(labels= effect_labels) +
   labs(title="Weights on Hypothesis Covariance Matrices") +
   xlab("Magnitude") + ylab("Correlation") +
   theme_pubclean() +
-  theme(axis.text=element_text(size=10), axis.title = element_text(size=12), plot.title = element_text(size=16), 
+  #theme(axis.text=element_text(size=9), axis.title = element_text(size=11), plot.title = element_text(size=14), 
+   #     legend.position = "none") +
+  theme(axis.text=element_text(size=9), axis.title = element_text(size=11), plot.title = element_blank(), 
         legend.position = "none") +
   scale_fill_gradient(low="gray98",high="#829ed9")
 
 
 small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "white", size= 3.2, vjust=-0.1) +
-  geom_text(aes(label=round(SE,3)), color= "white", size= 2.5, vjust=1.5) +
+  geom_text(aes(label=round(Mean,3)), color= "white", size= 2.6, vjust=-0.1) +
+  geom_text(aes(label=round(SE,3)), color= "white", size= 2, vjust=1.5) +
   scale_y_continuous(expand=c(0,0)) +
   ylab("Weight of \nNo Effect Matrix") +
   theme_pubclean() +
   theme(axis.text=element_blank(), axis.title=element_blank(), 
-        axis.title.y = element_text(size=12, angle=360, vjust=0.5),
+        axis.title.y = element_text(size=10, angle=360, vjust=0.5),
         legend.position = "none",axis.ticks = element_blank(), plot.title = element_blank()) +
   scale_fill_gradient(low="#2b62d9",high="#2b62d9")
 
-lay <- rbind( c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(2,2,3,3,3))
+lay <- rbind( c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(2,2,3,3,3))
 p <- gridExtra::grid.arrange(big, small, ncol=1, layout_matrix=lay)
 
-#dev.off()
+dev.off()
 
 ##########################################################################
 ### SMALL HEATMAP ###
@@ -99,15 +104,15 @@ for (s in c('f','m','e')) {
 df_small <- data.frame(cbind(e[,1], f[,2], e[,2], m[,2])); colnames(df_small) <- c('corr', 'F', 'E', 'M')
 df_small <- data.frame(rbind(
   c('perfect', colSums(df_small[df_small$corr == 1, 2:4])),
-  c('partial, positive', colSums(df_small[(df_small$corr > 0) & (df_small$corr < 1), 2:4])),
+  c('partial,\npositive', colSums(df_small[(df_small$corr > 0) & (df_small$corr < 1), 2:4])),
   c('uncorrelated', colSums(df_small[(df_small$corr == 0), 2:4])),
   c('negative', colSums(df_small[(df_small$corr < 0), 2:4]))
 ))
-colnames(df_small) <- c('corr', 'female > male', 'female = male', 'male > female')
+colnames(df_small) <- c('corr', 'female > male', 'female = male', 'female < male')
 df_small <- melt(df_small, id.vars=c('corr'))
 
-df_small$corr <- factor(df_small$corr, levels = c('negative', 'uncorrelated', 'partial, positive', 'perfect'))
-df_small$variable <- factor(df_small$variable, levels = c('female > male', 'female = male', 'male > female'))
+df_small$corr <- factor(df_small$corr, levels = c('negative', 'uncorrelated', 'partial,\npositive', 'perfect'))
+df_small$variable <- factor(df_small$variable, levels = c('female > male', 'female = male', 'female < male'))
 df_small <- df_small %>% mutate_at(3, as.numeric) %>%
   arrange(corr, variable)
 
@@ -120,24 +125,27 @@ sum_corr <- df_small %>%
   group_by(correlation) %>%
   summarise(sum = sum(value))
 
-#pdf(file=paste0(pheno,"_mash_small.pdf"), width=5, height=3)
-setwd("~/Research/GWAS-frontera/mash/heatmaps/png_small")
-png(file=paste0(pheno,"_mash_small.png"), width=5, height=3, units="in", res=200)
+#pdf(file=paste0(pheno,"_mash_small.pdf"), width=4, height=3)
+#setwd("~/Research/GWAS-frontera/mash/heatmaps/png_files")
+setwd("~/Research/GWAS-frontera/Supp Figures/mash heatmaps")
+png(file=paste0(pheno,"_mash_small.png"), width=3.5, height=2.3, units="in", res=200)
 
 print(
 ggplot(df_small, aes(x=magnitude, y= correlation, fill= value)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=sprintf("%.0f%%", (value*100))), color= "black", size= 3.2) +
-  labs(title="Covariance of Genetic Effects", subtitle = "Compact Representation") +
+  geom_text(aes(label=sprintf("%.0f%%", (value*100))), color= "black", size= 2.5) +
+  labs(title="Covariance of Genetic Effects: Compact Representation") +
   xlab("Magnitude") + ylab("Correlation") +
   theme_pubclean() +
-  theme(axis.text=element_text(size=10), axis.title = element_text(size=12),
-        plot.title = element_text(size=16, hjust=0.5), plot.subtitle = element_text(size=14, hjust=0.5),
-        legend.position = "none") +
+ # theme(axis.text=element_text(size=9), axis.title = element_text(size=10, hjust=0.5),
+#        plot.title = element_text(size=11, hjust=1), legend.position = "none") +
+  theme(axis.text=element_text(size=8), axis.title = element_text(size=9, hjust=0.5),
+        plot.title = element_blank(), legend.position = "none") +
+  scale_x_discrete(position="top") +
   scale_fill_gradient(low="gray98",high="#829ed9") + 
-  annotate("text", x=1:3, y = 4.6, size = 3.6, label = sprintf("%.0f%%", (sum_mag$sum*100))) +
-  annotate("text", x = 3.65, y=1:4, size = 3.6, label = sprintf("%.0f%%", (sum_corr$sum*100))) +
-  coord_cartesian(xlim=c(1,3.15), ylim=c(1,4.1), clip="off")
+  annotate("text", x=1:3, y = 0.4, size = 2.8, label = sprintf("%.0f%%", (sum_mag$sum*100))) +
+  annotate("text", x = 3.65, y=1:4, size = 2.8, label = sprintf("%.0f%%", (sum_corr$sum*100))) +
+  coord_cartesian(xlim=c(1,3.15), ylim=c(0.9,3.9), clip="off")
 )
 dev.off()
 

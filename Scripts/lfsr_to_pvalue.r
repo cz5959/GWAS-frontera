@@ -9,6 +9,7 @@ option_list = list(
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
+pheno <- opt$pheno; print(pheno)
 
 # load mash lfsr and pm results
 wd <- paste0("/scratch1/08005/cz5959/GWAS_Results/",pheno,"/mash")

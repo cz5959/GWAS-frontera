@@ -147,6 +147,7 @@ p + geom_text(data=f_text, x = 0.8, y = 11500, color="#d67629", aes(label=label)
 #dev.off()
 
 ########## 
+### for final paper
 results_both <- results[results$Type == "both",]
 trend_both <- trend[trend$Type == "both",]
 overlap_results_both <- overlap_results[overlap_results$Type == "both",]

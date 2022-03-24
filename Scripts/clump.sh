@@ -42,9 +42,10 @@ sed 's/ \+/\t/g' $FILE/female_${1}.clumped | cut -f2-7 > $FILE/female_${1}_tab.c
 sed 's/ \+/\t/g' $FILE/male_${1}.clumped | cut -f2-7 > $FILE/male_${1}_tab.clumped
 
 
-#### 
+#### annotation
 PHENO="arm_fatfree_mass_L"
 sex="female"
 FILE=$SCRATCH/GWAS_Results/$PHENO
 LD=$SCRATCH/1000G/all_phase3
 plink --bfile $LD --clump-p1 5e-8 --clump-r2 0.1 --clump-kb 250 --clump $FILE/${sex}_all.${PHENO}.glm.linear --clump-snp-field ID --clump-field P --out $FILE/${sex}_$PHENO
+sed 's/ \+/\t/g' $FILE/${sex}_${PHENO}.clumped | cut -f2 > $FILE/${sex}_${PHENO}.clumped.ids
