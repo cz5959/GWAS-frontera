@@ -63,45 +63,45 @@ get_slope <- function(data) {
   return(slope_row)
 }
 
-corrs_result <- NULL
-slope_result <- NULL
-for (pheno in pheno_list) {
-  print(pheno)
-  # phenotype
-  setwd("~/Research/GWAS-frontera/Phenotypes")
-  df_testosterone <- read.csv("pheno_testosterone.txt", sep="\t", colClasses = c("NULL","integer","numeric"))
-  df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
-  df_sex <- read.csv("sex_ids.txt", sep="\t")
-  colnames(df_pheno) <- c('IID','pheno')
-  
-  # PGS scores
-  setwd(paste0("~/Research/GWAS-frontera/GWAS_results/",pheno))
-  file_name <- list.files(pattern="both_sex_additive_")
-  df_both <- read.csv(file_name,sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-  
-  # merge dataframes
-  df <- merge(merge(df_testosterone, df_sex, by='IID'), df_pheno, by='IID')
-  df <- merge(df,df_both,by='IID')
-  
-  # order by testosterone
-  df <- df[order(df$testosterone),]
-  # label then split by sex
-  df$sex[df$sex == 1] <- 'male'
-  df$sex[df$sex == 0] <- 'female'
-  df_m <- df[df$sex == 'male',]
-  df_f <- df[df$sex == 'female',]
-  
-  # call function to get betas for each bin
-  m_results <- bin_fun(df_m,10,'male')
-  f_results <- bin_fun(df_f,10,'female')
-  results <- rbind(m_results, f_results)
-
-  # correlation between Beta and testosterone
-  corrs_result <- rbind(corrs_result, get_corr(results))
-  # slope between Beta and testosterone
-  slope_result <- rbind(slope_result, get_slope(results))
-}
-# save corr and slope files
+# corrs_result <- NULL
+# slope_result <- NULL
+# for (pheno in pheno_list) {
+#   print(pheno)
+#   # phenotype
+#   setwd("~/Research/GWAS-frontera/Phenotypes")
+#   df_testosterone <- read.csv("pheno_testosterone.txt", sep="\t", colClasses = c("NULL","integer","numeric"))
+#   df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
+#   df_sex <- read.csv("sex_ids.txt", sep="\t")
+#   colnames(df_pheno) <- c('IID','pheno')
+#   
+#   # PGS scores
+#   setwd(paste0("~/Research/GWAS-frontera/GWAS_results/",pheno))
+#   file_name <- list.files(pattern="both_sex_additive_")
+#   df_both <- read.csv(file_name,sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+#   
+#   # merge dataframes
+#   df <- merge(merge(df_testosterone, df_sex, by='IID'), df_pheno, by='IID')
+#   df <- merge(df,df_both,by='IID')
+#   
+#   # order by testosterone
+#   df <- df[order(df$testosterone),]
+#   # label then split by sex
+#   df$sex[df$sex == 1] <- 'male'
+#   df$sex[df$sex == 0] <- 'female'
+#   df_m <- df[df$sex == 'male',]
+#   df_f <- df[df$sex == 'female',]
+#   
+#   # call function to get betas for each bin
+#   m_results <- bin_fun(df_m,10,'male')
+#   f_results <- bin_fun(df_f,10,'female')
+#   results <- rbind(m_results, f_results)
+# 
+#   # correlation between Beta and testosterone
+#   corrs_result <- rbind(corrs_result, get_corr(results))
+#   # slope between Beta and testosterone
+#   slope_result <- rbind(slope_result, get_slope(results))
+# }
+# # save corr and slope files
 setwd("~/Research/GWAS-frontera/Phenotypes")
 #write.table(corrs_result, file="pgs_testosterone_corr.txt", sep="\t", row.names=FALSE)
 #write.table(slope_result, file="pgs_testosterone_slope.txt", sep="\t", row.names=FALSE)
@@ -130,26 +130,28 @@ colnames(corrs_result)
 # corrs_result$Phenotype <- rep(new_pheno, each=2)
 
 # corr plot scatter
+# 90% confidence interval --> mean +/- 1.645*SE ; z-score=1.645
 rects <- data.frame(xstart = seq(0.5,26.5,1), xend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))
 rects <- rects[1:26,]
 plot <- ggplot(corrs_result, aes(x= reorder(Phenotype, est_diff), y=Est, color=Sex)) +
   geom_hline(yintercept = 0, linetype="dashed", alpha=0.5) +
   geom_point(size=2, position=position_dodge(width=0.7)) +
-  geom_errorbar(aes(ymin=Est-Err, ymax=Est+Err), alpha= 0.6, width=0.5, position=position_dodge(width=0.7)) +
-  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.4,ymax=1.1), 
+  geom_errorbar(aes(ymin=Est-(1.645*Err), ymax=Est+(1.645*Err)), alpha= 0.6, width=0.5, position=position_dodge(width=0.7)) +
+  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.7,ymax=1.15), 
             inherit.aes = FALSE, alpha=0.2, fill = c(rep(c("grey","white"),13))) +
-  scale_y_continuous(expand=c(0,0)) + 
   labs(title=paste0("Correlation Between Phenotype~PGS \nand Testosterone Levels"), 
        y="R - Correlation between Testosterone Level and \nEffect of Polygenic Score on Phenotype") +
+  scale_y_continuous(expand=c(0,0), breaks=seq(-1.5,1,0.5)) +
   theme_classic() + 
   theme(axis.text = element_text(size=10), axis.title = element_blank(), plot.title=element_blank(),
-        #plot.title=element_text(size=12), legend.title=element_text(size=12), legend.text=element_text(size=10)
         legend.position = "none") +
   scale_color_manual(values=c("#d67629","#207335")) +
   coord_flip()
-
 annotate_figure(plot, 
                 bottom = text_grob("R - Correlation between Testosterone Level and \nEffect of Polygenic Score on Phenotype", size=12))
+
+
+
 
 # corr plot bar
 rects <- data.frame(xstart = seq(0.5,26.5,1), xend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))

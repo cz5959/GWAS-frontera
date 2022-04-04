@@ -7,10 +7,11 @@ library(ggsci)
 setwd("~/Research/GWAS-frontera/PGS")
 
 df <- read.csv("pgs_linear_results_five.txt", sep="\t")
+head(df)
 # inc r2
-#df <- df[c(-3,-4,-7,-8,-11,-12)]
+df <- df[c(-3,-4,-7,-8,-11,-12)]
 # r2
-df <- df[c(-5,-6,-9,-10,-13,-14)]
+#df <- df[c(-5,-6,-9,-10,-13,-14)]
 df$Sex[df$Sex == 'male'] <- 'm'
 df$Sex[df$Sex == 'female'] <- 'f'
 
@@ -32,19 +33,18 @@ melt_out <- function(df) {
 df_sep <- melt_out(df_sep)
 df_combined <- melt_out(df_combined)
 
-# formate df_combined for analysis
-df_combined = dcast(df_combined, Phenotype ~ r2_var, value.var="r2_val")
-#write.table(df_combined, file = "combined_r2.txt", sep="\t", row.names=FALSE, quote = FALSE)
-
-head(df_combined)
-# ttest for difference between additive and mash
-df_add <- df_combined[df_combined$r2_var == "_r2", c(1,2)]
-df_mash <- df_combined[df_combined$r2_var == "m_r2",c(1,4)]
-df_add <- df_add %>%
-  mutate(mean_diff = r2_val - df_mash$r2_val) %>%
-  mutate(se_diff = sqrt((df_add$r2_se_val)^2 + (df_mash$r2_se_val)^2) ) %>%
-  mutate(ttest = mean_diff - se_diff) 
-#write.table(df_add, file = "combined_diff.text", sep="\t", row.names=FALSE, quote = FALSE)
+# # formate df_combined for analysis
+# df_combined = dcast(df_combined, Phenotype ~ r2_var, value.var="r2_val")
+# #write.table(df_combined, file = "combined_r2.txt", sep="\t", row.names=FALSE, quote = FALSE)
+# head(df_combined)
+# # ttest for difference between additive and mash
+# df_add <- df_combined[df_combined$r2_var == "_r2", c(1,2)]
+# df_mash <- df_combined[df_combined$r2_var == "m_r2",c(1,4)]
+# df_add <- df_add %>%
+#   mutate(mean_diff = r2_val - df_mash$r2_val) %>%
+#   mutate(se_diff = sqrt((df_add$r2_se_val)^2 + (df_mash$r2_se_val)^2) ) %>%
+#   mutate(ttest = mean_diff - se_diff) 
+# #write.table(df_add, file = "combined_diff.text", sep="\t", row.names=FALSE, quote = FALSE)
 
 # separated plot, r2
 rects <- data.frame(xstart = seq(0.5,55.5,1), xend = seq(1.5,56.5,1))
@@ -79,10 +79,10 @@ p <- ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
 p
 #dev.off()
 
-## combined plot, edited
+## combined plot, edited 3SE
 ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
   geom_bar(position='dodge',stat='identity') +
-  geom_errorbar(aes(ymin=r2_val-r2_se_val, ymax=r2_val+r2_se_val), alpha= 0.8, 
+  geom_errorbar(aes(ymin=r2_val-3*r2_se_val, ymax=r2_val+3*r2_se_val), alpha= 0.8, 
                 show.legend = FALSE, position='dodge', stat='identity', size=0.2) +
   scale_y_continuous(expand = c(0,0)) +
   labs(title='PGS Comparison', subtitle = "Combined Models", y="Incremental R2", fill="Model") +

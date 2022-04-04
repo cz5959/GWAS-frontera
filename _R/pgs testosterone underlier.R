@@ -4,12 +4,16 @@ library(reshape2)
 library(ggsci)
 
 # set up and load in files
-pheno <- "whole_body_fat_mass"
-title <- "Whole body fat mass"
+pheno <- "wth_bmi_adj"
+title <- "Waist:hip (bmi adjusted)"
 
 # get PGS scores
 setwd(paste0("~/Research/GWAS-frontera/GWAS_results/",pheno))
-df_both <- read.csv("both_sex_additive_whole_body_fat_mass.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+#df_both <- read.csv("both_sex_additive_whole_body_fat_mass.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+
+df_male <- read.csv("male_additive_wth_bmi_adj.0.01.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+df_female <- read.csv("female_additive_wth_bmi_adj.1e-5.profile",sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
+df_both <- merge(df_male,df_female, by="IID")
 
 # get phenotype 
 setwd("~/Research/GWAS-frontera/Phenotypes")
@@ -21,6 +25,10 @@ colnames(df_pheno) <- c('IID','pheno')
 # merge dataframes - testosterone, sex, pheno, pgs scores f, pgs scores m
 df <- merge(merge(df_testosterone, df_sex, by='IID'), df_pheno, by='IID')
 df <- merge(df,df_both,by='IID')
+
+df$SCORE <- ifelse(df$sex == 1, df$SCORE.x, df$SCORE.y)
+df <- df[-c(5,6)]
+
 # order by testosterone
 df <- df[order(df$testosterone),]
 # label then split by sex
@@ -96,10 +104,10 @@ result_sub <- results[results$Sex == 'female',]
 female_model <- lm(Beta ~ Testosterone, data=result_sub)
 trend <- rbind(trend, trend_y(male_model, female_model))
 text_size = 2.5
-sex_label_y =18000
+sex_label_y =8000
 setwd("~/Research/GWAS-frontera/Supp Figures/pgs testosterone")
 
-#png(file=paste0(pheno,"_pgs_testosterone.png"), width=3.5, height=2.5, units="in", res=200)
+png(file=paste0(pheno,"_pgs_testosterone_sexspecific.png"), width=3.5, height=2.5, units="in", res=200)
 ggplot(results, aes(x=Testosterone, y=Beta, color=Sex)) +
   geom_point(size=1.5) +
   geom_point(data=overlap_results, aes(x=Testosterone, y=Beta), shape=1, stroke=1, size=1.5) +
