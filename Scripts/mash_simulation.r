@@ -1,10 +1,13 @@
 #!/usr/bin/env Rscript
 
 # TEST ENVIRONMENTAL VARIANCE IN MASH
-library(ashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
-library(mashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
+library(optparse, lib.loc="/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/")
+library(ashr, lib.loc="/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/")
+library(mashr, lib.loc="/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/")
 
-snp_nums <- c(10000)
+setwd("/scratch/08005/cz5959/simulation/results")
+
+snp_nums <- c(100, 1000, 10000)
 E_ratios <- c(1,1.5,5)
 h2s <- c(0.05,0.1,0.5)
 for (snp_num in snp_nums) {

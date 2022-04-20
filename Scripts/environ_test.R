@@ -4,7 +4,7 @@
 library(optparse, lib.loc="/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/")
 library(ashr, lib.loc="/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/")
 library(mashr, lib.loc="/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/")
-setwd("/scratch/08005/cz5959/QC/MFI/autosome")
+setwd("/scratch/08005/cz5959/MFI")
 
 # parameters
 option_list = list(
@@ -41,7 +41,7 @@ Beta <- rnorm(snp_num, mean=0, sd=1)
 
 # get environmental effect
 get_environment <- function(h2, E_ratio) {
-  var_G <- (Beta^2) * snp_freqs * (1-snp_freqs)   # genetic variance
+  var_G <- (Beta^2) * 2 * snp_freqs * (1-snp_freqs)   # genetic variance
   var_E_m <- (var_G * (1-h2)) / h2          # environmental variance (males)
   var_E_f <- var_E_m * E_ratio              # environmental variance for female based on proportion
   E <- NULL

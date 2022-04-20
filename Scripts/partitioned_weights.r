@@ -11,7 +11,7 @@ opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 pheno <- opt$pheno; print(pheno)
 
-# load cell type list
+# load cell type list - list of all SNPs and membership (0/1) in cell type groups 1-10
 setwd("/scratch1/08005/cz5959/LD_practice/Partitioned/celltype_to_snp")
 snp_df <- read.csv("celltype_all.txt", sep="\t", colClasses=c(rep("integer",12)))
 
@@ -28,7 +28,7 @@ df <- read.csv(paste0(pheno,"_mash_weights.txt"),sep="\t",nrow=1)
 num <- length(df)
 
 get_weight <- function(df) {
-    # combine position with df
+    # combine position with section of mash weights
     df <- data.frame( cbind(pos_df, df) )   
     # combine weights with cell groups
     df <- df %>%
@@ -37,9 +37,9 @@ get_weight <- function(df) {
     # group by cell type, get mean of each weight
     final_grouped <- data.frame(matrix(ncol=6,nrow=0))
     for (i in 1:10) {
-        grouped_df <- df %>%
+        grouped_df <- df %>%                # group by cell type
             group_by(across(5+i)) %>%
-            summarise(across(c(1:5), list(sum)))
+            summarise(across(c(1:5), list(sum)))        # sum weights for each matrix across the SNPs in the cell type
         grouped_df <- data.frame(grouped_df)
         final_grouped[nrow(final_grouped)+1,] <- grouped_df[2,] 
     }

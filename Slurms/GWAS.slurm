@@ -28,3 +28,19 @@ do
         ./Manhattan_plot.py $i
         ./QQ_plot.R $i
 done
+
+script="Association_script.sh"
+./$script -p albumin & ./$script -p arm_fatfree_mass_L & ./$script -p arm_fatfree_mass_R & ./$script -p bmi & ./$script -p calcium &
+./$script -p creatinine & ./$script -p diastolicBP_auto & ./$script -p eosinophil_perc & ./$script -p FVC_best & ./$script -p HbA1c &
+./$script -p height & ./$script -p hip_circ & ./$script -p IGF1 & ./$script -p lymphocyte_perc & ./$script -p protein_total &
+./$script -p pulse_rate & ./$script -p RBC_count & ./$script -p SHBG & ./$script -p systolicBP_auto & ./$script -p testosterone &
+./$script -p urate & ./$script -p urea & ./$script -p waist_circ & ./$script -p waist_to_hip & ./$script -p weight &
+./$script -p whole_body_fat_mass & ./$script -p wth_bmi_adj &
+wait 
+echo done 
+
+
+PATTERN="*_pm.txt"
+if ls $PATTERN 1> /dev/null 2>&1; then
+    echo "Files exist"
+fi

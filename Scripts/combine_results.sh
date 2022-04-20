@@ -18,7 +18,7 @@ do
     # move to directory with linear result files
     cd $FILE_PATH/$sex
     # pipeline: concatenate results vertically | remove header | remove NA rows | add header 
-    cat *.linear | awk '$1 !~ /^#CHROM/' - | awk '!/'NA'/' - | { printf $HEADER; cat - ; } > $PGS_dir/${sex}_all.${PHENO}.glm.linear
+    cat *.linear | awk '$1 !~ /^#CHROM/' - | awk '!/'NA'/' - | { printf $HEADER; cat - ; } > $FILE_PATH/${sex}_all.${PHENO}.glm.linear
 done
 
 

@@ -44,3 +44,9 @@ do
     done
 done
 
+# get list of enrichments and se
+cd $LD_FILE/celltypes
+grep L2_1 ./*_female_*.results | cut -f1,5,6 - > ${PHENO}_female_celltype_enrichment.txt
+grep "Total Observed scale h2:" ./*female*.log > ${PHENO}_female_celltype_h2.txt
+grep L2_1 ./*_male_*.results | cut -f1,5,6 - > ${PHENO}_male_celltype_enrichment.txt
+grep "Total Observed scale h2:" ./*_male*.log > ${PHENO}_male_celltype_h2.txt

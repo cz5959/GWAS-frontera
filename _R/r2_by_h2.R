@@ -25,8 +25,8 @@ df <- df %>%
 df <- df[df$Sex != 'both_sex', c(1,3,6,8,9)]
 f <- df[df$Sex == 'female',]
 m <- df[df$Sex == 'male',]
-f[f$Code == "arm_fatfree_mass_R",]
 df <- data.frame(Code = f$Code, Correlation = f$Correlation, h2_diff = abs(f$relative_h2 - m$relative_h2))
+## heritability difference
 model <- cor.test(df$Correlation, df$h2_diff)
 df
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # set up environment
-cd /scratch1/08005/cz5959/ldsc 
+cd /scratch/08005/cz5959/ldsc 
 source activate ldsc
 
 # cmd line argument - phenotype
