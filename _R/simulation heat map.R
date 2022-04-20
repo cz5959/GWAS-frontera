@@ -7,27 +7,28 @@ require("ggsci")
 require("ggpubr")
 require("gridExtra")
 
+unique(results$ANC)
+
 # get covariance matrice names
 pheno <- "height"
 setwd("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/height")
 df_names <- read.csv(paste0(pheno,"mixprop_100_all.txt"), sep="\t")
 mix <- df_names$mix_0; remove(df_names)
 
-### simulation
+### SIMULATION 
 setwd("~/Research/GWAS-frontera/mash/simulation/actual")
 
 # get simulation mixture weight dataframe
 get_df <- function(snps,h,e_ratio) {
   df <- read.csv(paste0(snps,"_",h,"_",e_ratio,".txt"), sep="\t")
-  df <- data.frame(cbind(0, df$x))   # combine names with dataframe
-  colnames(df) <- c("Name", "Mean")
-  df_values <- df
-  
-  # split matrice names
-  df_values <- df_values %>%
+  df <- data.frame(cbind(mix, df$x))   # combine names with dataframe
+
+    # split matrice names
+  df <- df %>%
+    rename(Name=mix, Mean=V2) %>%
     separate(Name, c("sex","correlation","effect"), sep="[_]", fill="right") %>%
     mutate(effect = paste0(sex, effect))
-  return(df_values)
+  return(df)
 }
 
 # order magnitude into factors, order by correlation and magnitude
@@ -40,23 +41,24 @@ prepare_df <- function(df) {
 
 ##################################
 # split between null and values
-#snp_list <- c(100,1000,10000)
-snp <- "100"
-#h_list <- c("0.05","0.1","0.5")
-h <- "0.5"                             
+#list <- c(100,1000,10000)
+snp <- "10000"
+#list <- c("0.05","0.1","0.5")
+h <- "0.05"                             
 #e_ratio <- "1"   
-e_ratio_list <- c("1","1.5","5")
+list <- c("1","1.5","5")
 
-#for (snp in snp_list) {
-#for (h in h_list) {
-for (e_ratio in e_ratio_list) {
-  df_values <- get_df(snp, h, e_ratio)
+for (snp in c(100,1000,10000)) {
+
+for (h in c("0.05","0.1","0.5")) {
+
+for (l in list) {
+  setwd("~/Research/GWAS-frontera/mash/simulation/actual")
+  df_values <- get_df(snp, h, l)
   ave <- prepare_df(df_values[2:nrow(df_values),c(2,3,4)])
   null <- prepare_df(df_values[1,c(2,3,4)])
   null$Mean <- as.numeric(null$Mean) ; ave$Mean <- as.numeric(ave$Mean)
-  #if (snp == snp_list[1]) {
-  #if (h == h_list[1]) {
-  if (e_ratio == e_ratio_list[1]) {
+  if (l == list[1]) {
     df_ave <- ave ; df_null <- null
   } else {
     df_ave <- cbind(df_ave, ave$Mean) 
@@ -67,45 +69,65 @@ for (e_ratio in e_ratio_list) {
 # rename dataframe columns
 #colnames(df_ave) <- c('correlation','effect',sprintf("snps_%s",snp_list))
 #colnames(df_ave) <- c('correlation','effect',sprintf("h2_%s",h_list))
-colnames(df_ave) <- c('correlation','effect',sprintf("E_ratio_%s",e_ratio_list))
+colnames(df_ave) <- c('correlation','effect',sprintf("Environmental Variance Ratio: %s",list))
 
 # filter out weights that are 0 throughout snp numbers
 df_ave <- df_ave %>% 
-#  filter(snps_100+snps_1000+snps_10000 !=0) %>% 
-  melt(id.vars=c('correlation','effect'))
+  melt(id.vars=c('correlation','effect')) %>%
+  mutate(label = ifelse(value<0.0005,"0%",sprintf("%.1f%%", (value*100)) )) %>%
+  mutate(text_color = ifelse(value<0.0005, "a", "b"))
 
-#df_null$parameter <- snp_list
-#df_null$parameter <- h_list
-df_null$parameter <- e_ratio_list
+df_null$parameter <- list
 
+effect_labels <- c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
+
+## PLOT
+# plot name 
+setwd("~/Research/GWAS-frontera/Supp Figures/simulation")
+pname <- paste0("env_s",snp,"_h",h)
+
+# big 8 x 7
+#pdf(file=paste0(pname,".pdf"), width=7, height=8)
 big <- ggplot(df_ave, aes(x= effect, y= correlation, fill= value)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(value,3)), color= "white", size= 4) +
+  geom_text(aes(label=label, color=text_color), size= 3.3) +
   scale_y_continuous(breaks=seq(-1,1,0.25)) +
-  theme_pubclean() +
-  theme(axis.text=element_text(size=12), legend.position = "none", 
-        plot.title = element_text(size=16), axis.title = element_text(size=14)) +
-  labs(title="Weights of Hypothesis Matrices", x="Magnitude", y = "Correlation") +
-  scale_fill_material("blue-grey") +
-  facet_wrap(~variable,ncol=3)
+  scale_x_discrete(labels= effect_labels) +
+  theme_classic() +
+  theme(axis.text=element_text(size=10), legend.position = "none", 
+        plot.title = element_text(size=14), axis.title = element_text(size=12),
+        axis.line = element_blank(), 
+        strip.text = element_text(hjust=0.1, size=11), strip.background = element_rect(linetype = 0)) +
+  labs(title="Simulated Weights on Hypothesis Matrices", x="Magnitude", y = "Correlation") +
+  scale_color_manual(values = c("gray70","black")) +
+  scale_fill_gradient(low="gray98",high="#829ed9") + 
+  facet_wrap(~variable,ncol=1) 
+#print(big)
+#dev.off()
 
-
+# small 3 x 3
+pdf(file=paste0(pname,"_noeffect.pdf"), width=3, height=3)
 small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
-  geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "white", size= 4) +
+  geom_tile(color= "white", lwd= 1.5, linetype= 1, fill="#829ed9") +
+  geom_text(aes(label=sprintf("%.0f%%", (Mean*100))), color= "black", size= 3.4) +
   scale_y_continuous(expand=c(0,0)) +
   labs(title="Weight of No Effect Matrice") +
-  theme_pubclean() +
+  theme_void() +
   theme(axis.text=element_blank(), axis.title=element_blank(), legend.position = "none",
-        axis.ticks = element_blank(), plot.title = element_text(size=10)) +
-  scale_fill_material("blue-grey") +
-  facet_wrap(~parameter, ncol=3) +
+        axis.ticks = element_blank(), plot.title = element_text(size=10), plot.margin = margin(10,20,10,20)) +
+  scale_fill_continuous(limits=c(0,100)) +
+  #scale_fill_gradient(low="gray98",high="#829ed9") + 
+  facet_wrap(~parameter, ncol=1) +
   labs(caption= paste0("# causal SNPs = ",snp,"\n",
                        "heritability = ", h, "\n"
                        #, "Environmental Variance Ratio = ",e_ratio
                        ))
+print(small)
+dev.off()
 
-lay <- rbind( c(1,1,1,1), c(1,1,1,1), c(1,1,1,1), c(3,3,3,3))
-p <- gridExtra::grid.arrange(big, small, ncol=1, layout_matrix=lay)
+}
+}
+#lay <- rbind( c(1,1,1,3), c(1,1,1,3), c(1,1,1,3), c(1,1,1,3))
+#p <- gridExtra::grid.arrange(big, small, ncol=2, layout_matrix=lay)
 
 

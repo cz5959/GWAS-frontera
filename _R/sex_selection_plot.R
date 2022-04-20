@@ -18,15 +18,19 @@ azj <- results[results$ANC == "Ashkenazi Jewish",]
 fin <- results[results$ANC == "Finnish",]
 nfe <- results[results$ANC == "Non-Finnish European",]
 
+# calc ancestry zmean mean
+head(resultsi)
+
 ### FST PLOT
 # size 3x4
 f1 <- ggplot(wbfm, aes(x=V, y=FST, weight=w)) +
   geom_point(color = "black", alpha= 0.1, size=1) +
   geom_smooth(method = "lm", se=F, color= "blue", size=0.5) +
   theme_classic() +
-  scale_y_continuous(breaks=c(0,0.003), labels=c("","3e-3")) +
-  scale_x_continuous(breaks=c(0,0.006), labels=c("","6e-3")) +
-  theme(axis.title=element_blank(), axis.text=element_text(size=8))
+  scale_y_continuous(breaks=c(0,0.0015,0.003), labels=c("0","2e-3","3e-3")) +
+  scale_x_continuous(breaks=c(0,0.003,0.006), labels=c("0","3e-3","6e-3")) +
+  xlab("VGxSex (kg2)") +
+  theme(axis.title.y=element_blank(), axis.title.x=element_text(size=10), axis.text=element_text(size=8))
 f1
 
 
@@ -34,9 +38,9 @@ f2 <- ggplot(waist, aes(x=V, y=FST, weight=w)) +
   geom_point(color = "black", alpha= 0.1, size=1) +
   geom_smooth(method = "lm", se=F, color= "red", size=0.5) +
   theme_classic() +
-  scale_y_continuous(breaks=c(0,0.0015), labels=c("","1.5e-3")) +
-  scale_x_continuous(breaks=c(0,0.0075), labels=c("","7.5e-3")) +
-  xlab("VGxSex") +
+  scale_y_continuous(breaks=c(0,0.00075, 0.0015), labels=c("0","7.5e-4","1.5e-3")) +
+  scale_x_continuous(breaks=c(0,0.004,0.008), labels=c("0","4e-3","8e-3")) +
+  xlab("VGxSex (cm2)") +
   theme(axis.title.y=element_blank(), axis.title.x=element_text(size=10), axis.text=element_text(size=8))
 f2
 
@@ -49,13 +53,14 @@ annotate_figure(fplot,
 
 head(results)
 ### ZSCORE PLOT
-# size 6x7
+# size 6x8
 ggplot(results, aes(x=ZMEAN, y=TRAIT)) +
   geom_point(size=1) +
-  geom_errorbarh(aes(xmin=ZMEAN-ZSE, xmax=ZMEAN+ZSE), height=0.3, size=0.3) +
+  geom_errorbarh(aes(xmin=CILOWER, xmax=CIUPPER), height=0.3, size=0.3) +
   geom_vline(xintercept = 0, linetype="longdash", color="#563f61", alpha=0.5, size=0.3) +
-  geom_vline(data = resultsi, aes(xintercept = ANCMEAN[1]), linetype="dashed", color="#b02e38", alpha=0.5, size=0.3) +
-  facet_wrap(~ANC,ncol=3, scale="free_x") +
+  geom_vline(data = resultsi, aes(xintercept = ANCMEAN), linetype="dashed", color="#b02e38", alpha=0.5, size=0.3) +
+  coord_cartesian(xlim=c(-2,5)) +
+  facet_wrap(~ANC,ncol=3) +
   theme_classic() +
   xlab("Z-score for Sexually-Antagonistic Selection") +
   theme(axis.title=element_text(size=12), axis.text=element_text(size=9),

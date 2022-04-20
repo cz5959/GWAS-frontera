@@ -35,7 +35,7 @@ random_subset <- function(seed=1) {
     #unique_groups <- sample(unique(LD_groups_subset$group))
     #while (length(random) <= 1703) {
     #    for (i in unique_groups) {
-    #        if (length(random) > 1703) {
+    #        if (length(random) = 1703) {
     #            break
     #        }
     #        sample_subset <- LD_groups_subset[LD_groups_subset$group == i, 'index']
@@ -84,6 +84,7 @@ thresholds <- [1, 5e-2, 1e-5, 5e-8]
 for (p in thresholds) {
     LD_groups_subset <- LD_groups[LD_groups$P.x < 5e-2 | LD_groups$P.y < 5e-2,]
     random <- random_subset()
+    print(nrow(random))
     m <- fit_mash(random)
     write.table(m, file=paste0(pheno,"_",as.character(p),".txt"), sep="\t", row.names=FALSE, quotes=FALSE)
 }

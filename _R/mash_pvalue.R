@@ -139,7 +139,7 @@ mag_all <- mag_list %>%
 # PLOT
 # pdf 3x4
 colors <- c("#d1b724", "#563f61", "#b0464f", "#2b62d9")
-pdf(file=paste0(pheno,"_corr_same.pdf"), width=4, height=3)
+#pdf(file=paste0(pheno,"_corr_same.pdf"), width=4, height=3)
 corr_plot <- 
   ggplot(corr_all, aes(x=threshold, y=weight*100, fill=correlation)) +
   geom_bar(position="stack", stat="identity") +
@@ -149,7 +149,7 @@ corr_plot <-
   scale_fill_manual(values = colors) +
   theme(axis.title=element_text(size=11), axis.text=element_text(size=9))
 print(corr_plot)
-dev.off()
+#dev.off()
 
 colors <- c("#d67629", "#829ed9", "#207335")
 pdf(file=paste0(pheno,"_mag_same.pdf"), width=4, height=3)

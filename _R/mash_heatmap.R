@@ -14,6 +14,8 @@ pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","w
                "albumin", "pulse_rate", "urea", "SHBG", "FVC_best", "HbA1c")
 
 for (pheno in pheno_list) {
+  
+  pheno <- 'testosterone'
 #setwd(paste0("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/",pheno))
 setwd(paste0("~/Research/GWAS-frontera/GWAS_Results/",pheno))
 
@@ -22,7 +24,6 @@ df <- read.csv(paste0(pheno,"mixprop_100_all.txt"), sep="\t")
 # get mean and sem (NOT SIM)
 df_values <- data.frame( Name = df$mix_0, Mean = rowMeans(df[2:101]), 
                          SE = rowSds(as.matrix(df[2:101])) / sqrt(length(colnames(df)) - 1) )
-
 # split matrice names
 df_values <- df_values %>%
   separate(Name, c("sex","correlation","magnitude"), sep="[_]", fill="right") %>%
@@ -38,8 +39,15 @@ prepare_df <- function(df) {
 # split between null and values
 df_ave <- prepare_df(df_values[2:nrow(df_values),c(2,3,4,5)])
 df_null <- prepare_df(df_values[1,c(2,3,4,5)])
-df_null$Mean <- as.numeric(df_null$Mean)
-df_ave$Mean <- as.numeric(df_ave$Mean)
+df_null <- df_null %>% 
+  mutate(Mean = as.numeric(Mean)) %>%
+  mutate(mean_lab = ifelse(Mean < 0.0005, "0%", sprintf("%.1f%%", round(Mean*100,1)) )) %>%
+  mutate(se_lab = ifelse(SE < 0.0005, "0%", sprintf("%.1f%%", round(SE*100,1)) ))
+
+df_ave <- df_ave %>% 
+  mutate(Mean = as.numeric(Mean)) %>%
+  mutate(mean_lab = ifelse(Mean < 0.0005, "0%", sprintf("%.1f%%", round(Mean*100,1)) )) %>%
+  mutate(se_lab = ifelse(SE < 0.0005, "0%", sprintf("%.1f%%", round(SE*100,1)) ))
 
 effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
 
@@ -48,12 +56,13 @@ effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5',
 #setwd("~/Research/GWAS-frontera/mash/heatmaps/png_files")
 #png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.8, units="in", res=300)
 setwd("~/Research/GWAS-frontera/Supp Figures/mash heatmaps")
-png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.5, units="in", res=300)
+#png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.5, units="in", res=300)
+
 
 big <- ggplot(df_ave, aes(x= magnitude, y= correlation, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "black", size= 2.6, vjust=-0.1) +
-  geom_text(aes(label=round(SE,3)), color= "black", size= 2, vjust=1.5) +
+  geom_text(aes(label=mean_lab), color= "black", size= 2.7, vjust=-0.1) +
+  geom_text(aes(label=paste("\u00B1",se_lab)), color= "black", size= 2.2, vjust=1.5) +
   scale_y_continuous(breaks=seq(-1,1,0.25), expand=c(0,0)) +
   scale_x_discrete(labels= effect_labels) +
   labs(title="Weights on Hypothesis Covariance Matrices") +
@@ -65,11 +74,10 @@ big <- ggplot(df_ave, aes(x= magnitude, y= correlation, fill= Mean)) +
         legend.position = "none") +
   scale_fill_gradient(low="gray98",high="#829ed9")
 
-
 small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=round(Mean,3)), color= "white", size= 2.6, vjust=-0.1) +
-  geom_text(aes(label=round(SE,3)), color= "white", size= 2, vjust=1.5) +
+  geom_text(aes(label=mean_lab), color= "white", size= 2.7, vjust=-0.1) +
+  geom_text(aes(label=paste("\u00B1",se_lab)), color= "white", size= 2.2, vjust=1.5) +
   scale_y_continuous(expand=c(0,0)) +
   ylab("Weight of \nNo Effect Matrix") +
   theme_pubclean() +
@@ -150,4 +158,3 @@ ggplot(df_small, aes(x=magnitude, y= correlation, fill= value)) +
 dev.off()
 
 }
-

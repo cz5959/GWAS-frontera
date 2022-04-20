@@ -1,9 +1,12 @@
 #!/usr/bin/env Rscript
 
 # load libraries
-library(optparse, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
-library(ashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
-library(mashr, lib.loc="/work/08005/cz5959/frontera/R/x86_64-pc-linux-gnu-library/4.0/")
+libLoc <- "/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/"
+library(optparse, lib.loc=libLoc)
+library(crayon,lib.loc=libLoc)
+library(dplyr,lib.loc=libLoc)
+library(ashr, lib.loc=libLoc)
+library(mashr, lib.loc=libLoc)
 
 # argument parser
 option_list = list(
@@ -62,8 +65,8 @@ for (i in 0:num) {
     pm_all <- rbind(pm_all, pm)
     psd_all <- rbind(psd_all, psd)
     lfsr_all <- rbind(lfsr_all, lfsr)
-    #save(pm_all,psd_all,lfsr_all,file=paste0(pheno,"_mash_posterior",suffix,".RData"))
     weights <- weight_col(msub$posterior_weights)
+    weights <- mutate(weights, across(everything(), round, 10))
     weights_all <- rbind(weights_all, msub$posterior_weights)
     #save(pm_all,psd_all,lfsr_all,weights_all, file=paste0(pheno,"_mash_posterior",suffix,".RData"))
 }
@@ -73,3 +76,5 @@ write.table(pm_all, file=paste0(pheno,"_mash_pm",suffix,".txt"), sep="\t", row.n
 write.table(psd_all, file=paste0(pheno,"_mash_psd",suffix,".txt"), sep="\t", row.names=FALSE)
 write.table(lfsr_all, file=paste0(pheno,"_mash_lfsr",suffix,".txt"), sep="\t", row.names=FALSE)
 write.table(weights_all, file=paste0(pheno,"_mash_weights",suffix,".txt"), sep="\t", row.names=FALSE)
+
+print(paste0(pheno," - done"))
