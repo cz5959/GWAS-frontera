@@ -1,7 +1,14 @@
 # Amplification is the Primary Mode of Gene-by-Sex Interaction in Complex Human Traits
+Carrie Zhu, Matthew J. Ming, Jared M. Cole, Mark Kirkpatrick, Arbel Harpak
 
-## update configuration file 
+Below provides instructions and details for the scripts used to generate the results and figures in "Amplification is the Primary Mode of Gene-by-Sex Interaction in Complex Human Traits". 
 
+## Outline:
+1. Download GWAS summary statistics, phenotype files from UTBox
+2. Install software: plink1.9, plink2, Ensembl VEP
+3. Update configuration file: config.R
+
+## Description for each script
 ### single snp analysis
 ./manhattan.R -p -n
     # need summ stat file
