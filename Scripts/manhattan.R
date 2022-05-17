@@ -33,12 +33,12 @@ male_df <- read.csv(male_name, sep="\t", colClasses=c(rep("integer",2),"characte
 female_df <- read.csv(female_name, sep="\t", colClasses=c(rep("integer",2),"character",rep("NULL",9),"numeric" ))
 
 edit_df <- function(df) {
-  for (p in c(5e-30, 5e-20, 5e-10, 5e-5, 0.05, 0.1, 0.5)) {
-    df <- bind_rows(filter(df, P<=p), sample_frac(filter(df, P>p), 0.3))
+  for (p in c(5e-30, 5e-20, 5e-10, 5e-5, 0.001, 0.05, 0.75, 0.1, 0.5, 0.7, 0.8)) {
+    df <- bind_rows(filter(df, P<=p), sample_frac(filter(df, P>p), 0.25))
   }
-  plot_df <- df %>% 
+  plot_df <- df %>%
   drop_na() %>%
-  group_by(X.CHROM) %>% 
+  group_by(X.CHROM) %>%
   summarize(CHR_LEN=max(POS)) %>%
   mutate(TOT=cumsum(as.numeric(CHR_LEN))-CHR_LEN) %>%
   select(-CHR_LEN) %>%
@@ -46,6 +46,7 @@ edit_df <- function(df) {
   arrange(X.CHROM, POS) %>%
   mutate(POS_CUM=POS+TOT) %>%
   mutate(COLOR=ifelse(X.CHROM %% 2, 1,2))
+
   return(plot_df)
 }
 
@@ -61,7 +62,7 @@ male_df <- edit_df(male_df)
 axis_df <- x_axis(female_df)
 axis_df$X.CHROM <- c(1:18,"",20,"",22)
 
-pdf(file=paste0(pheno,"_miami.pdf"), width=10, height=4)
+pdf(file=paste0(pheno,"_miami.pdf"), width=7, height=3)
 
 female_plot <- ggplot(female_df, aes(x=POS_CUM,y=-log10(P))) +
   geom_point( aes(color=as.factor(COLOR)), alpha=0.7, size=0.1) +
@@ -70,10 +71,11 @@ female_plot <- ggplot(female_df, aes(x=POS_CUM,y=-log10(P))) +
   scale_y_continuous(expand=c(0,0)) +
   
   theme_pubclean() +
-  theme(legend.position = "none", axis.title = element_blank(), plot.margin = margin(20,20,0,20),
-        axis.text = element_text(size=10), panel.grid.major.y=element_blank(), plot.title=element_text(size=16, hjust=0.5)) +
+  theme(legend.position = "none", axis.title = element_blank(), plot.margin = margin(20,5.5,0,5.5),
+        axis.text = element_text(size=9), panel.grid.major.y=element_blank(), plot.title=element_text(size=16, hjust=0.5)) +
   scale_color_manual(values=c("#d67629","#1d47a1")) +
-  labs(title=pheno_name)
+  labs(title=pheno_name) +
+  annotation_custom(grobTree(textGrob("female", x=0.1, y=0.9, gp = gpar(col="#d67629", fontsize=11) )))
 
 male_plot <- ggplot(male_df, aes(x=POS_CUM,y=-log10(P))) +
   geom_point( aes(color=as.factor(COLOR)), alpha=0.7, size=0.1) +
@@ -83,12 +85,13 @@ male_plot <- ggplot(male_df, aes(x=POS_CUM,y=-log10(P))) +
   
   theme_pubclean() + 
   theme(legend.position = "none",  axis.text.x=element_blank(), axis.ticks.x = element_blank(), 
-        plot.margin =  margin(0,20,20,20), panel.grid.major.y=element_blank(), 
-        axis.text.y = element_text(size=10), axis.title.y = element_blank(), axis.title.x = element_text(size=12)) +
+        plot.margin =  margin(0,5.5,40,5.5), panel.grid.major.y=element_blank(), 
+        axis.text.y = element_text(size=9), axis.title.y = element_blank(), axis.title.x = element_text(size=11)) +
   scale_color_manual(values=c("#d67629","#1d47a1")) +
-  labs(x="Chromosome")
+  labs(x="Chromosome") +
+  annotation_custom(grobTree(textGrob("male", x=0.1, y=0.1, gp = gpar(col="#207335", fontsize=11) )))
 
-p <- grid.arrange(female_plot, male_plot, nrow = 2, left=textGrob(bquote(-log[10] ~P), rot=90, vjust=1, gp=gpar(fontsize=12)))
+p <- grid.arrange(female_plot, male_plot, nrow = 2, left=textGrob(bquote(-log[10] ~P), rot=90, vjust=1, gp=gpar(fontsize=11)))
 p
 
 dev.off()

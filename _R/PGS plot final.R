@@ -33,17 +33,17 @@ melt_out <- function(df) {
 df_sep <- melt_out(df_sep)
 df_combined <- melt_out(df_combined)
 
+
 # # formate df_combined for analysis
 # df_combined = dcast(df_combined, Phenotype ~ r2_var, value.var="r2_val")
 # #write.table(df_combined, file = "combined_r2.txt", sep="\t", row.names=FALSE, quote = FALSE)
-# head(df_combined)
 # # ttest for difference between additive and mash
 # df_add <- df_combined[df_combined$r2_var == "_r2", c(1,2)]
 # df_mash <- df_combined[df_combined$r2_var == "m_r2",c(1,4)]
 # df_add <- df_add %>%
 #   mutate(mean_diff = r2_val - df_mash$r2_val) %>%
 #   mutate(se_diff = sqrt((df_add$r2_se_val)^2 + (df_mash$r2_se_val)^2) ) %>%
-#   mutate(ttest = mean_diff - se_diff) 
+#   mutate(ttest = mean_diff - se_diff)
 # #write.table(df_add, file = "combined_diff.text", sep="\t", row.names=FALSE, quote = FALSE)
 
 # separated plot, r2

@@ -7,7 +7,6 @@ library(dplyr)
 library(gridExtra)
 library(grid)
 library(ggpubr)
-library(reshape2)
 
 # get correlation
 setwd("~/Research/GWAS-frontera/LDSC")

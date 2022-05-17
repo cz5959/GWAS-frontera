@@ -8,39 +8,41 @@ library(gridExtra)
 library(grid)
 library(ggpubr)
 # get phenotypic variance
-# setwd("~/Research/GWAS-frontera/Phenotypes")
-# set.seed(1)
-# pheno_var <- NULL
-# pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","weight","calcium",
-#                 "protein_total","whole_body_fat_mass","urate","arm_fatfree_mass_L",
-#                 "arm_fatfree_mass_R", "eosinophil_perc", "lymphocyte_perc", "waist_circ",
-#                 "hip_circ", "waist_to_hip", "wth_bmi_adj","diastolicBP_auto","systolicBP_auto",
-#                 "albumin", "pulse_rate", "urea", "SHBG", "FVC_best", "HbA1c")
-# 
-# df_sex <- read.csv("sex_ids.txt", sep="\t")
-# for (pheno in pheno_list) {
-#    df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
-#    df_pheno <- merge(df_pheno, df_sex, by='IID')
-#    m <- df_pheno[df_pheno$sex == 1, 2] ; f <- df_pheno[df_pheno$sex == 0, 2]
-#    male_var <- var(m)
-#    female_var <- var(f)
-# 
-#    # bootstrap
-#    male_varse <- replicate(100,var(sample(m,replace=T)))
-#    female_varse <- replicate(100,var(sample(f,replace=T)))
-# 
-#    male_varse <- sqrt( sum((male_varse - mean(male_varse))^2) / (100-1) )
-#    female_varse <- sqrt( sum((female_varse - mean(female_varse))^2) / (100-1) )
-# 
-#    pheno_var <- rbind(pheno_var, data.frame(pheno=pheno, m_var=male_var, f_var=female_var,
-#                                             m_varse=male_varse, f_varse=female_varse))
-# }
+setwd("~/Research/Phenotypes")
+set.seed(1)
+pheno_var <- NULL
+pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","weight","calcium",
+                "protein_total","whole_body_fat_mass","urate","arm_fatfree_mass_L",
+                "arm_fatfree_mass_R", "eosinophil_perc", "lymphocyte_perc", "waist_circ",
+                "hip_circ", "waist_to_hip", "wth_bmi_adj","diastolicBP_auto","systolicBP_auto",
+                "albumin", "pulse_rate", "urea", "SHBG", "FVC_best", "HbA1c")
+
+df_sex <- read.csv("sex_ids.txt", sep="\t")
+for (pheno in pheno_list) {
+   df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
+   df_pheno <- merge(df_pheno, df_sex, by='IID')
+   m <- df_pheno[df_pheno$sex == 1, 2] ; f <- df_pheno[df_pheno$sex == 0, 2]
+   male_var <- var(m)
+   female_var <- var(f)
+
+   # bootstrap
+   #male_varse <- replicate(100,var(sample(m,replace=T)))
+   #female_varse <- replicate(100,var(sample(f,replace=T)))
+
+   #male_varse <- sqrt( sum((male_varse - mean(male_varse))^2) / (100-1) ) 
+   #female_varse <- sqrt( sum((female_varse - mean(female_varse))^2) / (100-1) ) 
+   male_varse <- mean(replicate(100, sd(sample(m,replace=T))/sqrt(length(m))))
+   female_varse <- mean(replicate(100, sd(sample(f,replace=T))/sqrt(length(f))))
+
+   pheno_var <- rbind(pheno_var, data.frame(pheno=pheno, m_var=male_var, f_var=female_var,
+                                            m_varse=male_varse, f_varse=female_varse))
+}
 
 #write.table(pheno_var, file="pheno_var.txt", sep="\t", row.names=FALSE, quote=FALSE)
-#write.table(pheno_var, file="pheno_var2.txt",sep="\t",row.names = FALSE, quote=FALSE)
+#write.table(pheno_var, file="pheno_var_bootstrap2.txt",sep="\t",row.names = FALSE, quote=FALSE)
 #pheno_var <- read.csv("pheno_var.txt", sep="\t")
-setwd("~/Research/GWAS-frontera/Phenotypes")
-pheno_var <- read.csv("pheno_var_bootstrap.txt", sep="\t")
+setwd("~/Research/Phenotypes")
+pheno_var <- read.csv("pheno_var_bootstrap2.txt", sep="\t")
 
 # get heritability
 setwd("~/Research/GWAS-frontera/LDSC")
@@ -70,7 +72,7 @@ df <- df %>%
            (geno_var_ratio)*sqrt((geno_se_m^2/geno_var_m^2)+(geno_se_f^2/geno_var_f^2)) ) %>%
   mutate(env_var_ratio_se = 
            (env_var_ratio)*sqrt((env_se_m^2/env_var_m^2)+(env_se_f^2/env_var_f^2))) %>%
-  select(c(1,10,21,22,23,24))
+  select(c(1,12,23,24,25,26))
 
 
 ## pvalue error bars
@@ -404,8 +406,8 @@ annotate_figure(plot,
 
 ##################### 90% CI
 pcolor = '#2b62d9'
-df <- mutate(df, on = ifelse(abs(env_var_ratio-geno_var_ratio) <= 3*env_var_ratio_se | 
-                               abs(geno_var_ratio-env_var_ratio) <= 3*geno_var_ratio_se, 2,1))
+df <- mutate(df, on = ifelse(abs(env_var_ratio-geno_var_ratio) <= ci_y2-ci_y1 | 
+                               abs(geno_var_ratio-env_var_ratio) <= ci_x2-ci_x2, 2,1))
 df1 <- df[! df$pheno %in% c('arm_fatfree_mass_L', 'arm_fatfree_mass_R', 'testosterone'),]
 df1_1 <- df1[(df1$env_var_ratio/df1$geno_var_ratio) >=1,]
 df1_2 <- df1[df1$env_var_ratio/df1$geno_var_ratio <1,]
@@ -503,7 +505,7 @@ z_ratio <- ((x/y)-1) / se_ratio
 df$ratio_se <- se_ratio
 df$z_score <- z_ratio
 df$p <- pnorm(z_ratio)
-
+head(df)
 #write.table(df, file="gen_env_amplification.txt", sep="\t", row.names = F, quote = F)
 
 df1[df1$pheno == "creatinine",]

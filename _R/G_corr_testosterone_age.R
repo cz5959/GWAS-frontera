@@ -20,38 +20,35 @@ bin_fun <- function(data, n, sex) {
     bin <- data[cuts == levels(cuts)[i],]
     model <- lm(paste0("pheno ~ SCORE"), data = bin)
     beta <- model$coefficients[2]
-    stderror <- summary(model)$coefficients[2,2]
     T_mean <- mean(bin$testosterone)
-    year_mean <- mean(bin$age)
-    results <- rbind(results, data.frame(Testosterone=T_mean, Birthyear = year_mean, Beta=beta, Error=stderror, Sex=sex))
+    age_mean <- mean(bin$age)
+    results <- rbind(results, data.frame(Testosterone=T_mean, Beta=beta, Age = age_mean, Sex=sex))
   }
   return(results)
 }
 
-get_slope <- function(data) {
-  # slope between Beta and testosterone
-  slope_row <- NULL
+get_corr <- function(data) {
+  # correlation between Beta and testosterone
+  corrs_row <- NULL
   for (sex in c("male", "female")) {
     data_sub <- data[data$Sex == sex,]
-    model <- lm(Beta ~ Testosterone, data_sub)
-    model.adj <- lm(Beta ~ Testosterone + Birthyear, data_sub)
-    slope_est <- summary(model)$coefficient[2]
-    slope_err <- summary(model)$coefficient[2,2]
-    r2 <- summary(model)$r.squared
-    r2.adj <- summary(model.adj)$r.squared
-    slope_row <- rbind(slope_row, data.frame(Pheno=pheno, Est=slope_est, Err=slope_err, R2 = r2, R2.adj = r2.adj, Sex=sex))
+    model <- lm(Beta ~ Age, data_sub)
+    corr <- cor.test(data_sub$Testosterone, residuals(model))
+    corr_est <- corr$estimate
+    corr_err <- corr$conf.int[2] - corr_est
+    corrs_row <- rbind(corrs_row, data.frame(Pheno=pheno, Est=corr_est, Err=corr_err, Sex=sex))
   }
-  slope_row$est_diff <- abs(slope_row[1,2] - slope_row[2,2])
-  slope_row$err_sum <- abs(slope_row[1,3] + slope_row[2,3])
-  return(slope_row)
+  corrs_row$est_diff <- abs(corrs_row[1,2] - corrs_row[2,2])
+  corrs_row$err_sum <- abs(corrs_row[1,3] + corrs_row[2,3])
+  return(corrs_row)
 }
 
 
-slope_result <- NULL
+corrs_result <- NULL
 for (pheno in pheno_list) {
   print(pheno)
   # phenotype
-  setwd("~/Research/GWAS-frontera/Phenotypes")
+  setwd("~/Research/Phenotypes")
   df_testosterone <- read.csv("pheno_testosterone.txt", sep="\t", colClasses = c("NULL","integer","numeric"))
   df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
   df_sex <- read.csv("sex_ids.txt", sep="\t")
@@ -63,11 +60,11 @@ for (pheno in pheno_list) {
   setwd(paste0("~/Research/GWAS-frontera/GWAS_results/",pheno))
   file_name <- list.files(pattern="both_sex_additive_")
   df_both <- read.csv(file_name,sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
-  
+
   # merge dataframes
   df <- merge(merge(merge(df_testosterone, df_sex, by='IID'), df_age, by = 'IID'), df_pheno, by='IID')
   df <- merge(df,df_both,by='IID')
-  
+
   # order by testosterone
   df <- df[order(df$testosterone),]
   # label then split by sex
@@ -81,31 +78,34 @@ for (pheno in pheno_list) {
   f_results <- bin_fun(df_f,10,'female')
   results <- rbind(m_results, f_results)
 
-  # slope between Beta and testosterone
-  slope_result <- rbind(slope_result, get_slope(results))
+  # correlation between Beta and testosterone
+  corrs_result <- rbind(corrs_result, get_corr(results))
 }
-slope_result$R2_diff <- slope_result$R2.adj - slope_result$R2 
-setwd("~/Research/GWAS-frontera/Phenotypes")
-#write.table(slope_result, file="G_corr_testosterone_age.txt", sep="\t", row.names=FALSE)
-
+#setwd("~/Research/Phenotypes")
+#write.table(corrs_result, file="G_corr_testosterone_age.txt", sep="\t", row.names=FALSE)
+corrs_result <- read.csv("G_corr_testosterone_age.txt", sep="\t")
 # get nice phenotype names
 setwd("~/Research/GWAS-frontera/LDSC/")
 ldsc_df <- read.csv("ldsc_results.txt", sep="\t", colClasses = c(rep("character",2), rep("NULL",5)))
 ldsc_df <- unique(ldsc_df)
-slope_result <- merge(slope_result, ldsc_df, by.x="Pheno", by.y="Code")
+corrs_result <- merge(corrs_result, ldsc_df, by.x="Pheno", by.y="Code")
 
-## negative confounding, underestimates the association
+## plot
 rects <- data.frame(xstart = seq(0.5,26.5,1), xend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))
 rects <- rects[1:26,]
-ggplot(slope_result, aes(x=reorder(Phenotype, R2_diff), y=R2_diff, color=Sex)) +
+ggplot(corrs_result, aes(x=reorder(Phenotype, est_diff), y=Est, color=Sex)) +
+  geom_hline(yintercept = 0, linetype="dashed", alpha=0.5) +
   geom_point(size=2, position=position_dodge(width=0.7)) +
-  geom_hline(yintercept=0.1, alpha=0.5) +
-  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=0,ymax=0.75), 
+  geom_errorbar(aes(ymin=Est-(1.645*Err), ymax=Est+(1.645*Err)), 
+                alpha= 0.6, width=0.5, position=position_dodge(width=0.7)) +
+  geom_rect(data=rects, aes(xmin=xstart,xmax=xend,ymin=-1.5,ymax=1.2), 
             inherit.aes = FALSE, alpha=0.2, fill = c(rep(c("grey","white"),13))) +
-  labs(x="", y="R2.adj - R2") +
+  labs(x="", y="R") +
   scale_y_continuous(expand=c(0.01,0)) +
   theme_classic() +
   theme(axis.text = element_text(size=12), axis.title = element_text(size=16), plot.title=element_blank(),
         legend.position = "top", legend.title=element_text(size=14), legend.text=element_text(size=12)) +
   scale_color_manual(values=c("#d67629","#207335")) +
   coord_flip()
+
+head(corrs_result)

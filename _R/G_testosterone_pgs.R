@@ -3,9 +3,18 @@ library(ggpubr)
 library(reshape2)
 library(ggsci)
 
+
 # set up and load in files
-pheno <- "SHBG"
-title <- "SHBG"
+# phenotype names
+setwd("~/Research/Phenotypes/")
+pheno_names <- read.csv("pheno_names.txt", sep="\t")
+
+for (i in 1:27) {
+  pheno <- pheno_names$Code[i]
+  title <- pheno_names$Phenotype[i]
+  
+  pheno <- "FVC_best"
+  title <- "Forced vital capacity"
 
 # get PGS scores
 setwd(paste0("~/Research/GWAS-frontera/GWAS_results/",pheno))
@@ -13,7 +22,7 @@ file_name <- list.files(pattern="both_sex_additive_")
 df_both <- read.csv(file_name,sep="", colClasses= c("NULL","integer",rep("NULL",3),"numeric"))
 
 # get phenotype 
-setwd("~/Research/GWAS-frontera/Phenotypes")
+setwd("~/Research/Phenotypes")
 df_pheno <- read.csv(paste0("pheno_",pheno,".txt"), sep="\t", colClasses = c("NULL","integer","numeric"))
 df_sex <- read.csv("sex_ids.txt", sep="\t")
 
@@ -46,11 +55,11 @@ df_m <- df[df$sex == 'male',]
 df_f <- df[df$sex == 'female',]
 
 ## get n for bins
-nrow(df_m)/10
-nrow(df_f)/10
+#nrow(df_m)/10
+#nrow(df_f)/10
 
 # get lm results from each testosterone bin
-bin_fun <- function(data, n, sex) {
+bin_fun <- function(data, n, sex, pgs_sd) {
   intervals = seq(0,nrow(data),nrow(data)/n)
   cuts <- cut(1:nrow(data), breaks = intervals)
   results <- NULL
@@ -60,6 +69,7 @@ bin_fun <- function(data, n, sex) {
     model <- lm(paste0("pheno ~ SCORE"), data = bin)
     beta <- model$coefficients[2]
     stderror <- summary(model)$coefficients[2,2]
+    beta <- beta * pgs_sd; stderror <- stderror * pgs_sd
     T_mean <- mean(bin$testosterone)
     results <- rbind(results, data.frame(Testosterone=T_mean, Beta=beta, Error=stderror, Sex=sex))
   }
@@ -67,8 +77,9 @@ bin_fun <- function(data, n, sex) {
 }
 
 # call function for overlap and nonoverlaps
-m_results <- bin_fun(df_m,10,'male')
-f_results <- bin_fun(df_f,10,'female')
+pgs_sd <- sd(df$SCORE)
+m_results <- bin_fun(df_m,10,'male', pgs_sd)
+f_results <- bin_fun(df_f,10,'female', pgs_sd)
 results <- rbind(m_results, f_results)
 
 # trendlines x range
@@ -99,10 +110,10 @@ trend <- rbind(trend, trend_y(male_model, female_model))
 text_size = 2.5
 sex_label <- data.frame(label = c("female", "male"), Sex=c("female", "male"))
 sex_label_y =8000
-setwd("~/Research/GWAS-frontera/Supplementary Figures/Tpgs")
+setwd("~/Research/GWAS-frontera/Supplementary Figures/S11 T pgs mendelian")
 
-#png(file=paste0(pheno,"_Tpgs_sexspecific.png"), width=3.5, height=3, units="in", res=200)
-ggplot(results, aes(x=Testosterone, y=Beta, color=Sex)) +
+png(file=paste0(pheno,"_Tpgs_sexspecific.png"), width=3.5, height=3, units="in", res=200)
+g <- ggplot(results, aes(x=Testosterone, y=Beta, color=Sex)) +
   geom_point(size=1.5) +
   geom_errorbar(aes(ymin=Beta-Error, ymax=Beta+Error), alpha= 0.4) +
   labs(title=title, x="Testosterone PGS", y="Effect of PGS on Phenotype") +
@@ -112,11 +123,13 @@ ggplot(results, aes(x=Testosterone, y=Beta, color=Sex)) +
         plot.title=element_text(size=11), legend.position= "none", plot.margin = margin(20,20,20,20),
         strip.background = element_blank(), strip.text = element_blank()) +
   scale_color_manual(values=c("#d67629","#207335")) +
-  stat_cor(method='pearson', p.accuracy=0.001, label.x.npc=0.0, label.y.npc = c(1,1), vjust=c(1,0.7),
+  stat_cor(method='pearson', p.accuracy=0.001, label.x.npc=0.0, label.y.npc = c(1,1), vjust=c(6.6,6.7), hjust=(-0.05),
            show.legend=FALSE, size=3) +
   geom_text(data=sex_label, aes(x=Inf, y=Inf, label=label), hjust=1.2, vjust=1.2, size=3.2) +
   facet_wrap(~Sex, ncol=1, scales="free")
 
+print(g)
+dev.off()
 
-#dev.off()
+#}
 
