@@ -16,7 +16,7 @@ R_LIB = "/work/08005/cz5959/ls6/R/x86_64-pc-linux-gnu-library/4.0/"
 QC_DIR="/scratch/08005/cz5959/QC"                   # quality controlled pgen sample and variant files
 PHENO_DIR="/scratch/08005/cz5959/Phenotypes"        # phenotype files
 GWAS_DIR="/scratch/08005/cz5959/GWAS_Results"       # summary statistics, results, intermediate tables
-# mash and PGS results directories are subdirectories of $GWAS_DIR/{phenotype}/ 
+# mash and PGS files directories are subdirectories of $GWAS_DIR/{phenotype}/ 
 
 ### ENSEMBL annotation files ###
 ENSEMBL="/scratch/08005/cz5959/ensembl-vep"         # ensembl vep github (https://github.com/Ensembl/ensembl-vep.git)

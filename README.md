@@ -35,7 +35,12 @@ nontrivial.R
     # need relative_h2.txt from r2_by_h2.R, mash_weights from GWAS directory
 
 ### mash simulations
-
+environ_matrix.R
+    # need maf_sample_20k.txt in QC dir, output to GWAS dir
+environ_small.R
+environ_large.R
+environ_mash.R
+environ_heatmap.R
 
 ### PGS 
 PGS_testset_1.R
