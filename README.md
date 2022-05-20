@@ -5,20 +5,21 @@ Provided below are instructions and details for scripts used to generate the res
 
 ## Outline:
 1. Download GWAS summary statistics files from [UTBox](https://utexas.box.com/s/ef25198jq6owpcq5j2wq6najovlq75b8)
+2. Download Final_scripts directory which contains scripts and files used to replicate the results and figures
 2. Install software: [plink 1.9](https://www.cog-genomics.org/plink/), [plink 2.0](https://www.cog-genomics.org/plink/2.0/), [ldsc](https://github.com/bulik/ldsc), [Ensembl VEP](https://useast.ensembl.org/info/docs/tools/vep/script/index.html), [mashr](https://github.com/stephenslab/mashr)
-3. Follow file path outline shown in directory_outline
+3. Follow file path outline shown below or in directory_outline, (directory names in config.R)
 4. Update configuration file with own file paths: config.R
 5. For each section in Documentation, it is best to follow the code in order
 
 ## Software
-*plink v1.9 beta*  
-*plink v2.0 alpha*  
-*LD SCore v1.0.1*  
-Ensembl command line *variant effect predictor (VEP) v106*
+*plink v1.9 beta* (Purcell, S. & Chang, C 2021)  
+*plink v2.0 alpha* (Purcell, S. & Chang, C 2020)  
+*LDSC v1.0.1*  (Bulik-Sullivan et al. 2015)  
+Ensembl command line *variant effect predictor (VEP) v106* (McLaren et al. 2016)  
 - We used the command line VEP tool to annotate SNPs, following documentation listed on the website
 - We downloaded cache files for human genome assembly GRCh37 using INSTALL.pl
 - perl module Set::IntervalTree also needs to be installed to use the --nearest flag for VEP  
-*mashr* package in R
+*mashr* package in R (Urbut, et al. 2019)  
 
 ## Documentation
 ### General Flags
@@ -34,7 +35,7 @@ Download sex-specific summary statistics
 Code Example: ```./manhattan.R -p arm_fatfree_mass_L -n "Arm fat-free mass (L)"```
 <br> <br/>
 ##### SNP annotation for list of SNPs after clumping and thresholding, removing SNPs with p-value>5e-8, pairwise LD threshold r<sup>2</sup>>0.1, or within 250kb  
-Download 1000G phase 3 genotype data, all_phase3 files, which were created using the following code:  
+Download 1000G phase 3 genotype data (all_phase3 files), which were created using the following code:  
 ```plink2 --pfile all_phase3 --chr 1-22 --max-alleles 2 --keep eur_ids.txt --rm-dup exclude-all --king-cutoff 0.0442 --make-bed --out all_phase3```  
 eur_ids.txt contained subpopulation codes CEU and GBR on separate lines to be kept in the sample  
 
@@ -65,7 +66,7 @@ Code Example: ```./mash_posterior.R -p height```
 Create a overall and compact heatmaps of mixture weights. Plots for **Fig. S4**.   
 Code Example: ```./mash_heatmap.R -p height -n Height```
 
-Plot for **Fig. 4A**.  Download pheno_names.txt and sex_ids.txt.  
+Plot for **Fig. 4A**.  Download pheno_names.txt. Create a text file names sex_ids.txt with two columns [IID, sex], which contains the IIDs and corresponding sex in (0,1) format.
 Code: ```./phenovar_by_phenomean.R```
 
 Plot for **Fig. 4B**. Download mash_weights.txt, which summarizes weights from all traits.  
@@ -130,7 +131,7 @@ Code Example: ```PGS_predict_5_linear.R -p height -s 2```
 Plot for **Fig. S14**. Download pgs_linear_results_five.txt, which provides a summary of correlations from the script before. pgs_combined_r2.txt is outputted.  
 Code: ```PGS_plot_final.R```
 
-Plot for **Fig. S16**. Move the best .profile file (female_additive..., male_additive..., male_mash..., female_mash..., both_sex_additive...) to $GWAS_dir/[pheno_code] as printed by PGS_predict_5_linear.R. There should be 5 .profile files for each phenotype in pheno_names.txt.    
+Plot for **Fig. S16**. Move the best .profile file (female_additive..., male_additive..., male_mash..., female_mash..., both_sex_additive...) from set 1 to $GWAS_dir/[pheno_code] as printed by PGS_predict_5_linear.R. There should be a total of 5 .profile files for each phenotype in pheno_names.txt.    
 Code: ```pheno_pgs.R```
 
 Plot for **Fig. 2I,J**. This script uses sexspecific_pheno_pgs_lm.txt which is produced in the script before. The Spearman correlation between the male and females panels is printed out.  
@@ -157,4 +158,11 @@ Plot for **Fig. 6**.  This script uses pheno_meanvar.txt, which was produce in p
 Code: ```gen_env_bootstrap.R```
 
 ### Sexually-Antagonistic Selection
+Plot for **Fig. 7C,D**.  Download the following RData files:  
+fst_plot_testosterone.1e-05.RData  
+fst_plot_protein_total.1e-05.RData  
+zscore_plot.1e-05.RData  
+Code: ```sex_selection_plot.R```
+
+Analysis for sexually-antagonistic selection was done by Matthew J. Ming. Code can be found [here](https://github.com/MattJMing)
 
