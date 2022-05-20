@@ -127,7 +127,7 @@ Print out predictions using PGS based on three methods described in **Text S1**.
 Code Example: ```PGS_predict_5_linear.R -p height -s 2```
 
 #### Plots
-Plot for **Fig. S14**. Download pgs_linear_results_five.txt, which provides a summary of correlations from the script before. pgs_combined_r2.txt is outputted. 
+Plot for **Fig. S14**. Download pgs_linear_results_five.txt, which provides a summary of correlations from the script before. pgs_combined_r2.txt is outputted.  
 Code: ```PGS_plot_final.R```
 
 Plot for **Fig. S16**. Move the best .profile file (female_additive..., male_additive..., male_mash..., female_mash..., both_sex_additive...) to $GWAS_dir/[pheno_code] as printed by PGS_predict_5_linear.R. There should be 5 .profile files for each phenotype in pheno_names.txt.    
@@ -137,15 +137,24 @@ Plot for **Fig. 2I,J**. This script uses sexspecific_pheno_pgs_lm.txt which is p
 Code: ```pheno_pgs_overall.R```
 
 ### Testosterone as an modulator of amplification
-G_testosterone.R
-G_testosterone_pgs.R
-G_corr_testosterone.R
-G_corr_testosterone_pgs.R
-G_corr_testosterone_age.R
+Plots for **Fig. S9,10**. If using PGS estimated from sex-specific summary statistics (**Fig. S10**), input 'sex-specific' for the ```-m``` or ```--mode``` flag. Otherwise, do not use that flag.  
+Code Example: ```G_testosterone.R -p height -n Height```
 
-### shared amplification
-gen_env_bootstrap.R 
-    # need ldsc_results.txt in LDSC directory
+Plots for **Fig. S11A**.  
+Code Example: ```G_testosterone_pgs.R -p height -n Height```
 
-### selection
+Plot for **Fig. 5B**.  
+Code: ```G_corr_testosterone.R```
+
+Plot for **Fig. S11B**.  
+Code: ```G_corr_testosterone_pgs.R```
+
+Plot for **Fig. S12**.  
+Code: ```G_corr_testosterone_age.R```
+
+### Model of shared amplification
+Plot for **Fig. 6**.  This script uses pheno_meanvar.txt, which was produce in phenovar_by_phenomean.R. Download ldsc_results.txt, if not already.  
+Code: ```gen_env_bootstrap.R```
+
+### Sexually-Antagonistic Selection
 
