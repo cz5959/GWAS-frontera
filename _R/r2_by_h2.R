@@ -21,14 +21,15 @@ df <- df %>%
   mutate(Phenotype = factor(Phenotype, levels=unique(Phenotype))) 
 
 #write.table(df, file = "relative_h2.txt", quote=FALSE, sep="\t", row.names=FALSE)
+## STAT
 # relative heritability diff by correlation
-df <- df[df$Sex != 'both_sex', c(1,3,6,8,9)]
-f <- df[df$Sex == 'female',]
-m <- df[df$Sex == 'male',]
-df <- data.frame(Code = f$Code, Correlation = f$Correlation, h2_diff = abs(f$relative_h2 - m$relative_h2))
+#df <- df[df$Sex != 'both_sex', c(1,3,6,8,9)]
+#f <- df[df$Sex == 'female',]
+#m <- df[df$Sex == 'male',]
+#df <- data.frame(Code = f$Code, Correlation = f$Correlation, h2_diff = abs(f$relative_h2 - m$relative_h2))
 ## heritability difference
-model <- cor.test(df$Correlation, df$h2_diff)
-df
+#model <- cor.test(df$Correlation, df$h2_diff)
+#df
 
 rects <- data.frame(ystart = seq(0.5,26.5,1), yend = seq(1.5,27.5,1), col = c(1,rep(c(2,1),13)))
 p1 <- ggplot(df, aes(x=relative_h2, y=Phenotype, col=(Sex))) +
@@ -74,5 +75,14 @@ p2 <- ggplot(corr_df, aes(x=0,y=Correlation)) +
 lay <- rbind( c(1,2,2,2,2,2))
 p <- grid.arrange(p2, p1, ncol = 2, layout_matrix=lay, 
                   top=textGrob("", gp=gpar(fontsize=16)))
-p  
+
+head(corr_df)
+# poster correlation
+ggplot(corr_df, aes(x=Correlation,y=0)) +
+  geom_segment(aes(x=-0.05,y=0,xend=1.05,yend=0), arrow = arrow(length = unit(0.3, "cm"), end="both"), size=0.7, color="#2b62d9") +
+  geom_point(alpha=0.2, color="#2b62d9", size=3) +
+  theme_void() +
+  scale_x_continuous(breaks=c(0,0.5,1)) +
+  theme(axis.text.x=element_text(size=9)) +
+  geom_text_repel(aes(label=Phenotype), size=3, max.overlaps=40)
 

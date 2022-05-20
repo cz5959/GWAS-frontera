@@ -15,7 +15,7 @@ pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","w
 
 for (pheno in pheno_list) {
   
-  pheno <- 'testosterone'
+  pheno <- 'arm_fatfree_mass_R'
 #setwd(paste0("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/",pheno))
 setwd(paste0("~/Research/GWAS-frontera/GWAS_Results/",pheno))
 
@@ -52,10 +52,10 @@ df_ave <- df_ave %>%
 effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
 
 #setwd("~/Research/GWAS-frontera/mash/heatmaps")
-#pdf(file=paste0(pheno,"_mash_large.pdf"), width=6.5, height=4.8)
+setwd("~/Research/GWAS-frontera/mash/pdf heatmaps")
+pdf(file=paste0(pheno,"_mash_large.pdf"), width=6.5, height=4.8)
 #setwd("~/Research/GWAS-frontera/mash/heatmaps/png_files")
 #png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.8, units="in", res=300)
-setwd("~/Research/GWAS-frontera/Supp Figures/mash heatmaps")
 #png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.5, units="in", res=300)
 
 
@@ -133,10 +133,10 @@ sum_corr <- df_small %>%
   group_by(correlation) %>%
   summarise(sum = sum(value))
 
-#pdf(file=paste0(pheno,"_mash_small.pdf"), width=4, height=3)
+pdf(file=paste0(pheno,"_mash_small.pdf"), width=3.5, height=2)
 #setwd("~/Research/GWAS-frontera/mash/heatmaps/png_files")
-setwd("~/Research/GWAS-frontera/Supp Figures/mash heatmaps")
-png(file=paste0(pheno,"_mash_small.png"), width=3.5, height=2.3, units="in", res=200)
+#setwd("~/Research/GWAS-frontera/Supp Figures/mash heatmaps")
+#png(file=paste0(pheno,"_mash_small.png"), width=3.5, height=2.3, units="in", res=200)
 
 print(
 ggplot(df_small, aes(x=magnitude, y= correlation, fill= value)) +

@@ -98,7 +98,7 @@ for (pheno in pheno_list) {
 }
 
 # save corr and slope files
-setwd("~/Research/GWAS-frontera/Phenotypes")
+setwd("~/Research/Phenotypes")
 #write.table(corrs_result, file="G_corr_testosterone_sexspecificpgs.txt", sep="\t", row.names=FALSE)
 #corrs_result <- read.csv("G_corr_testosterone_pgs.txt", sep="\t")
 corrs_result <- read.csv("G_corr_testosterone_sexspecificpgs.txt", sep="\t")

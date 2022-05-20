@@ -9,39 +9,49 @@ require("gridExtra")
 
 # load RData files (from Matt)
 setwd("~/Research/GWAS-frontera/selection")
-load("fst_plot_whole_body_fat_mass.RData"); wbfm <- pointsf
-load("fst_plot_waist_circ.RData"); waist <- pointsf
-load("zscore_plot.RData")
+load("fst_plot_testosterone.1e-05.RData"); testosterone <- pointsf
+load("fst_plot_protein_total.1e-05.RData"); protein <- pointsf
+load("zscore_plot.1e-05.RData")
+load("zscore_plot.1e-08.all.Rdata")
 
 # split results by ancestry
 azj <- results[results$ANC == "Ashkenazi Jewish",]
 fin <- results[results$ANC == "Finnish",]
 nfe <- results[results$ANC == "Non-Finnish European",]
 
-# calc ancestry zmean mean
-head(resultsi)
-
+nfe[nfe$TRAIT == "Total protein",c(6,7)]
+summary(t_model)
+# lm line
+t_model <- lm(FST~V, testosterone, weight=w)
+t_B
+t_B <- summary(t_model)$coefficients[2]; t_yi <- summary(t_model)$coefficients[1]
+p_model <- lm(FST~V, protein, weight=w)
+p_B <- summary(p_model)$coefficients[2]; p_yi <- summary(p_model)$coefficients[1]
 ### FST PLOT
 # size 3x4
-f1 <- ggplot(wbfm, aes(x=V, y=FST, weight=w)) +
-  geom_point(color = "black", alpha= 0.1, size=1) +
-  geom_smooth(method = "lm", se=F, color= "blue", size=0.5) +
+f1 <- ggplot(testosterone, aes(x=V, y=FST, weight=w, size=w)) +
+  geom_point(color = "black", alpha= 0.2) +
+  #geom_segment(x=0,y=t_yi, xend=1.5e-3, yend=1.5e-3*t_B+t_yi, size= 0.5, color="blue") +
+  geom_abline(slope=t_B, intercept=t_yi, size=0.5, color="blue") +
   theme_classic() +
-  scale_y_continuous(breaks=c(0,0.0015,0.003), labels=c("0","2e-3","3e-3")) +
-  scale_x_continuous(breaks=c(0,0.003,0.006), labels=c("0","3e-3","6e-3")) +
-  xlab("VGxSex (kg2)") +
-  theme(axis.title.y=element_blank(), axis.title.x=element_text(size=10), axis.text=element_text(size=8))
+  scale_y_continuous(breaks=c(0,5e-5,1e-4), labels=c("0","5e-5","1e-4"), limits = c(0,1e-4)) +
+  scale_x_continuous(breaks=c(0,5e-4,1e-3, 1.5e-3), labels=c("0","5e-4","1e-3", "1.5e-3"), limits=c(0,1.5e-3)) +
+  xlab("VGxSex (nmol/L)") +
+  theme(axis.title.x=element_text(size=10), axis.text=element_text(size=8), axis.title.y=element_blank(),
+        legend.position="none") +
+  scale_size(range = c(0.5,3)) 
 f1
-
-
-f2 <- ggplot(waist, aes(x=V, y=FST, weight=w)) +
-  geom_point(color = "black", alpha= 0.1, size=1) +
-  geom_smooth(method = "lm", se=F, color= "red", size=0.5) +
+max(testosterone$FST)
+f2 <- ggplot(protein, aes(x=V, y=FST, weight=w,size=w)) +
+  geom_point(color = "black", alpha= 0.2) +
+  geom_abline(slope=p_B, intercept=p_yi, size=0.5, color="red") +
   theme_classic() +
-  scale_y_continuous(breaks=c(0,0.00075, 0.0015), labels=c("0","7.5e-4","1.5e-3")) +
-  scale_x_continuous(breaks=c(0,0.004,0.008), labels=c("0","4e-3","8e-3")) +
-  xlab("VGxSex (cm2)") +
-  theme(axis.title.y=element_blank(), axis.title.x=element_text(size=10), axis.text=element_text(size=8))
+  scale_y_continuous(breaks=c(0,4e-5, 8e-5), labels=c("0","4e-5","8e-5"), limits = c(0,9e-5)) +
+  scale_x_continuous(breaks=c(0,5e-4,1e-3), labels=c("0","5e-4","1e-3"), limits=c(0,1.1e-3)) +
+  xlab("VGxSex (g/L)") +
+  theme(axis.title.y=element_blank(), axis.title.x=element_text(size=10), axis.text=element_text(size=8),
+        legend.position="none") +
+  scale_size(range = c(0.5,3)) 
 f2
 
 fa <- ggplotGrob(f1) ; fb <- ggplotGrob(f2)
@@ -51,7 +61,7 @@ fplot <- grid.arrange(fa, fb, ncol=1, nrow=2)
 annotate_figure(fplot, 
                 left = text_grob("FST Between Males and Females", size=10, rot=90))
 
-head(results)
+
 ### ZSCORE PLOT
 # size 6x8
 ggplot(results, aes(x=ZMEAN, y=TRAIT)) +
@@ -59,14 +69,14 @@ ggplot(results, aes(x=ZMEAN, y=TRAIT)) +
   geom_errorbarh(aes(xmin=CILOWER, xmax=CIUPPER), height=0.3, size=0.3) +
   geom_vline(xintercept = 0, linetype="longdash", color="#563f61", alpha=0.5, size=0.3) +
   geom_vline(data = resultsi, aes(xintercept = ANCMEAN), linetype="dashed", color="#b02e38", alpha=0.5, size=0.3) +
-  coord_cartesian(xlim=c(-2,5)) +
+  coord_cartesian(xlim=c(-2.6,5.35)) +
   facet_wrap(~ANC,ncol=3) +
   theme_classic() +
   xlab("Z-score for Sexually-Antagonistic Selection") +
-  theme(axis.title=element_text(size=12), axis.text=element_text(size=9),
+  theme(axis.title.y=element_blank(),axis.title.x=element_text(size=12), axis.text=element_text(size=9),
         panel.grid.major.y = element_line(color="gray95", size=0.5))
-
-
+min(results$ZMEAN)
+max(results$ZMEAN)
 ################3
 
 
