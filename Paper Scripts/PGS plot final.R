@@ -54,6 +54,6 @@ ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=factor(r2_var))) +
 dev.off()
 
 
-## formate df_combined for analysis
+## format df_combined for analysis
 df_combined = dcast(df_combined, Phenotype ~ r2_var, value.var="r2_val")
 write.table(df_combined, file = "pgs_combined_r2.txt", sep="\t", row.names=FALSE, quote = FALSE)

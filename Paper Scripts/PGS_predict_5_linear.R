@@ -93,20 +93,22 @@ pgs_prediction <- function(sex, type = "additive", null.r2, mode = 'specific') {
 # null
 female_null <- pgs_null("female"); male_null <- pgs_null("male"); both_sex_null <- pgs_null("both_sex"); 
 
+print("Order for each method: \n 1) prediction on both-sex \n 2) prediction on females 3) prediction on males")
+
 # additive
-print("ADDITIVE SEX-SPECIFIC")
+print("COVARIANCE-NAIVE, SEX-SPECIFIC")
 pgs_prediction("both_sex", "additive", both_sex_null, "combined")
 pgs_prediction("female", "additive", female_null)
 pgs_prediction("male", "additive", male_null)
 
 # mash
-print("MASH")
+print("COVARIANCE-AWARE, SEX-SPECIFIC")
 pgs_prediction("both_sex", "mash", both_sex_null, "combined")
 pgs_prediction("female", "mash", female_null)
 pgs_prediction("male", "mash", male_null)
 
 # both-sex additive
-print("BOTH SEX ADDITIVE")
+print("ADDITIVE, BOTH-SEX")
 pgs_prediction("both_sex","additive", both_sex_null, "both_sex_additive")
 pgs_prediction("female","additive", female_null, "both_sex_additive")
 pgs_prediction("male","additive", male_null, "both_sex_additive")

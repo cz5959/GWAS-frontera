@@ -9,11 +9,13 @@ library(optparse, lib.loc=R_LIB)
 # arguments and set working directory
 # argument parser
 option_list = list(
-    make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character")
+    make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character"),
+    make_option(c("-m","--mode"), type="character", default="",help="input '_same' if using same size subset",metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 pheno <- opt$pheno; print(pheno)
+method <- opt$mode
 
 wd <- paste0(GWAS_DIR,"/",pheno,"/mash")
 setwd(wd)

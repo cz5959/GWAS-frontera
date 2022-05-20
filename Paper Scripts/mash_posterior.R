@@ -11,7 +11,7 @@ library(mashr, lib.loc=R_LIB)
 # argument parser
 option_list = list(
     make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character"),
-    make_option(c("-m","--mode"), type="character", default="additive",help="input set # if using PGS pipeline",metavar="character")
+    make_option(c("-s","--set"), type="character", default="additive",help="input set # if using PGS pipeline",metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
@@ -20,7 +20,7 @@ if (is.null(opt$pheno)) {
   stop("Missing argument for phenotype code", call.=FALSE)
 }
 pheno <- opt$pheno; print(pheno)
-mode <- opt$mode; print(mode)
+mode <- opt$set; print(mode)
 
 # add PGS suffix if using PGS method 
 if (mode == "additive") {

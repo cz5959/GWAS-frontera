@@ -13,11 +13,11 @@ library("gridExtra", lib.loc=R_LIB)
 
 # user input phenotype
 option_list = list(
-  make_option(c("-m","--method"), type="character", default="",help="input '_same' if using same size subset",metavar="character")
+  make_option(c("-m","--mode"), type="character", default="",help="input '_same' if using same size subset",metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
-method <- opt$method
+method <- opt$mode
 
 wd <- paste0(GWAS_DIR)
 setwd(wd)

@@ -15,7 +15,7 @@ library("gridExtra", lib.loc=R_LIB)
 option_list = list(
   make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character"),
   make_option(c("-n","--name"), type="character", default=NULL,help="formatted phenotype name",metavar="character"),
-  make_option(c("-m","--method"), type="character", default="",help="input '_same' if using same size subset",metavar="character")
+  make_option(c("-m","--mode"), type="character", default="",help="input '_same' if using same size subset",metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
@@ -25,7 +25,7 @@ if (is.null(opt$pheno) | is.null(opt$name)) {
 }
 pheno <- opt$pheno; print(pheno)
 pheno_name <- opt$name
-method <- opt$method
+method <- opt$mode
 
 # load mixture names
 wd <- paste0(GWAS_DIR,"/",pheno,"/mash")

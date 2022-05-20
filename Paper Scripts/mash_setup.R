@@ -10,7 +10,7 @@ library(mashr, lib.loc=R_LIB)
 # argument parser
 option_list = list(
     make_option(c("-p","--pheno"), type="character", default=NULL,help="phenotype name",metavar="character"),
-    make_option(c("-m","--mode"), type="character", default="additive",help="input set # if using PGS pipeline",metavar="character")
+    make_option(c("-s","--set"), type="character", default="additive",help="input set # if using PGS pipeline",metavar="character")
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
@@ -28,10 +28,10 @@ setwd(wd)
 
 setup_sex_df <- function(sex) {
     # load results - summstats
-    if (opt$mode == "additive") {
+    if (opt$set == "additive") {
         file_name <- paste0(sex,"_all.",pheno,".glm.linear")
     } else {
-        file_name <- paste0(wd,"/PGS_",opt$mode,"/",sex,"_train.",pheno,".glm.linear")
+        file_name <- paste0(wd,"/PGS_",opt$set,"/",sex,"_train.",pheno,".glm.linear")
     }
     gwas_df <- read.table(file_name,sep="\t",head=FALSE, 
     col.names=c("CHROM","POS","ID","REF","ALT","A1","AX","TEST","OBS_CT","BETA","SE","TSTAT","P"), 
@@ -74,8 +74,8 @@ SE <- matrix(c(female_df$SE, male_df$SE), nrow=r, ncol=2, dimnames=list(c(female
 data = mash_set_data(BETA, SE)
 
 # save variables into Rdata
-if (opt$mode != "additive") {
-    save(data, LD_groups, file= paste0(wd,"/PGS_",opt$mode,"/",pheno,"_mash_pgs.RData"))
+if (opt$set != "additive") {
+    save(data, LD_groups, file= paste0(wd,"/PGS_",opt$set,"/",pheno,"_mash_pgs.RData"))
 } else {
     dir.create(file.path(wd, "mash"))
     summstat_pos <- female_df$POS
