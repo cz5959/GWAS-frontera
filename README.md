@@ -50,7 +50,7 @@ Download ldsc_results.txt, which contains sex-specific heritability estimates an
 Code: ```./r2_by_h2.R```
 
 ### Multivariate adaptive shrinkage (mashr)
-The ```-m``` or ```--mode``` flag may be used in the three scripts below. The flag indicates whether or not to produce results specifically for the polygenic score pipeline (**Text S1**), which uses a smaller sample size for the cross-validation procedure. Use the flag and input 'pgs' only if performing the PGS pipeline, otherwise do not use the flag. 
+The ```-s``` or ```--set``` flag may be used in the three scripts below. The flag indicates whether or not to produce results specifically for the polygenic score pipeline (**Text S1**), which uses a smaller sample size for the cross-validation procedure. Use the flag and input the set number [1-5] only if performing the PGS pipeline, otherwise do not use the flag. 
 
 Read in the data to create a matrix of effect estimates and standard errors by sex from sex-specific GWAS summary statistics.  
 Code Example: ```./mash_setup.R -p height```
@@ -75,7 +75,7 @@ Plot for **Fig. S7**
 Code: ```nontrivial.R```
 
 #### Test different p-value threshold (Methods and Fig. S3)
-The ```-s``` or ```--same``` flag may be used in the three scripts below. To keep the same random sample size for input to *mash*, use the flag, with the parameter '_same'. Otherwise, do not use the flag. 
+The ```-m``` or ```--mode``` flag may be used in the three scripts below. To keep the same random sample size for input to *mash*, use the flag, with the parameter '_same'. Otherwise, do not use the flag. 
 
 ```./mash_setup.R``` needs to be run first for the same trait.  
 Code Example: ```mash_p_threshold.R -p height```  
@@ -107,20 +107,36 @@ Produce heatmap plots as depicted in **Fig. S6**. Download matrice_names.txt, wh
 Code Example: ```environ_heatmap.R```
 
 ### Polygenic Score  
-Create five test sets to be used for cross validation. Each test set is placed in a separate PGS folder.  
-PGS_testset_1.R
-PGS_GWAS_2.R
-PGS_CT_SCORE_4.R
-PGS_predict_5_linear.R
+Create five test sets to be used for cross validation. Each test set is placed in a separate PGS folder.  Download QC_ids.txt. 
+Code Example: ```PGS_testset_1.R -p height```
 
-PGS_plot_final.R
-    # need pgs_linear_results_five.txt, output pgs_combined_r2.txt
-pheno_pgs.R
-    # directions to move best pgs file to gwas/pheno directory    #!
-pheno_pgs_overall.$
-    # need sexspecific_pheno_pgs_lm.txt from previous
+For the following four scripts, provide the set number [1-5] with the ```-s``` flag.  
 
-### testosterone as underlier
+Generate sex-specific GWAS summary statistics estimated in both sexes and sexes separately.  
+Code Example: ```PGS_GWAS_2.R -p height -s 1```
+
+Continue procedure using the following scripts adding the set number to the ```-s``` flag:  
+Code Example: ```./mash_setup.R -p height -s 2```  
+Code Example: ```./mash_100.R -p height -s 2```  
+Code Example: ```./mash_posterior.R -p height -s 2```  
+
+Clumping and thresholding procedure.  
+Code Example: ```PGS_CT_SCORE_4.R -p height -s 2```
+
+Print out predictions using PGS based on three methods described in **Text S1**.   
+Code Example: ```PGS_predict_5_linear.R -p height -s 2```
+
+#### Plots
+Plot for **Fig. S14**. Download pgs_linear_results_five.txt, which provides a summary of correlations from the script before. pgs_combined_r2.txt is outputted. 
+Code: ```PGS_plot_final.R```
+
+Plot for **Fig. S16**. Move the best .profile file (female_additive..., male_additive..., male_mash..., female_mash..., both_sex_additive...) to $GWAS_dir/[pheno_code] as printed by PGS_predict_5_linear.R. There should be 5 .profile files for each phenotype in pheno_names.txt.    
+Code: ```pheno_pgs.R```
+
+Plot for **Fig. 2I,J**. This script uses sexspecific_pheno_pgs_lm.txt which is produced in the script before. The Spearman correlation between the male and females panels is printed out.  
+Code: ```pheno_pgs_overall.R```
+
+### Testosterone as an modulator of amplification
 G_testosterone.R
 G_testosterone_pgs.R
 G_corr_testosterone.R
