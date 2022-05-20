@@ -11,9 +11,9 @@ Provided below are instructions and details for scripts used to generate the res
 5. For each section in Documentation, it is best to follow the code in order
 
 ## Software
-*plink v1.9 beta*
-*plink v2.0 alpha*
-*LD SCore v1.0.1*
+*plink v1.9 beta*  
+*plink v2.0 alpha*  
+*LD SCore v1.0.1*  
 Ensembl command line *variant effect predictor (VEP) v106*
 - We used the command line VEP tool to annotate SNPs, following documentation listed on the website
 - We downloaded cache files for human genome assembly GRCh37 using INSTALL.pl
@@ -86,15 +86,28 @@ Code Example: ```mash_pvalue_plot.R -p height -n Height```
 Plots for **Fig. S3A**. Download noeffect_weight.txt and noeffect_weight_same.txt, which has the weight on the no effect matrix for each phenotype and p-value threshold used in this particular analysis.  
 Code Example: ```mash_pvalue_null_plot.R```  
 
-### mash simulations
-environ_matrix.R
-    # need maf_sample_20k.txt in QC dir, output to GWAS dir
-environ_small.R
-environ_large.R
-environ_mash.R
-environ_heatmap.R
+#### Environmental variance simulation for *mash*
+##### Create a matrix of 30K individuals and 20K genotypes. 
+Download maf_sample_20k.txt, which contained a random sample of 20K mean allele frequencies from UK Biobank [Resource 1967](https://biobank.ndph.ox.ac.uk/ukb/refer.cgi?id=1967).  
+Code: ```environ_matrix.R```
 
-### PGS 
+Estimate effect sizes and standard errors for input into mash. Flags ```-i```, ```-g```. and ```-e```, indicate parameters for number of causal SNPs, heritability, and female to male environmental variance ratio. We used the following parameters:  
+```-i``` or ```--snps```: [100, 1000]  
+```-g``` or ```--heritability```: [0.05, 0.5]  
+```-e``` or ```--environment```: [1, 1.5, 5]  
+Code Example: ```environ_small.R -i 100 -g 0.5 -e 1.5```
+
+Same as the one above, but only for a causal SNP sample size of 10k. Flags ```-g``` and ```-e``` are the same, and there is no ```-i```.   
+Code Example: ```environ_large.R -g 0.05 -e 5```
+
+*mash* fitting procedure to test if differences in environmental variance is captured. Results for all parameters from the previous two scripts are required before running this script.  
+Code: ```environ_mash.R```
+
+Produce heatmap plots as depicted in **Fig. S6**. Download matrice_names.txt, which is a list of all hypothesis covariance matrices used.  
+Code Example: ```environ_heatmap.R```
+
+### Polygenic Score  
+Create five test sets to be used for cross validation. Each test set is placed in a separate PGS folder.  
 PGS_testset_1.R
 PGS_GWAS_2.R
 PGS_CT_SCORE_4.R
