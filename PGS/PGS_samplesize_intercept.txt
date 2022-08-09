@@ -1,0 +1,5 @@
+phenotype	model	ah_r2	ah_r2_se	ah_inc_r2	ah_inc_r2_se
+height	as	0.6084	0.0013	0.0746	0.0009
+height	m	0.6379	0.0012	0.1041	0.0009
+bmi	as	0.0458	0.0009	0.0351	0.0009
+bmi	m	0.0653	0.0020	0.0547	0.0021
