@@ -124,7 +124,7 @@ label_f <- f_lm %>%
 setwd("~/Research/GWAS-frontera/Supplementary Figures/phenotype and pgs")
 #png(file=paste0(pheno,"_pheno_pgs.png"), width=4, height=5, units="in", res=200)
 #pdf(file=paste0(pheno,"_pheno_pgs.pdf"), width=3, height=4)
-pdf(file=paste0(pheno,"_pheno_pgs2.pdf"), width=2, height=3)
+pdf(file=paste0(pheno,"_pheno_pgs.pdf"), width=2, height=3)
 p1 <- ggplot(data = m_results, aes(x=Score, y=Pheno, color=as.character(Sex))) +
   geom_point() +
   geom_abline(data=m_lm, aes(slope=Beta, intercept = Y0, color=as.character(Sex))) +

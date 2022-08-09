@@ -108,13 +108,13 @@ Produce heatmap plots as depicted in **Fig. S6**. Download matrice_names.txt, wh
 Code Example: ```environ_heatmap.R```
 
 ### Polygenic Score  
-Create five test sets to be used for cross validation. Each test set is placed in a separate PGS folder.  Download QC_ids.txt. 
+Create five test sets to be used for cross validation. Each test set is placed in a separate PGS folder.  Download QC_ids.txt.  
 Code Example: ```PGS_testset_1.R -p height```
 
 For the following four scripts, provide the set number [1-5] with the ```-s``` flag.  
 
 Generate sex-specific GWAS summary statistics estimated in both sexes and sexes separately.  
-Code Example: ```PGS_GWAS_2.R -p height -s 1```
+Code Example: ```PGS_GWAS_2.sh -p height -s 1```
 
 Continue procedure using the following scripts adding the set number to the ```-s``` flag:  
 Code Example: ```./mash_setup.R -p height -s 2```  
@@ -122,7 +122,7 @@ Code Example: ```./mash_100.R -p height -s 2```
 Code Example: ```./mash_posterior.R -p height -s 2```  
 
 Clumping and thresholding procedure.  
-Code Example: ```PGS_CT_SCORE_4.R -p height -s 2```
+Code Example: ```PGS_CT_SCORE_4.sh -p height -s 2```
 
 Print out predictions using PGS based on three methods described in **Text S1**.   
 Code Example: ```PGS_predict_5_linear.R -p height -s 2```

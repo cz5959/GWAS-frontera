@@ -7,8 +7,6 @@ require("ggsci")
 require("ggpubr")
 require("gridExtra")
 
-unique(results$ANC)
-
 # get covariance matrice names
 pheno <- "height"
 setwd("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/height")
