@@ -4,7 +4,7 @@ library(reshape2)
 library(ggpubr)
 library(ggsci)
 
-setwd("~/Research/GWAS-frontera/PGS")
+setwd("~/Documents/Harpak/GxSex/PGS")
 
 df <- read.csv("PGS_results_4.txt", sep="\t")
 head(df)
@@ -74,13 +74,13 @@ ggplot(data=df_combined, aes(x=Phenotype, y=r2_val, fill=(r2_var))) +
   labs(title='PGS Comparison', y="Incremental R2", fill="Model") +
   coord_flip() + 
   theme_classic() + 
-  scale_fill_manual(values = c("#2b62d9", "#d1b724", "#649e98","#b0464f")) +
+  scale_fill_manual(values = c("#2b62d9", "#e89b3c", "#2e9448","#c9404b")) +
   theme(axis.text = element_text(size=9), axis.title.x = element_text(size=11),
         plot.title=element_text(size=14), axis.title.y = element_blank(),
         legend.position = "none") +
-  annotate("text", x = 26, y=0.105, label = "Additive", hjust = 1, color="#b0464f", size=3.4 ) +
-  annotate("text", x = 25, y=0.105, label = "Additive (half sample)", hjust = 1, color="#649e98", size=3.4 ) +
-  annotate("text", x = 24, y=0.105, label = "Sex-specific additive", hjust = 1, color="#d1b724", size=3.4) +
+  annotate("text", x = 26, y=0.105, label = "Additive", hjust = 1, color="#c9404b", size=3.4 ) +
+  annotate("text", x = 25, y=0.105, label = "Additive (half sample)", hjust = 1, color="#2e9448", size=3.4 ) +
+  annotate("text", x = 24, y=0.105, label = "Sex-specific additive", hjust = 1, color="#e89b3c", size=3.4) +
   annotate("text", x = 23, y=0.105, label = "Sex-specific covariance aware", hjust = 1, color="#2b62d9", size=3.4 )
   
   
@@ -113,5 +113,4 @@ ggplot(df, aes(x=perc, y=ah_inc_r2, color=phenotype)) +
   theme(legend.position="top") +
   guides(linetype=guide_legend(nrow=2), color=guide_legend(nrow=2))
 
-  
 

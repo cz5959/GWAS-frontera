@@ -15,9 +15,9 @@ pheno_list <- c("height","bmi","testosterone","RBC_count","IGF1","creatinine","w
 
 for (pheno in pheno_list) {
   
-  pheno <- 'arm_fatfree_mass_R'
-#setwd(paste0("~/Research/GWAS-frontera/OLD/GWAS_Results_OLD/",pheno))
-setwd(paste0("~/Research/GWAS-frontera/GWAS_Results/",pheno))
+  pheno <- 'HbA1c'
+  setwd(paste0("~/Documents/Harpak/GxSex/GWAS_Results/",pheno))
+#setwd(paste0("~/Research/GWAS-frontera/GWAS_Results/",pheno))
 
 df <- read.csv(paste0(pheno,"mixprop_100_all.txt"), sep="\t")
 
@@ -51,45 +51,45 @@ df_ave <- df_ave %>%
 
 effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
 
-#setwd("~/Research/GWAS-frontera/mash/heatmaps")
-setwd("~/Research/GWAS-frontera/mash/pdf heatmaps")
-pdf(file=paste0(pheno,"_mash_large.pdf"), width=6.5, height=4.8)
-#setwd("~/Research/GWAS-frontera/mash/heatmaps/png_files")
-#png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.8, units="in", res=300)
-#png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.5, units="in", res=300)
-
-
-big <- ggplot(df_ave, aes(x= magnitude, y= correlation, fill= Mean)) +
-  geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=mean_lab), color= "black", size= 2.7, vjust=-0.1) +
-  geom_text(aes(label=paste("\u00B1",se_lab)), color= "black", size= 2.2, vjust=1.5) +
-  scale_y_continuous(breaks=seq(-1,1,0.25), expand=c(0,0)) +
-  scale_x_discrete(labels= effect_labels) +
-  labs(title="Weights on Hypothesis Covariance Matrices") +
-  xlab("Magnitude") + ylab("Correlation") +
-  theme_pubclean() +
-  #theme(axis.text=element_text(size=9), axis.title = element_text(size=11), plot.title = element_text(size=14), 
-   #     legend.position = "none") +
-  theme(axis.text=element_text(size=9), axis.title = element_text(size=11), plot.title = element_blank(), 
-        legend.position = "none") +
-  scale_fill_gradient(low="gray98",high="#829ed9")
-
-small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
-  geom_tile(color= "white", lwd= 1.5, linetype= 1) +
-  geom_text(aes(label=mean_lab), color= "white", size= 2.7, vjust=-0.1) +
-  geom_text(aes(label=paste("\u00B1",se_lab)), color= "white", size= 2.2, vjust=1.5) +
-  scale_y_continuous(expand=c(0,0)) +
-  ylab("Weight of \nNo Effect Matrix") +
-  theme_pubclean() +
-  theme(axis.text=element_blank(), axis.title=element_blank(), 
-        axis.title.y = element_text(size=10, angle=360, vjust=0.5),
-        legend.position = "none",axis.ticks = element_blank(), plot.title = element_blank()) +
-  scale_fill_gradient(low="#2b62d9",high="#2b62d9")
-
-lay <- rbind( c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(2,2,3,3,3))
-p <- gridExtra::grid.arrange(big, small, ncol=1, layout_matrix=lay)
-
-dev.off()
+setwd("~/Documents/Harpak/GxSex/mash/fig 3.2")
+#setwd("~/Research/GWAS-frontera/mash/pdf heatmaps")
+# pdf(file=paste0(pheno,"_mash_large.pdf"), width=6.5, height=4.8)
+# #setwd("~/Research/GWAS-frontera/mash/heatmaps/png_files")
+# #png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.8, units="in", res=300)
+# #png(file=paste0(pheno,"_mash_large.png"), width=6.5, height=4.5, units="in", res=300)
+# 
+# 
+# big <- ggplot(df_ave, aes(x= magnitude, y= correlation, fill= Mean)) +
+#   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
+#   geom_text(aes(label=mean_lab), color= "black", size= 2.7, vjust=-0.1) +
+#   geom_text(aes(label=paste("\u00B1",se_lab)), color= "black", size= 2.2, vjust=1.5) +
+#   scale_y_continuous(breaks=seq(-1,1,0.25), expand=c(0,0)) +
+#   scale_x_discrete(labels= effect_labels) +
+#   labs(title="Weights on Hypothesis Covariance Matrices") +
+#   xlab("Magnitude") + ylab("Correlation") +
+#   theme_pubclean() +
+#   #theme(axis.text=element_text(size=9), axis.title = element_text(size=11), plot.title = element_text(size=14), 
+#    #     legend.position = "none") +
+#   theme(axis.text=element_text(size=9), axis.title = element_text(size=11), plot.title = element_blank(), 
+#         legend.position = "none") +
+#   scale_fill_gradient(low="gray98",high="#829ed9")
+# 
+# small <- ggplot(df_null, aes(x= 0, y= 0, fill= Mean)) +
+#   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
+#   geom_text(aes(label=mean_lab), color= "white", size= 2.7, vjust=-0.1) +
+#   geom_text(aes(label=paste("\u00B1",se_lab)), color= "white", size= 2.2, vjust=1.5) +
+#   scale_y_continuous(expand=c(0,0)) +
+#   ylab("Weight of \nNo Effect Matrix") +
+#   theme_pubclean() +
+#   theme(axis.text=element_blank(), axis.title=element_blank(), 
+#         axis.title.y = element_text(size=10, angle=360, vjust=0.5),
+#         legend.position = "none",axis.ticks = element_blank(), plot.title = element_blank()) +
+#   scale_fill_gradient(low="#2b62d9",high="#2b62d9")
+# 
+# lay <- rbind( c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(2,2,3,3,3))
+# p <- gridExtra::grid.arrange(big, small, ncol=1, layout_matrix=lay)
+# 
+# dev.off()
 
 ##########################################################################
 ### SMALL HEATMAP ###

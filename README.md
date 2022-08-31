@@ -14,10 +14,11 @@ Provided below are instructions and details for scripts used to generate the res
 ## Software
 *plink v1.9 beta* (Purcell, S. & Chang, C 2021)  
 *plink v2.0 alpha* (Purcell, S. & Chang, C 2020)  
+- Download both to the directory containing all the scripts
 *LDSC v1.0.1*  (Bulik-Sullivan et al. 2015)  
 Ensembl command line *variant effect predictor (VEP) v106* (McLaren et al. 2016)  
-- We used the command line VEP tool to annotate SNPs, following documentation listed on the website
-- We downloaded cache files for human genome assembly GRCh37 using INSTALL.pl
+- We used the command line VEP tool to annotate SNPs, following documentation listed on the website 
+- We downloaded cache files for human genome assembly GRCh37 using INSTALL.pl to $ENSEMBL_CACHE
 - perl module Set::IntervalTree also needs to be installed to use the --nearest flag for VEP  
 *mashr* package in R (Urbut, et al. 2019)  
 
@@ -31,11 +32,11 @@ Phenotype files are obtained from UK Biobank and renamed pheno_(phenotype code).
 
 ### Single snp analysis
 ##### Miami plots from GWAS summary statistics estimated in males and females only
-Download sex-specific summary statistics
+Download sex-specific summary statistics from [UTBox](https://utexas.box.com/s/ef25198jq6owpcq5j2wq6najovlq75b8) in the corresponding $GWAS_DIR/[phenotype code] folder
 Code Example: ```./manhattan.R -p arm_fatfree_mass_L -n "Arm fat-free mass (L)"```
 <br> <br/>
 ##### SNP annotation for list of SNPs after clumping and thresholding, removing SNPs with p-value>5e-8, pairwise LD threshold r<sup>2</sup>>0.1, or within 250kb  
-Download 1000G phase 3 genotype data (all_phase3 files), which were created using the following code:  
+In the $LD_1000G directory, download 1000G phase 3 genotype data (all_phase3 files), which were created using the following code:  
 ```plink2 --pfile all_phase3 --chr 1-22 --max-alleles 2 --keep eur_ids.txt --rm-dup exclude-all --king-cutoff 0.0442 --make-bed --out all_phase3```  
 eur_ids.txt contained subpopulation codes CEU and GBR on separate lines to be kept in the sample  
 
@@ -43,11 +44,12 @@ Code Example: ```./snp_annotation.sh -p height```
 
 ### LD Score regression
 ##### Estimate heritability and genetic correlation from sex-specific GWAS summary statistics
-Download the pre-computed LD scores from the [ldsc tutorial](https://github.com/bulik/ldsc) (Bulik-Sullivan et al. 2015).  
+Download the pre-computed LD scores from the [ldsc tutorial](https://github.com/bulik/ldsc) (Bulik-Sullivan et al. 2015) to $LD_SCORE.  
 Code Example: ```./ldsc_basic.sh -p height``` 
 
 #### Create plot for Figure 1
-Download ldsc_results.txt, which contains sex-specific heritability estimates and male-female genetic correlations, estimated in the previous step.  
+Download ldsc_results.txt to $LDSC_FILE, which contains sex-specific heritability estimates and male-female genetic correlations, estimated in the previous step.  
+relative_h2.txt, which is used in nontrivial.R, is created in this step and placed in $LD_FILE
 Code: ```./r2_by_h2.R```
 
 ### Multivariate adaptive shrinkage (mashr)
@@ -66,10 +68,10 @@ Code Example: ```./mash_posterior.R -p height```
 Create a overall and compact heatmaps of mixture weights. Plots for **Fig. S4**.   
 Code Example: ```./mash_heatmap.R -p height -n Height```
 
-Plot for **Fig. 4A**.  Download pheno_names.txt. Create a text file names sex_ids.txt with two columns [IID, sex], which contains the IIDs and corresponding sex in (0,1) format.
+Plot for **Fig. 4A**.  Download pheno_names.txt to $PHENO_DIR. Create a text file names sex_ids.txt with two columns [IID, sex], which contains the IIDs and corresponding sex in (0,1) format.
 Code: ```./phenovar_by_phenomean.R```
 
-Plot for **Fig. 4B**. Download mash_weights.txt, which summarizes weights from all traits.  
+Plot for **Fig. 4B**. Download mash_weights.txt to $GWAS_DIR, which summarizes weights from all traits.  
 Code: ```./phenovar_by_amplification.R```
 
 Plot for **Fig. S7**  
@@ -79,17 +81,17 @@ Code: ```nontrivial.R```
 The ```-m``` or ```--mode``` flag may be used in the three scripts below. To keep the same random sample size for input to *mash*, use the flag, with the parameter '_same'. Otherwise, do not use the flag. 
 
 ```./mash_setup.R``` needs to be run first for the same trait.  
-Code Example: ```mash_p_threshold.R -p height```  
+Code Example: ```mash_p_threshold.R -p height``` or ```mash_p_threshold.R -p height -m _same```  
 
 Plots for **Fig. S3B**.  
-Code Example: ```mash_pvalue_plot.R -p height -n Height```  
+Code Example: ```mash_pvalue_plot.R -p height -n Height``` or ```mash_pvalue_plot.R -p height -n Height -m _same```  
 
-Plots for **Fig. S3A**. Download noeffect_weight.txt and noeffect_weight_same.txt, which has the weight on the no effect matrix for each phenotype and p-value threshold used in this particular analysis.  
-Code Example: ```mash_pvalue_null_plot.R```  
+Plots for **Fig. S3A**. In $GWAS_DIR, Download noeffect_weight.txt and noeffect_weight_same.txt, which has the weight on the no effect matrix for each phenotype and p-value threshold used in this particular analysis.  
+Code Example: ```mash_pvalue_null_plot.R``` or ```mash_pvalue_null_plot.R -m _same```  
 
 #### Environmental variance simulation for *mash*
 ##### Create a matrix of 30K individuals and 20K genotypes. 
-Download maf_sample_20k.txt, which contained a random sample of 20K mean allele frequencies from UK Biobank [Resource 1967](https://biobank.ndph.ox.ac.uk/ukb/refer.cgi?id=1967).  
+In $QC_DIR, Download maf_sample_20k.txt, which contained a random sample of 20K mean allele frequencies from UK Biobank [Resource 1967](https://biobank.ndph.ox.ac.uk/ukb/refer.cgi?id=1967).  
 Code: ```environ_matrix.R```
 
 Estimate effect sizes and standard errors for input into mash. Flags ```-i```, ```-g```. and ```-e```, indicate parameters for number of causal SNPs, heritability, and female to male environmental variance ratio. We used the following parameters:  
@@ -104,11 +106,11 @@ Code Example: ```environ_large.R -g 0.05 -e 5```
 *mash* fitting procedure to test if differences in environmental variance is captured. Results for all parameters from the previous two scripts are required before running this script.  
 Code: ```environ_mash.R```
 
-Produce heatmap plots as depicted in **Fig. S6**. Download matrice_names.txt, which is a list of all hypothesis covariance matrices used.  
+Produce heatmap plots as depicted in **Fig. S6**. Download matrice_names.txt, which is a list of all hypothesis covariance matrices used, to $GWAS_DIR.  
 Code Example: ```environ_heatmap.R```
 
 ### Polygenic Score  
-Create five test sets to be used for cross validation. Each test set is placed in a separate PGS folder.  Download QC_ids.txt.  
+Create five test sets to be used for cross validation. This step will create folders PGS_1-5 and place a test set in each folder.  Download QC_ids.txt to $PHENO_DIR.  
 Code Example: ```PGS_testset_1.R -p height```
 
 For the following four scripts, provide the set number [1-5] with the ```-s``` flag.  

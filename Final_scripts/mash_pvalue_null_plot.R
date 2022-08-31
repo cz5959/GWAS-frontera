@@ -34,3 +34,5 @@ ggplot(all_null, aes(x=pval, y=Weight, group=Phenotype, color=Phenotype)) +
   scale_color_manual(values = colors) +
   theme_classic() +
   theme(axis.title=element_text(size=10), axis.text=element_text(size=9))
+
+print(paste0("Results in: ", wd))

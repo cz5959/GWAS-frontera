@@ -33,5 +33,5 @@ for (i in (j-4999):(j)) {
   snp <- get_genotypes(gwas_snps[i])    # get allele count for all individuals
   genotype_matrix_k <- suppressMessages(bind_cols(genotype_matrix_k, snp))
 }
-save(genotype_matrix_k, file=paste0("simulation_matrix_k_",j,"k.RData"))
+save(genotype_matrix_k, file=paste0("simulation_matrix_k_",j/1000,"k.RData"))
 }

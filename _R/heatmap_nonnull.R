@@ -1,9 +1,18 @@
+require("dplyr")
+require("tidyr")
+require("reshape2")
+require("matrixStats")
+require("ggplot2")
+require("ggsci")
+require("ggpubr")
+require("gridExtra")
 
-
-setwd("~/Research/GWAS-frontera/mash/")
+setwd("~/Documents/Harpak/GxSex/mash/")
+#setwd("~/Research/GWAS-frontera/mash/")
 m_names <- read.csv("matrice_names.txt", sep="\t")
 
-setwd("~/Research/GWAS-frontera/mash/simulation/fs")
+setwd("~/Documents/Harpak/GxSex/mash/simulation/nonnull2")
+#setwd("~/Research/GWAS-frontera/mash/simulation/nonnull2")
 # f=18
 # m=64
 # s=2
@@ -11,39 +20,44 @@ setwd("~/Research/GWAS-frontera/mash/simulation/fs")
 # same="same"
 # 
 # name <- paste0("mash_",snps,"_nonnull_",f,"_",m,"_",s,"_",same)
-name <- "mash_1000_0.16_fs_ttest"
+name <- "mash_1000_0_all"
 df <- read.csv(paste0(name,".txt"), sep="\t")
-x <- rowSums(df)/10
-df <- data.frame(cbind(m_names[1:4], x))
+mean <- rowMeans(df)
+se <- rowSds(as.matrix(df)) / sqrt(length(colnames(df)) - 1)
 
+df <- data.frame(cbind(m_names[1:4], mean, se))
 df$effect <- paste0(df$sex, df$magnitude)
-
 prepare_df <- function(df) {
   df$effect <- factor(df$effect, levels = c('f1','f3', 'f2', 'f1.5','equal1','m1.5','m2','m3','m1'))
   df <- df %>% mutate_at(1, as.numeric) %>%
     arrange(correlation, effect)
   return(df)
 }
-
-df_nonnull <- prepare_df(df[2:nrow(df),c(3,5,6)])
-df_null <- prepare_df(df[1,c(3,5,6)])
+df_nonnull <- prepare_df(df[2:nrow(df),c(3,5,6,7)])
+df_null <- prepare_df(df[1,c(3,4,5,6,7)])
 
 # format labels
 df_nonnull <- df_nonnull %>% 
-  mutate(x = as.numeric(x)) %>%
-  mutate(mean_lab = ifelse(x < 0.0005, "0%", sprintf("%.1f%%", round(x*100,1)) ))
+  mutate(mean = as.numeric(mean)) %>%
+  mutate(mean_lab = ifelse(mean < 0.0005, "0%", sprintf("%.1f%%", round(mean*100,1)) )) %>%
+  mutate(se = as.numeric(se)) %>%
+  mutate(se_lab = ifelse(se < 0.0005, "0%", sprintf("%.1f%%", round(se*100,1)) )) 
 df_null <- df_null %>% 
-  mutate(x = as.numeric(x)) %>%
-  mutate(mean_lab = ifelse(x < 0.0005, "0%", sprintf("%.1f%%", round(x*100,1)) ))
+  mutate(mean = as.numeric(mean)) %>%
+  mutate(mean_lab = ifelse(mean < 0.0005, "0%", sprintf("%.1f%%", round(mean*100,1)) )) %>%
+  mutate(se = as.numeric(se)) %>%
+  mutate(se_lab = ifelse(se < 0.0005, "0%", sprintf("%.1f%%", round(se*100,1)) )) 
 
 
 ### BIG PLOT
 effect_labels <-  c('female-\nspecific','female x3', 'female x2', 'female x1.5','equal','male x1.5','male x2','male x3','male-\nspecific')
 
-png(file=paste0(name,".png"), width=6.5, height=4.8, units="in", res=300)
-big <- ggplot(df_nonnull, aes(x= effect, y= correlation, fill= x)) +
+#png(file=paste0(name,".png"), width=6.5, height=4.8, units="in", res=300)
+pdf(file=paste0(name,".pdf"), width=6.5, height=4.8)
+big <- ggplot(df_nonnull, aes(x= effect, y= correlation, fill= mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
   geom_text(aes(label=mean_lab), color= "black", size= 2.7, vjust=-0.1) +
+  geom_text(aes(label=paste("\u00B1",se_lab)), color= "black", size= 2.2, vjust=1.5) +
   scale_y_continuous(breaks=seq(-1,1,0.25), expand=c(0,0)) +
   scale_x_discrete(labels= effect_labels) +
   #labs(title=paste0(f,"% female; ",m,"% male; x",s,"; snps=",snps,"; same sign")) +
@@ -53,9 +67,10 @@ big <- ggplot(df_nonnull, aes(x= effect, y= correlation, fill= x)) +
        legend.position = "none") +
   scale_fill_gradient(low="gray98",high="#829ed9")
 
-small <- ggplot(df_null, aes(x= 0, y= 0, fill= x)) +
+small <- ggplot(df_null, aes(x= 0, y= 0, fill= mean)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
   geom_text(aes(label=mean_lab), color= "white", size= 2.7, vjust=-0.1) +
+  geom_text(aes(label=paste("\u00B1",se_lab)), color= "white", size= 2.2, vjust=1.5) +
   scale_y_continuous(expand=c(0,0)) +
   ylab("Weight of \nNo Effect Matrix") +
   theme_pubclean() +
@@ -67,18 +82,19 @@ small <- ggplot(df_null, aes(x= 0, y= 0, fill= x)) +
 lay <- rbind( c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(1,1,1,1,1), c(2,2,3,3,3))
 p <- gridExtra::grid.arrange(big, small, ncol=1, layout_matrix=lay)
 
+
 dev.off()
 
 ### SMALL PLOT
-nan_weight <- 1 / (1 - df_null$x[1])
-df_nonnull$x = df_nonnull$x * nan_weight
+nan_weight <- 1 / (1 - df_null$mean[1])
+df_nonnull$mean = df_nonnull$mean * nan_weight
 df_nonnull$effect <- as.character(df_nonnull$effect) ; df_nonnull$correlation <- as.numeric(df_nonnull$correlation)
 
 # group by sex
 group_sex <- function(sex){
   df_sex <- df_nonnull %>% filter(substr(effect,1,1) == sex) %>%
     group_by(correlation) %>%
-    summarise(mean_sum = sum(x)) %>%
+    summarise(mean_sum = sum(mean)) %>%
     as.data.frame()
   return(df_sex)
 }
@@ -111,7 +127,8 @@ sum_corr <- df_small %>%
   summarise(sum = sum(value))
 
 # PLOT 
-png(file=paste0(name,"_small.png"), width=3.5, height=2.3, units="in", res=200)
+#png(file=paste0(name,"_small.png"), width=3.5, height=2.3, units="in", res=200)
+pdf(file=paste0(name,"_small.pdf"), width=3.5, height=2.3)
 ggplot(df_small, aes(x=magnitude, y= correlation, fill= value)) +
   geom_tile(color= "white", lwd= 1.5, linetype= 1) +
   geom_text(aes(label=sprintf("%.0f%%", (value*100))), color= "black", size= 2.5) +
@@ -129,4 +146,5 @@ ggplot(df_small, aes(x=magnitude, y= correlation, fill= value)) +
   coord_cartesian(xlim=c(1,3.15), ylim=c(0.9,3.9), clip="off")
 
 dev.off()
+
 

@@ -158,6 +158,7 @@ mag_plot <-
 print(mag_plot)
 dev.off()
 
+print(paste0("Results in: ", wd))
 
 
 

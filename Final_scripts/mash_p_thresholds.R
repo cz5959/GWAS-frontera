@@ -91,3 +91,5 @@ for (p in thresholds) {
         write.table(m, file=paste0(pheno,"_",as.character(p),method,".txt"), sep="\t", row.names=FALSE, quotes=FALSE)
     }
 }
+
+print(paste0("Results in: ", wd))

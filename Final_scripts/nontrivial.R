@@ -13,7 +13,7 @@ library(grid, lib.loc=R_LIB)
 library(ggpubr, lib.loc=R_LIB)
 
 # get correlation
-setwd(LDSC_DIR)
+setwd(LDSC_FILE)
 ldsc <- read.csv("relative_h2.txt", sep="\t")
 ldsc_both <- ldsc[ldsc$Sex == "both_sex", c(1,2,6)]
 # get ratio of relative h2

@@ -39,7 +39,7 @@ genotype_matrix_i <- genotype_matrix_k[,(1:snp_num)]
 
 # Beta (effect size)
 sigma_1 <- matrix(c(1,1,1,1), 2, 2) 
-sigma_2 <- matrix(c(2,1,1,1), 2, 2) 1
+sigma_2 <- matrix(c(2,1,1,1), 2, 2) 
 mu <- c(0,0)
 Beta <- mvrnorm(snp_num*(1-a_weight), mu=mu, Sigma=sigma_1)
 Beta <- rbind(Beta, mvrnorm(snp_num*a_weight, mu=mu, Sigma=sigma_2))
