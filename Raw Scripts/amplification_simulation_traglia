@@ -16,7 +16,7 @@ option_list = list(
 )
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
-pheno <- opt$pheno; print(pheno)
+pheno_name <- opt$pheno; print(pheno_name)
 snp_num <- opt$snps; print(snp_num)
 E_ratio <- opt$environment; print(E_ratio)
 s <- opt$seed; print(s)
@@ -57,7 +57,7 @@ if (pheno == "height") {
 } else if (pheno == "bmi") {
     # a_sum = 0.485
     a <- c(0.129, 0.111, 0.108, 0.076, 0.027, 0.019, 0.008, 0.007)
-    null <- 0.0446
+    null <- 0.446
     sigma_1 <- matrix(c(1, 0.75, 0.75, 1), 2, 2)
     sigma_2 <- matrix(c(1, 1, 1, 1), 2, 2)
     sigma_3 <- matrix(c(2.25, 1.5, 1.5 ,1), 2, 2)
@@ -79,17 +79,19 @@ if (pheno == "height") {
     sigma_7 <- matrix(c(1, 1.5, 1.5, 2.25), 2, 2)
     sigma_8 <- matrix(c(1, 0.5, 0.5, 1), 2, 2)
 }
-null_weight <- 1 / sum(a)
-a <- round(a * null_weight, 3)
+null_sigma <- matrix(c(0,0,0,0),2,2)
+null_weight <- (1-null) / sum(a)
+a = round(a * null_weight,3)
 mu <- c(0,0)
 Beta <- mvrnorm((snp_num*(a[1])), mu=mu, Sigma=sigma_1)
-Beta <- rbind( rbind( rbind( rbind( rbind( rbind( rbind( Beta, mvrnorm((snp_num*a[2]), mu=mu, Sigma=sigma_2)) ,
+Beta <- rbind( rbind( rbind( rbind( rbind( rbind( rbind( rbind( Beta, mvrnorm((snp_num*a[2]), mu=mu, Sigma=sigma_2)) ,
                     mvrnorm((snp_num*a[3]), mu=mu, Sigma=sigma_3) ),
                     mvrnorm((snp_num*a[4]), mu=mu, Sigma=sigma_4) ),
                     mvrnorm((snp_num*a[5]), mu=mu, Sigma=sigma_5) ),
                     mvrnorm((snp_num*a[6]), mu=mu, Sigma=sigma_6) ),
                     mvrnorm((snp_num*a[7]), mu=mu, Sigma=sigma_7) ),
-                    mvrnorm((snp_num*a[8]), mu=mu, Sigma=sigma_8) )
+                    mvrnorm((snp_num*a[8]), mu=mu, Sigma=sigma_8) ),
+                    mvrnorm((snp_num*null), mu=mu, Sigma=null_sigma) )
 
 # get environmental effect
 get_environment <- function(h2, E_ratio) {
@@ -110,13 +112,16 @@ get_environment <- function(h2, E_ratio) {
 # environment and heritability combination
 # E_ratio in c(1, 1.5, 5)
 print("get vector of environmental effect")
-E <- get_environment(0.5, E_ratio)
+E <- get_environment(0.05, E_ratio)
 rm(snp_freqs)
 print("get phenotype vector")
 genotype_matrix_i <- t(genotype_matrix_i)
 genotype_matrix_i[,m_id] <- genotype_matrix_i[,m_id]*Beta[,2]
 genotype_matrix_i[,f_id] <- genotype_matrix_i[,f_id]*Beta[,1]
 pheno <- colSums(genotype_matrix_i) + E
+# standardize by units of std dev
+pheno[m_id] <- pheno[m_id] / sd(pheno[m_id])
+pheno[f_id] <- pheno[f_id]  / sd(pheno[f_id])
 print(length(pheno))
 rm(genotype_matrix_i)
 
@@ -146,5 +151,5 @@ for (j in c(1,10,15,20)) {
   rm(genotype_matrix_k)
 }
 print("write to file")
-setwd(paste0("/scratch/08005/cz5959/simulation/",snp_num,"_",pheno))
-save(mash_BETA, mash_SE, file=paste0("mash_",snp_num,"_",pheno,"_",s,".RData"))
+setwd(paste0("/scratch/08005/cz5959/simulation/",snp_num,"_",pheno_name))
+save(mash_BETA, mash_SE, file=paste0("mash_",snp_num,"_",pheno_name,"_",s,".RData"))

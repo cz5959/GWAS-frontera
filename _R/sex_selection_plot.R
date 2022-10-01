@@ -8,26 +8,45 @@ require("ggpubr")
 require("gridExtra")
 
 # load RData files (from Matt)
-setwd("~/Research/GWAS-frontera/selection")
-load("fst_plot_testosterone.1e-05.RData"); testosterone <- pointsf
-load("fst_plot_protein_total.1e-05.RData"); protein <- pointsf
-load("zscore_plot.1e-05.RData")
-load("zscore_plot.1e-08.all.Rdata")
+setwd("~/Documents/Harpak/GxSex/selection/new")
+load("nfe_fst_plot_testosterone.1e-05.RData"); testosterone <- pointsf
+load("nfe_fst_plot_protein_total.1e-05.RData"); protein <- pointsf
+#
+pvalue <- "1e-05"
+load(paste0("asj_zscore_plot.",pvalue,".all.Rdata"))
+asj <- results; asj_i <- resultsi
+load(paste0("nfe_zscore_plot.",pvalue,".all.Rdata"))
+nfe <- results; nfe_i <- resultsi
+load(paste0("fin_zscore_plot.",pvalue,".all.Rdata"))
+fin <- results; fin_i <- resultsi
+#load(paste0("afr_zscore_plot.",pvalue,".all.Rdata"))
+#afr <- results; afr_i <- resultsi
+#load(paste0("amr_zscore_plot.",pvalue,".all.Rdata"))
+#amr <- results; amr_i <- resultsi
+#load(paste0("eas_zscore_plot.",pvalue,".all.Rdata"))
+#eas <- results; eas_i <- resultsi
 
+# merge ancestry results (new)
+results <- rbind(asj, nfe, fin)#, afr, amr, eas)
+resultsi <- rbind(asj_i, nfe_i, fin_i)#, afr_i, amr_i, eas_i)
+resultsi$ANC <- c("Ashkenazi Jewish", "Non-Finnish European", "Finnish")#, "African", "Latino/American Admixed", "East Asian")
+results$ANC <- factor(results$ANC, levels=c("Non-Finnish European", "Ashkenazi Jewish", "Finnish"))
+resultsi$ANC <- factor(resultsi$ANC, levels=c("Non-Finnish European", "Ashkenazi Jewish", "Finnish"))
+results$TRAIT <- factor(results$TRAIT, levels=results$TRAIT[order(nfe$TRAIT)])
 # split results by ancestry
-azj <- results[results$ANC == "Ashkenazi Jewish",]
-fin <- results[results$ANC == "Finnish",]
-nfe <- results[results$ANC == "Non-Finnish European",]
+#azj <- results[results$ANC == "Ashkenazi Jewish",]
+#fin <- results[results$ANC == "Finnish",]
+#nfe <- results[results$ANC == "Non-Finnish European",]
 
-nfe[nfe$TRAIT == "Total protein",c(6,7)]
-summary(t_model)
+#nfe[nfe$TRAIT == "Total protein",c(6,7)]
 # lm line
 t_model <- lm(FST~V, testosterone, weight=w)
-t_B
 t_B <- summary(t_model)$coefficients[2]; t_yi <- summary(t_model)$coefficients[1]
 p_model <- lm(FST~V, protein, weight=w)
 p_B <- summary(p_model)$coefficients[2]; p_yi <- summary(p_model)$coefficients[1]
 ### FST PLOT
+nfe[nfe$TRAIT=="Testosterone",]
+
 # size 3x4
 f1 <- ggplot(testosterone, aes(x=V, y=FST, weight=w, size=w)) +
   geom_point(color = "black", alpha= 0.2) +
@@ -35,19 +54,19 @@ f1 <- ggplot(testosterone, aes(x=V, y=FST, weight=w, size=w)) +
   geom_abline(slope=t_B, intercept=t_yi, size=0.5, color="blue") +
   theme_classic() +
   scale_y_continuous(breaks=c(0,5e-5,1e-4), labels=c("0","5e-5","1e-4"), limits = c(0,1e-4)) +
-  scale_x_continuous(breaks=c(0,5e-4,1e-3, 1.5e-3), labels=c("0","5e-4","1e-3", "1.5e-3"), limits=c(0,1.5e-3)) +
+  scale_x_continuous(breaks=c(0,5e-4,1e-3, 1.5e-3), labels=c("0","5e-4","1e-3", "1.5e-3"), limits=c(0,2e-3)) +
   xlab("VGxSex (nmol/L)") +
   theme(axis.title.x=element_text(size=10), axis.text=element_text(size=8), axis.title.y=element_blank(),
         legend.position="none") +
   scale_size(range = c(0.5,3)) 
 f1
-max(testosterone$FST)
+max(protein$V)
 f2 <- ggplot(protein, aes(x=V, y=FST, weight=w,size=w)) +
   geom_point(color = "black", alpha= 0.2) +
   geom_abline(slope=p_B, intercept=p_yi, size=0.5, color="red") +
   theme_classic() +
   scale_y_continuous(breaks=c(0,4e-5, 8e-5), labels=c("0","4e-5","8e-5"), limits = c(0,9e-5)) +
-  scale_x_continuous(breaks=c(0,5e-4,1e-3), labels=c("0","5e-4","1e-3"), limits=c(0,1.1e-3)) +
+  scale_x_continuous(breaks=c(0,5e-4,1e-3), labels=c("0","5e-4","1e-3"), limits=c(0,1.5e-3)) +
   xlab("VGxSex (g/L)") +
   theme(axis.title.y=element_blank(), axis.title.x=element_text(size=10), axis.text=element_text(size=8),
         legend.position="none") +
@@ -69,14 +88,15 @@ ggplot(results, aes(x=ZMEAN, y=TRAIT)) +
   geom_errorbarh(aes(xmin=CILOWER, xmax=CIUPPER), height=0.3, size=0.3) +
   geom_vline(xintercept = 0, linetype="longdash", color="#563f61", alpha=0.5, size=0.3) +
   geom_vline(data = resultsi, aes(xintercept = ANCMEAN), linetype="dashed", color="#b02e38", alpha=0.5, size=0.3) +
-  coord_cartesian(xlim=c(-2.6,5.35)) +
+  #coord_cartesian(xlim=c(-2.9,4.4)) +
+  scale_x_continuous(breaks = c(-2,0,2,4), limits=c(-2.9,4.4)) +
   facet_wrap(~ANC,ncol=3) +
   theme_classic() +
   xlab("Z-score for Sexually-Antagonistic Selection") +
   theme(axis.title.y=element_blank(),axis.title.x=element_text(size=12), axis.text=element_text(size=9),
         panel.grid.major.y = element_line(color="gray95", size=0.5))
-min(results$ZMEAN)
-max(results$ZMEAN)
+min(results$CILOWER)
+max(results$CIUPPER)
 ################3
 
 
